@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amanda — UX Research & Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Helvetica+Neue:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════
+   TOKENS — Cargo reference palette
+   Background: #898680 (warm gray)
+   Surface:    #7C7974 (darker gray)
+   Ink:        #1A1917 (near black)
+   Light text: rgba(26,25,23,0.45)
+══════════════════════════════════════════════ */
+:root {
+  --bg:       #8C8880;
+  --bg-light: #9A9690;
+  --bg-dark:  #6E6B65;
+  --surface:  #7A7770;
+  --card:     #232220;
+  --ink:      #1A1917;
+  --ink-2:    rgba(26,25,23,0.60);
+  --ink-3:    rgba(26,25,23,0.38);
+  --ink-4:    rgba(26,25,23,0.22);
+  --on-dark:  rgba(255,255,255,0.88);
+  --on-dark2: rgba(255,255,255,0.45);
+  --on-dark3: rgba(255,255,255,0.22);
+  --rule:     rgba(26,25,23,0.14);
+  --rule-d:   rgba(255,255,255,0.10);
+  --nav-h:    44px;
+  --font: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:13px;scroll-behavior:smooth;}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+
+/* ── PAGE ROUTER ─────────────────────────────── */
+.page{display:none;}
+.page.active{display:block;animation:pgIn .28s ease both;}
+@keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════════════
+   NAV — exact Cargo style
+══════════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:var(--nav-h);
+  background:var(--bg);
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  align-items:start;
+  padding:14px 20px 0;
+  border-bottom:none;
+}
+.nav-col{
+  font-size:12px;
+  font-weight:400;
+  color:var(--ink);
+  line-height:1.3;
+}
+.nav-col a,.nav-col span{
+  display:block;
+  font-size:12px;
+  font-weight:400;
+  color:var(--ink);
+  text-decoration:none;
+  line-height:1.45;
+  cursor:pointer;
+  transition:opacity .15s;
+}
+.nav-col a:hover,.nav-col span:hover{opacity:.55;}
+.nav-col.right{text-align:right;}
+.nav-col.right a{display:inline;}
+.nav-active{opacity:.45;}
+
+/* ══════════════════════════════════════════════
+   HOME — HERO (full Cargo style)
+══════════════════════════════════════════════ */
+.home-hero{
+  min-height:100vh;
+  padding-top:var(--nav-h);
+  background:var(--bg);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+.hero-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  padding:28px 20px 0;
+  gap:0;
+}
+.hero-meta-col{font-size:12px;font-weight:400;color:var(--ink);line-height:1.45;}
+.hero-meta-col.right{text-align:right;}
+
+.hero-headline{
+  flex:1;
+  display:flex;
+  align-items:flex-end;
+  padding:0 12px 0 8px;
+  margin-top:20px;
+}
+.hero-h1{
+  font-size:clamp(88px,13vw,196px);
+  font-weight:400;
+  line-height:.88;
+  letter-spacing:-0.03em;
+  color:var(--ink);
+  font-family:var(--font);
+  animation:hdIn 1s cubic-bezier(.16,1,.3,1) .05s both;
+}
+@keyframes hdIn{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-foot{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:18px 20px;
+  margin-top:28px;
+  border-top:1px solid var(--rule);
+}
+.hero-foot-item{font-size:12px;color:var(--ink-2);line-height:1.4;}
+.hero-foot-item.right{text-align:right;}
+.hero-foot-item a{color:var(--ink);text-decoration:none;cursor:pointer;}
+.hero-foot-item a:hover{opacity:.55;}
+
+/* ══════════════════════════════════════════════
+   PROJECTS LISTING — Cargo project row style
+══════════════════════════════════════════════ */
+.projects-section{background:var(--bg);}
+
+.proj-section-header{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:20px 20px 12px;
+  border-bottom:1px solid var(--rule);
+}
+.psh-title{font-size:12px;font-weight:400;color:var(--ink);}
+.psh-right{
+  text-align:right;
+  display:flex;align-items:center;justify-content:flex-end;gap:16px;
+}
+
+/* FILTER PILLS */
+.filter-bar{
+  display:flex;gap:0;
+  font-size:11px;
+  color:var(--ink-2);
+}
+.filter-btn{
+  font-size:11px;font-weight:400;
+  color:var(--ink-2);background:none;border:none;
+  cursor:pointer;padding:3px 12px;
+  border-right:1px solid var(--rule);
+  transition:color .15s;
+  font-family:var(--font);
+}
+.filter-btn:first-child{padding-left:0;}
+.filter-btn:last-child{border-right:none;}
+.filter-btn:hover,.filter-btn.active{color:var(--ink);}
+
+/* PROJECT ROW */
+.proj-row{
+  display:grid;
+  grid-template-columns:1fr 2fr 1fr 1fr;
+  padding:22px 20px;
+  border-bottom:1px solid var(--rule);
+  cursor:pointer;
+  transition:background .18s;
+  align-items:start;
+  gap:24px;
+}
+.proj-row:hover{background:rgba(26,25,23,.06);}
+.proj-row[data-hidden="true"]{display:none;}
+
+.pr-num{font-size:12px;color:var(--ink-3);font-weight:400;}
+.pr-title-block{}
+.pr-title{
+  font-size:18px;font-weight:400;
+  color:var(--ink);line-height:1.15;
+  letter-spacing:-0.01em;margin-bottom:6px;
+}
+.pr-desc{font-size:12px;color:var(--ink-2);line-height:1.55;max-width:380px;}
+.pr-meta{font-size:12px;color:var(--ink-2);line-height:1.45;}
+.pr-meta strong{color:var(--ink);font-weight:500;}
+.pr-cta{
+  text-align:right;
+  font-size:12px;color:var(--ink-3);
+}
+.pr-cta-btn{
+  font-size:11px;font-weight:400;
+  color:var(--ink);background:none;border:none;
+  cursor:pointer;font-family:var(--font);
+  letter-spacing:0.02em;
+  text-decoration:underline;text-underline-offset:3px;
+}
+.pr-cta-btn:hover{opacity:.55;}
+
+/* ── BIG VISUAL ROWS (with images) ─────────── */
+.proj-visual-section{
+  border-top:1px solid var(--rule);
+}
+.pvs-header{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:18px 20px;
+  border-bottom:1px solid var(--rule);
+}
+.pvs-title{font-size:12px;color:var(--ink);font-weight:400;}
+.pvs-sub{font-size:12px;color:var(--ink-2);}
+
+.proj-visual-row{
+  display:grid;
+  grid-template-columns:340px 1fr 1fr;
+  border-bottom:1px solid var(--rule);
+  min-height:420px;
+  cursor:pointer;
+  transition:background .18s;
+}
+.proj-visual-row:hover{background:rgba(26,25,23,.04);}
+
+.pvr-text{
+  border-right:1px solid var(--rule);
+  padding:28px 24px;
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+}
+.pvr-num{font-size:11px;color:var(--ink-3);margin-bottom:16px;letter-spacing:0.04em;}
+.pvr-title{
+  font-size:22px;font-weight:400;letter-spacing:-0.015em;
+  color:var(--ink);line-height:1.1;margin-bottom:8px;
+}
+.pvr-category{font-size:11px;color:var(--ink-3);margin-bottom:20px;}
+.pvr-lead{font-size:12.5px;color:var(--ink-2);line-height:1.65;margin-bottom:24px;flex:1;}
+.pvr-foot{display:flex;align-items:center;justify-content:space-between;}
+.pvr-year{font-size:11px;color:var(--ink-3);}
+.pvr-open{
+  font-size:11px;color:var(--ink);
+  background:none;border:1px solid var(--rule);
+  padding:7px 16px;cursor:pointer;
+  font-family:var(--font);
+  transition:background .15s,color .15s;
+  border-radius:1px;
+}
+.pvr-open:hover{background:var(--ink);color:var(--bg);}
+
+/* image placeholders / CSS covers */
+.pvr-main-img{
+  border-right:1px solid var(--rule);
+  position:relative;overflow:hidden;
+}
+.pvr-side{
+  display:flex;flex-direction:column;
+}
+.pvr-fig{
+  flex:1;border-bottom:1px solid var(--rule);
+  position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;padding:12px;
+}
+.pvr-fig:last-child{border-bottom:none;}
+.pvr-fig-lbl{
+  font-size:10px;color:var(--on-dark2);
+  font-weight:400;letter-spacing:0.06em;
+}
+
+/* CSS ART for covers */
+.cover-dark{background:var(--card);}
+.cover-dates-art{
+  background:var(--card);
+  display:grid;grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;gap:1px;
+  background-color:rgba(255,255,255,.06);
+}
+.cda-cell{background:var(--card);display:flex;align-items:center;justify-content:center;}
+.cda-cell.accent{background:#8B2A18;}
+.cda-word{font-size:32px;font-weight:300;color:rgba(255,255,255,.08);letter-spacing:-0.02em;}
+
+.cover-guiar{
+  background:#111A13;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:32px;gap:10px;position:relative;
+}
+.cover-guiar::before{
+  content:'';position:absolute;
+  left:-60px;bottom:-60px;width:300px;height:300px;
+  border-radius:50%;
+  background:radial-gradient(#1A4A24,transparent 70%);
+  opacity:.5;
+}
+.cg-line{
+  height:1px;background:rgba(255,255,255,.06);position:relative;
+}
+.cg-line::after{
+  content:'';position:absolute;height:1px;
+  background:rgba(60,160,80,.4);left:0;top:0;
+}
+
+.cover-setoca{
+  background:#1E1020;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.cover-setoca::before{
+  content:'';position:absolute;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(#5A2048,transparent 65%);
+  opacity:.6;
+}
+.cover-setoca::after{
+  content:'';position:absolute;
+  width:380px;height:380px;border-radius:50%;
+  border:1px solid rgba(160,80,130,.15);
+}
+.cst-inner{
+  position:relative;z-index:2;text-align:center;
+}
+.cst-word{
+  font-size:48px;font-weight:300;
+  color:rgba(255,255,255,.08);letter-spacing:-0.03em;line-height:1;
+}
+
+.cover-innov{
+  background:#0C0B09;
+  position:relative;overflow:hidden;
+}
+.ci-ring{
+  position:absolute;border-radius:50%;
+  border:1px solid rgba(160,110,20,.15);
+}
+
+/* ══════════════════════════════════════════════
+   ABOUT PAGE
+══════════════════════════════════════════════ */
+.about-page{padding-top:var(--nav-h);background:var(--bg);}
+.about-hero{
+  min-height:50vh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 20px 0;
+  margin-bottom:0;
+}
+.about-h{
+  font-size:clamp(72px,10vw,152px);
+  font-weight:400;line-height:.88;
+  letter-spacing:-0.03em;
+  color:var(--ink);
+  padding:40px 0 0;
+}
+.about-rule{height:1px;background:var(--rule);margin:24px 0 0;}
+
+.about-grid{
+  display:grid;
+  grid-template-columns:1fr 2fr 1fr;
+  border-bottom:1px solid var(--rule);
+}
+.about-col{
+  padding:32px 20px;
+  border-right:1px solid var(--rule);
+}
+.about-col:last-child{border-right:none;}
+.about-col-label{
+  font-size:11px;color:var(--ink-3);
+  letter-spacing:0.04em;margin-bottom:18px;
+  text-transform:uppercase;font-weight:400;
+}
+.about-col-body{font-size:12.5px;color:var(--ink-2);line-height:1.7;}
+.about-col-body p+p{margin-top:.9rem;}
+.about-col-body strong{color:var(--ink);font-weight:500;}
+
+.about-blocks{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  border-bottom:1px solid var(--rule);
+}
+.about-block{
+  padding:28px 20px;
+  border-right:1px solid var(--rule);
+}
+.about-block:last-child{border-right:none;}
+.ab-heading{
+  font-size:28px;font-weight:400;letter-spacing:-0.02em;
+  color:var(--ink);margin-bottom:16px;line-height:1.1;
+}
+.ab-body{font-size:12px;color:var(--ink-2);line-height:1.7;}
+.ab-body ul{padding-left:14px;margin-top:10px;}
+.ab-body li{margin-bottom:4px;}
+
+.about-now{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  border-bottom:1px solid var(--rule);
+}
+.an-item{
+  padding:24px 20px;
+  border-right:1px solid var(--rule);
+}
+.an-item:last-child{border-right:none;}
+.an-label{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+.an-val{font-size:12.5px;color:var(--ink-2);line-height:1.6;}
+.an-val strong{color:var(--ink);font-weight:500;}
+
+/* ══════════════════════════════════════════════
+   CATEGORY PAGES (listing)
+══════════════════════════════════════════════ */
+.cat-page{padding-top:var(--nav-h);background:var(--bg);}
+.cat-hero-section{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:28px 20px 0;
+  min-height:40vh;
+  align-items:end;
+}
+.cat-hero-h{
+  grid-column:1/3;
+  font-size:clamp(56px,8vw,120px);
+  font-weight:400;letter-spacing:-0.03em;line-height:.9;
+  color:var(--ink);padding-bottom:24px;
+}
+.cat-hero-meta{
+  grid-column:3/5;padding-bottom:28px;padding-left:20px;
+  font-size:12px;color:var(--ink-2);line-height:1.6;
+}
+.cat-intro-bar{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:16px 20px;border-top:1px solid var(--rule);
+  font-size:11px;color:var(--ink-3);
+}
+
+/* ══════════════════════════════════════════════
+   CASE STUDY TEMPLATE PAGE
+══════════════════════════════════════════════ */
+.cs-page{padding-top:var(--nav-h);background:var(--bg);}
+.cs-hero{
+  border-bottom:1px solid var(--rule);
+}
+.cs-hero-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:0 20px;
+  padding-top:36px;
+}
+.csh-left{grid-column:1/3;padding-bottom:32px;}
+.csh-category{font-size:11px;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px;}
+.csh-title{
+  font-size:clamp(52px,7.5vw,110px);
+  font-weight:400;letter-spacing:-0.03em;line-height:.9;
+  color:var(--ink);margin-bottom:14px;
+}
+.csh-sub{font-size:13px;color:var(--ink-2);line-height:1.55;max-width:440px;}
+.csh-right{
+  grid-column:3/5;padding-bottom:32px;
+  padding-left:32px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  border-left:1px solid var(--rule);
+}
+.cs-meta-row{
+  display:flex;justify-content:space-between;
+  padding:8px 0;border-bottom:1px solid var(--rule);
+}
+.cs-meta-row:last-child{border-bottom:none;}
+.cs-meta-k{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;}
+.cs-meta-v{font-size:12px;color:var(--ink-2);}
+
+.cs-cover{
+  height:48vh;position:relative;overflow:hidden;
+  border-bottom:1px solid var(--rule);
+}
+
+/* Case study sections */
+.cs-section{
+  display:grid;grid-template-columns:240px 1fr;
+  border-bottom:1px solid var(--rule);
+}
+.cs-sec-label{
+  border-right:1px solid var(--rule);
+  padding:32px 20px;
+  font-size:11px;font-weight:400;
+  color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:.06em;
+  line-height:1.4;
+  position:sticky;top:var(--nav-h);align-self:start;
+}
+.cs-sec-label small{
+  display:block;margin-top:8px;
+  font-size:10px;font-style:italic;
+  color:var(--ink-4);text-transform:none;letter-spacing:0;
+  line-height:1.5;
+}
+.cs-sec-body{padding:32px 28px 32px 36px;}
+
+.cs-lead{
+  font-size:16px;font-weight:400;
+  color:var(--ink);line-height:1.6;
+  margin-bottom:24px;
+  padding-bottom:24px;
+  border-bottom:1px solid var(--rule);
+  letter-spacing:-0.005em;
+}
+.cs-body-text{font-size:12.5px;color:var(--ink-2);line-height:1.75;}
+.cs-body-text p+p{margin-top:.9rem;}
+.cs-body-text strong{color:var(--ink);font-weight:500;}
+.cs-body-text em{font-style:italic;}
+.cs-body-text ul{padding-left:16px;margin:12px 0;}
+.cs-body-text li{font-size:12.5px;color:var(--ink-2);line-height:1.7;margin-bottom:4px;}
+.cs-body-text li strong{color:var(--ink);}
+
+/* Decision block */
+.decision-blk{
+  border-left:2px solid var(--ink);
+  padding:16px 20px;margin:16px 0;
+  background:rgba(26,25,23,.06);
+}
+.decision-head{
+  font-size:10px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink);margin-bottom:6px;
+}
+.decision-blk p{font-size:12px;color:var(--ink-2);line-height:1.65;}
+
+/* Tradeoff row */
+.tradeoff-row{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:8px;margin:12px 0;
+}
+.to-item{
+  padding:12px 16px;border:1px solid var(--rule);
+  font-size:11.5px;color:var(--ink-2);line-height:1.6;
+}
+.to-item::before{font-weight:600;display:block;margin-bottom:4px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;}
+.to-item.pro{background:rgba(26,25,23,.04);}
+.to-item.pro::before{content:'Trade-off ↑';color:var(--ink);}
+.to-item.con{background:rgba(26,25,23,.03);}
+.to-item.con::before{content:'Trade-off ↓';color:var(--ink-3);}
+
+/* Methods */
+.methods-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0;}
+.m-pill{
+  font-size:10px;font-weight:400;letter-spacing:.04em;
+  border:1px solid var(--rule);padding:4px 10px;
+  color:var(--ink-3);
+}
+
+/* Visual slot */
+.vis-slot{
+  background:rgba(26,25,23,.1);border:1px solid var(--rule);
+  margin:20px 0;display:flex;align-items:center;
+  justify-content:center;text-align:center;
+  font-size:10px;color:var(--ink-3);
+  letter-spacing:.08em;text-transform:uppercase;padding:12px;
+}
+.vs-wide{aspect-ratio:16/5;}
+.vs-med{aspect-ratio:4/3;}
+.vs-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0;}
+
+/* Impact */
+.impact-strip{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--rule);
+  margin:20px 0;border:1px solid var(--rule);
+}
+.impact-cell{
+  background:var(--bg);
+  padding:20px;
+}
+.impact-val{
+  font-size:24px;font-weight:300;letter-spacing:-0.02em;
+  color:var(--ink);margin-bottom:6px;
+}
+.impact-lbl{
+  font-size:10px;color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:.08em;
+}
+
+/* ══════════════════════════════════════════════
+   PUBLICATIONS PAGE
+══════════════════════════════════════════════ */
+.pub-page{padding-top:var(--nav-h);background:var(--bg);}
+.pub-row{
+  display:grid;grid-template-columns:240px 1fr 240px;
+  border-bottom:1px solid var(--rule);
+  transition:background .18s;
+}
+.pub-row:hover{background:rgba(26,25,23,.06);}
+.pub-idx{
+  border-right:1px solid var(--rule);
+  padding:28px 20px;
+  display:flex;align-items:flex-start;
+}
+.pub-idx-num{font-size:11px;color:var(--ink-3);letter-spacing:.04em;}
+.pub-body{padding:28px 24px 28px 28px;}
+.pub-year{font-size:11px;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px;}
+.pub-title{
+  font-size:16px;font-weight:400;letter-spacing:-0.01em;
+  color:var(--ink);line-height:1.35;margin-bottom:8px;
+}
+.pub-venue{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px;}
+.pub-abstract{font-size:12px;color:var(--ink-2);line-height:1.65;max-width:520px;}
+.pub-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.pub-tag{
+  font-size:10px;color:var(--ink-3);
+  border:1px solid var(--rule);padding:3px 9px;
+}
+.pub-aside{
+  border-left:1px solid var(--rule);
+  padding:28px 20px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.pa-label{font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.pa-val{font-size:12px;color:var(--ink-2);line-height:1.5;}
+.pub-cta{
+  margin-top:auto;
+  font-size:11px;color:var(--ink);
+  background:none;border:1px solid var(--rule);
+  padding:8px 16px;cursor:pointer;
+  font-family:var(--font);transition:.15s;
+}
+.pub-cta:hover{background:var(--ink);color:var(--bg);}
+
+/* ══════════════════════════════════════════════
+   FOOTER — Cargo style
+══════════════════════════════════════════════ */
+footer{
+  background:var(--bg);
+  border-top:1px solid var(--rule);
+}
+.footer-main{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  border-bottom:1px solid var(--rule);
+}
+.footer-col{padding:28px 20px;border-right:1px solid var(--rule);}
+.footer-col:last-child{border-right:none;}
+.footer-col-label{
+  font-size:11px;color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px;
+}
+.footer-col a{
+  display:block;font-size:12px;
+  color:var(--ink-2);text-decoration:none;
+  line-height:1.9;cursor:pointer;
+}
+.footer-col a:hover{color:var(--ink);}
+.footer-col p{font-size:12px;color:var(--ink-2);line-height:1.6;}
+.footer-bar{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:14px 20px;
+  font-size:11px;color:var(--ink-3);
+}
+.footer-bar span:last-child{text-align:right;}
+
+/* ══════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════ */
+.border-top{border-top:1px solid var(--rule);}
+.divider{height:1px;background:var(--rule);margin:0;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--ink-3);}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     NAV — Cargo 4-column header
+════════════════════════════════════════════ -->
+<nav id="main-nav">
+  <div class="nav-col">
+    <span onclick="go('home')" style="cursor:pointer;">Amanda<br>Portfolio</span>
+  </div>
+  <div class="nav-col">
+    <span onclick="go('product')" id="nl-product">Product Design</span>
+    <span onclick="go('research')" id="nl-research">Research & Facilitation</span>
+    <span onclick="go('innov')" id="nl-innov">Innovation Practice</span>
+  </div>
+  <div class="nav-col">
+    <span onclick="go('pub')" id="nl-pub">Publications</span>
+    <span onclick="go('about')" id="nl-about">About</span>
+  </div>
+  <div class="nav-col right" id="nav-right">
+    <a href="#">Email, LinkedIn ↗</a>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════
+     PAGE: HOME
+════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <div class="home-hero">
+    <div class="hero-meta">
+      <div class="hero-meta-col">
+        UX Research &amp; Strategy<br>
+        Innovation Practice
+      </div>
+      <div class="hero-meta-col right">
+        IADE – Universidade Europeia<br>
+        CESAR / CESARE, Aveiro
+      </div>
+    </div>
+
+    <div class="hero-headline">
+      <h1 class="hero-h1">I help<br>organizations<br>make better<br>decisions—<br>by design.</h1>
+    </div>
+
+    <div class="hero-foot">
+      <div class="hero-foot-item">Lisbon · Aveiro · Recife</div>
+      <div class="hero-foot-item">Doctoral Researcher · UX Lead · Innovation Strategist</div>
+      <div class="hero-foot-item">4 Projects · 5 Programs</div>
+      <div class="hero-foot-item right">
+        <a onclick="document.getElementById('home-projects').scrollIntoView({behavior:'smooth'})">↓ Selected Projects</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS — list mode -->
+  <div id="home-projects">
+    <div class="proj-section-header">
+      <div class="psh-title">Selected Projects</div>
+      <div></div>
+      <div></div>
+      <div class="psh-right">
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterProjects('all',this)">All</button>
+          <button class="filter-btn" onclick="filterProjects('product',this)">Product Design</button>
+          <button class="filter-btn" onclick="filterProjects('research',this)">Research</button>
+          <button class="filter-btn" onclick="filterProjects('innov',this)">Innovation</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row entries -->
+    <div class="proj-row" data-cat="product" onclick="go('cs-dates')">
+      <div class="pr-num">Project 01</div>
+      <div class="pr-title-block">
+        <div class="pr-title">da.tes</div>
+        <div class="pr-desc">Startup-investor matchmaking platform. Two-sided marketplace UX redesigned around algorithm alignment, progressive onboarding, and match-score-driven data completion.</div>
+      </div>
+      <div class="pr-meta">
+        <strong>Product Design</strong><br>
+        Design Sprint · JTBD<br>
+        Brazil · 2023
+      </div>
+      <div class="pr-cta"><button class="pr-cta-btn">Read the Case ↗</button></div>
+    </div>
+
+    <div class="proj-row" data-cat="research" onclick="go('cs-setoca')">
+      <div class="pr-num">Project 02</div>
+      <div class="pr-title-block">
+        <div class="pr-title">Diversicuida</div>
+        <div class="pr-desc">Feminist health platform for LBT women. Participatory research, active listening workshops, and a community-driven rebranding that changed the product's name, scope, and mission.</div>
+      </div>
+      <div class="pr-meta">
+        <strong>Research & Facilitation</strong><br>
+        Co-design · 16 Interviews<br>
+        Brazil · 2023
+      </div>
+      <div class="pr-cta"><button class="pr-cta-btn">Open Research ↗</button></div>
+    </div>
+
+    <div class="proj-row" data-cat="product" onclick="go('cs-guiar')">
+      <div class="pr-num">Project 03</div>
+      <div class="pr-title-block">
+        <div class="pr-title">GUIAR</div>
+        <div class="pr-desc">ESG investment management platform. Dual user flows, OKR-structured impact tracking, and a template system designed around a single insight: blank canvases block adoption.</div>
+      </div>
+      <div class="pr-meta">
+        <strong>Product Design</strong><br>
+        Atomic UX · JTBD<br>
+        Brazil · 2023
+      </div>
+      <div class="pr-cta"><button class="pr-cta-btn">Read the Case ↗</button></div>
+    </div>
+
+    <div class="proj-row" data-cat="innov" onclick="go('cs-innov')">
+      <div class="pr-num">Project 04</div>
+      <div class="pr-title-block">
+        <div class="pr-title">Open Innovation Programs</div>
+        <div class="pr-desc">Startup scouting, evaluation rubric design, and BMC facilitation across Sonae, SEBRAE, and CESAR programs. Ecosystem design as a design practice.</div>
+      </div>
+      <div class="pr-meta">
+        <strong>Innovation Practice</strong><br>
+        BMC · Sprint Design<br>
+        BR + EU · 2022–25
+      </div>
+      <div class="pr-cta"><button class="pr-cta-btn">See the Approach ↗</button></div>
+    </div>
+  </div>
+
+  <!-- VISUAL PROJECT SHOWCASE -->
+  <div class="proj-visual-section">
+    <div class="pvs-header">
+      <div class="pvs-title">Featured — Product Design</div>
+      <div></div>
+      <div></div>
+      <div style="text-align:right;font-size:11px;color:var(--ink-3);">Visual overview</div>
+    </div>
+
+    <!-- da.tes visual row -->
+    <div class="proj-visual-row" onclick="go('cs-dates')">
+      <div class="pvr-text">
+        <div>
+          <div class="pvr-num">01 — Product Design</div>
+          <div class="pvr-title">da.tes</div>
+          <div class="pvr-category">Startup-investor matchmaking · Brazil</div>
+          <div class="pvr-lead">The algorithm had no useful signal to work with. Both sides of the marketplace were under-delivering data. The brief became: design for completeness without making onboarding feel like compliance.</div>
+        </div>
+        <div class="pvr-foot">
+          <span class="pvr-year">2023</span>
+          <button class="pvr-open" onclick="event.stopPropagation();go('cs-dates')">Read the Case →</button>
+        </div>
+      </div>
+      <div class="pvr-main-img cover-dates-art">
+        <div class="cda-cell accent"><div class="cda-word">da.</div></div>
+        <div class="cda-cell"><div style="width:24px;height:24px;border-radius:50%;border:1px solid rgba(255,255,255,.1);"></div></div>
+        <div class="cda-cell"><div style="width:24px;height:24px;border-radius:50%;border:1px solid rgba(255,255,255,.1);"></div></div>
+        <div class="cda-cell" style="background:#1A1714;"><div class="cda-word">tes</div></div>
+      </div>
+      <div class="pvr-side">
+        <div class="pvr-fig cover-dark">
+          <span class="pvr-fig-lbl">Figure 1 · Meus Matches</span>
+        </div>
+        <div class="pvr-fig cover-dark">
+          <span class="pvr-fig-lbl">Figure 2 · Sprint Board</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUIAR visual row -->
+    <div class="proj-visual-row" onclick="go('cs-guiar')">
+      <div class="pvr-text">
+        <div>
+          <div class="pvr-num">03 — Product Design</div>
+          <div class="pvr-title">GUIAR</div>
+          <div class="pvr-category">ESG impact management · Brazil</div>
+          <div class="pvr-lead">Before you design an impact dashboard, you have to define what impact means. Two distinct user flows, OKR tracking, and a template gallery — because blank canvases are the fastest path to non-adoption.</div>
+        </div>
+        <div class="pvr-foot">
+          <span class="pvr-year">2023</span>
+          <button class="pvr-open" onclick="event.stopPropagation();go('cs-guiar')">Read the Case →</button>
+        </div>
+      </div>
+      <div class="pvr-main-img cover-guiar">
+        <div class="cg-line" style=""></div>
+        <div class="cg-line"></div>
+        <div class="cg-line"></div>
+        <div class="cg-line"></div>
+        <div class="cg-line"></div>
+        <div class="cg-line"></div>
+        <div class="cg-line"></div>
+      </div>
+      <div class="pvr-side">
+        <div class="pvr-fig cover-dark" style="background:#111A13;">
+          <span class="pvr-fig-lbl">Figure 1 · OKR Screen</span>
+        </div>
+        <div class="pvr-fig cover-dark" style="background:#111A13;">
+          <span class="pvr-fig-lbl">Figure 2 · Dashboard</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diversicuida visual row -->
+    <div class="proj-visual-row" onclick="go('cs-setoca')">
+      <div class="pvr-text">
+        <div>
+          <div class="pvr-num">02 — Research & Facilitation</div>
+          <div class="pvr-title">Diversicuida</div>
+          <div class="pvr-category">Feminist health platform · Brazil</div>
+          <div class="pvr-lead">Co-design as genuine commitment, not method. A participatory research project that changed its own name because the community asked it to. Published in the Design Journal.</div>
+        </div>
+        <div class="pvr-foot">
+          <span class="pvr-year">2023</span>
+          <button class="pvr-open" onclick="event.stopPropagation();go('cs-setoca')">Open Research →</button>
+        </div>
+      </div>
+      <div class="pvr-main-img cover-setoca">
+        <div class="cst-inner">
+          <div class="cst-word">diversi<br>cuida</div>
+        </div>
+      </div>
+      <div class="pvr-side">
+        <div class="pvr-fig cover-dark" style="background:#1E1020;">
+          <span class="pvr-fig-lbl">Figure 1 · Workshop</span>
+        </div>
+        <div class="pvr-fig cover-dark" style="background:#1E1020;">
+          <span class="pvr-fig-lbl">Figure 2 · Prototype</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-main">
+      <div class="footer-col">
+        <div class="footer-col-label">Amanda</div>
+        <p>UX Research & Strategy<br>Innovation Practice<br>Lisbon · Aveiro · Recife</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-label">Work</div>
+        <a onclick="go('product')">Product Design</a>
+        <a onclick="go('research')">Research & Facilitation</a>
+        <a onclick="go('innov')">Innovation Practice</a>
+        <a onclick="go('pub')">Publications</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-label">Contact</div>
+        <a href="#">Email ↗</a>
+        <a href="#">LinkedIn ↗</a>
+        <a href="#">CV (PDF) ↗</a>
+        <a href="#">Lattes / CNPq ↗</a>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span>© 2025 Amanda</span>
+      <span>IADE – Universidade Europeia · CESAR / CESARE</span>
+      <span>PhD Researcher · UX Lead</span>
+      <span id="clock"></span>
+    </div>
+  </footer>
+</div><!-- /home -->
+
+<!-- ════════════════════════════════════════════
+     PAGE: ABOUT
+════════════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="about-page">
+    <div class="about-hero">
+      <h1 class="about-h">Research-<br>driven.<br>Strategy-<br>led.</h1>
+      <div class="about-rule"></div>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-col">
+        <div class="about-col-label">Position</div>
+        <div class="about-col-body">
+          <p><strong>UX Researcher and Innovation Strategist</strong> working at the intersection of design practice, academic inquiry, and systems thinking.</p>
+          <p>Doctoral researcher at IADE – Universidade Europeia, Lisbon. UX Designer and Innovation Lead at CESAR / CESARE, Aveiro.</p>
+        </div>
+      </div>
+      <div class="about-col">
+        <div class="about-col-label">Practice</div>
+        <div class="about-col-body">
+          <p>My work spans health platforms, ESG management tools, startup ecosystems, and AI futures — but the method is always <strong>research-first</strong>. I don't separate the question from the strategy from the design. That's the point.</p>
+          <p>I'm drawn to projects where design has real stakes: where the wrong interface can exclude a community, where the right algorithm can redirect capital, where a speculative artifact can shift how a team imagines what's possible.</p>
+        </div>
+      </div>
+      <div class="about-col">
+        <div class="about-col-label">Base</div>
+        <div class="about-col-body">
+          <p>Lisbon · Aveiro · Recife</p><br>
+          <p>EN · PT · ES</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-blocks">
+      <div class="about-block">
+        <div class="ab-heading">Research</div>
+        <div class="ab-body">
+          <p>Qualitative inquiry, participatory design, and academic publication as design practice — not as support activities.</p>
+          <ul>
+            <li>Qualitative interviews & ethnographic fieldwork</li>
+            <li>Participatory workshops & active listening</li>
+            <li>Usability testing & Atomic UX Research</li>
+            <li>Speculative design & futures frameworks</li>
+            <li>Peer-reviewed publication</li>
+          </ul>
+        </div>
+      </div>
+      <div class="about-block">
+        <div class="ab-heading">Innovation</div>
+        <div class="ab-body">
+          <p>Ecosystem design, startup evaluation, and open innovation facilitation — the strategic layer between design and institutional decision-making.</p>
+          <ul>
+            <li>Design Sprint facilitation</li>
+            <li>Business Model Canvas workshops</li>
+            <li>Startup scouting & evaluation rubrics</li>
+            <li>Open innovation program design</li>
+            <li>EU consortium development (Eureka Eurostars)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="about-block">
+        <div class="ab-heading">Design</div>
+        <div class="ab-body">
+          <p>Information architecture, interaction design, and product strategy for complex digital platforms with multiple user types.</p>
+          <ul>
+            <li>Platform UX for B2B and social-impact products</li>
+            <li>Two-sided and multi-flow systems</li>
+            <li>Algorithm-aligned interface design</li>
+            <li>JTBD framing & stakeholder alignment</li>
+            <li>Mid-fidelity prototyping & validation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-now">
+      <div class="an-item">
+        <div class="an-label">Now</div>
+        <div class="an-val">
+          <strong>FFIE Framework</strong><br>
+          Feminist Futures for Innovation Ecosystems. Paper under review.
+        </div>
+      </div>
+      <div class="an-item">
+        <div class="an-label">R&D</div>
+        <div class="an-val">
+          <strong>PMIS-EU</strong><br>
+          Smart Ports platform · Eureka Eurostars #11 · Sept 2026
+        </div>
+      </div>
+      <div class="an-item">
+        <div class="an-label">Conference</div>
+        <div class="an-val">
+          <strong>ICGR 2026</strong><br>
+          Wrocław, Poland · May 2026
+        </div>
+      </div>
+      <div class="an-item">
+        <div class="an-label">PhD</div>
+        <div class="an-val">
+          <strong>IADE – Universidade Europeia</strong><br>
+          GenAI · Speculative Design · Feminist Epistemology
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-bar" style="border-top:1px solid var(--rule);">
+        <span>© 2025 Amanda</span><span></span><span></span>
+        <span><a href="#" style="color:var(--ink-2);text-decoration:none;cursor:pointer;" onclick="go('home')">← Home</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE: PRODUCT DESIGN (category listing)
+════════════════════════════════════════════ -->
+<div class="page" id="page-product">
+  <div class="cat-page">
+    <div class="cat-hero-section">
+      <div class="cat-hero-h">Product<br>Design</div>
+      <div></div>
+      <div class="cat-hero-meta">
+        Platform strategy, algorithm-aligned UX, and multi-sided marketplace design for complex digital products.<br><br>
+        2 Case Studies · B2B Platforms · ESG Tools · Brazil
+      </div>
+      <div></div>
+    </div>
+    <div class="cat-intro-bar">
+      <span>2 Projects</span><span>B2B · Marketplace · ESG</span><span>Design Sprint · JTBD · Figma</span><span style="text-align:right;">Brazil · 2023</span>
+    </div>
+
+    <div class="proj-section-header" style="border-top:1px solid var(--rule);">
+      <div>Project</div><div>Description</div><div>Details</div><div class="psh-right"></div>
+    </div>
+
+    <div class="proj-row" onclick="go('cs-dates')">
+      <div class="pr-num">01</div>
+      <div class="pr-title-block">
+        <div class="pr-title">da.tes</div>
+        <div class="pr-desc">Startup-investor matchmaking platform. Redesigned around progressive onboarding, algorithm-aligned filtering, and a bifurcated landing UX to drive data completeness without friction.</div>
+      </div>
+      <div class="pr-meta">
+        <strong>Type 0-24-DK</strong><br>Lead Designer · Sprint Facilitator<br>6-day Sprint + Validation
+      </div>
+      <div class="pr-cta"><button class="pr-cta-btn">Read the Case ↗</button></div>
+    </div>
+
+    <div class="proj-row" onclick="go('cs-guiar')">
+      <div class="pr-num">02</div>
+      <div class="pr-title-block">
+        <div class="pr-title">GUIAR</div>
+        <div class="pr-desc">ESG investment management platform. Dual-flow design for entrepreneurs and institutions, OKR-structured impact measurement, and a template gallery that solves for blank-canvas paralysis.</div>
+      </div>
+      <div class="pr-meta">
+        <strong>Type 0-24-DK</strong><br>UX Research Lead · Product Designer<br>Full research → prototype cycle
+      </div>
+      <div class="pr-cta"><button class="pr-cta-btn">Read the Case ↗</button></div>
+    </div>
+
+    <footer>
+      <div class="footer-bar" style="border-top:1px solid var(--rule);">
+        <span>Product Design — 2 Projects</span><span></span><span></span>
+        <span style="text-align:right;"><a href="#" style="color:var(--ink-2);text-decoration:none;cursor:pointer;" onclick="go('home')">← Home</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE: RESEARCH (category listing)
+════════════════════════════════════════════ -->
+<div class="page" id="page-research">
+  <div class="cat-page">
+    <div class="cat-hero-section">
+      <div class="cat-hero-h">Research &<br>Facilitation</div>
+      <div></div>
+      <div class="cat-hero-meta">
+        Participatory research, active listening workshops, and co-design facilitation positioned as strategic design practice — not support activities.<br><br>
+        2 Projects · Qualitative · Speculative · Co-design · Brazil
+      </div>
+      <div></div>
+    </div>
+    <div class="cat-intro-bar">
+      <span>2 Projects</span><span>Participatory · Feminist · Futures</span><span>Active Listening · JTBD · Published</span><span style="text-align:right;">Brazil · 2022–24</span>
+    </div>
+
+    <div class="proj-section-header" style="border-top:1px solid var(--rule);">
+      <div>Project</div><div>Description</div><div>Details</div><div></div>
+    </div>
+
+    <div class="proj-row" onclick="go('cs-setoca')">
+      <div class="pr-num">01</div>
+      <div class="pr-title-block">
+        <div class="pr-title">Se Toca, Mana! → Diversicuida</div>
+        <div class="pr-desc">A participatory research project that became a social enterprise. 16 interviews, co-design workshops, an active listening session that changed the product's name. Published in the Design Journal.</div>
+      </div>
+      <div class="pr-meta">
+        <strong>Feminist Design</strong><br>Lead Researcher & UX Designer<br>Grant · Publication · Social Enterprise
+      </div>
+      <div class="pr-cta"><button class="pr-cta-btn">Open Research ↗</button></div>
+    </div>
+
+    <footer>
+      <div class="footer-bar" style="border-top:1px solid var(--rule);">
+        <span>Research & Facilitation — 1 Project</span><span></span><span></span>
+        <span style="text-align:right;"><a href="#" style="color:var(--ink-2);text-decoration:none;cursor:pointer;" onclick="go('home')">← Home</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE: INNOVATION (category)
+════════════════════════════════════════════ -->
+<div class="page" id="page-innov">
+  <div class="cat-page">
+    <div class="cat-hero-section">
+      <div class="cat-hero-h">Innovation<br>Practice</div>
+      <div></div>
+      <div class="cat-hero-meta">
+        Ecosystem design, startup evaluation, and open innovation facilitation — the strategic layer between design and institutional decision-making.<br><br>
+        5 Programs · Sonae · SEBRAE · CESAR · BR + EU
+      </div>
+      <div></div>
+    </div>
+    <div class="cat-intro-bar">
+      <span>5 Programs</span><span>BMC · Sprint Design · Scouting</span><span>Corporate + Institutional</span><span style="text-align:right;">BR + EU · 2022–25</span>
+    </div>
+
+    <div class="proj-section-header" style="border-top:1px solid var(--rule);">
+      <div>Program</div><div>Description</div><div>Details</div><div></div>
+    </div>
+
+    <div class="proj-row" onclick="go('cs-innov')">
+      <div class="pr-num">01–05</div>
+      <div class="pr-title-block">
+        <div class="pr-title">Open Innovation Programs</div>
+        <div class="pr-desc">Startup scouting, evaluation rubric design, and BMC facilitation across multiple cohorts at Sonae, SEBRAE, and CESAR. Includes intrapreneurship program design for institutional contexts.</div>
+      </div>
+      <div class="pr-meta">
+        <strong>Innovation Strategy</strong><br>Mentor · Evaluator · Sprint Designer<br>Multiple cohorts · BR + EU
+      </div>
+      <div class="pr-cta"><button class="pr-cta-btn">See the Approach ↗</button></div>
+    </div>
+
+    <footer>
+      <div class="footer-bar" style="border-top:1px solid var(--rule);">
+        <span>Innovation Practice — 5 Programs</span><span></span><span></span>
+        <span style="text-align:right;"><a href="#" style="color:var(--ink-2);text-decoration:none;cursor:pointer;" onclick="go('home')">← Home</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE: PUBLICATIONS
+════════════════════════════════════════════ -->
+<div class="page" id="page-pub">
+  <div class="pub-page">
+    <div class="cat-hero-section">
+      <div class="cat-hero-h">Publi-<br>cations</div>
+      <div></div>
+      <div class="cat-hero-meta">
+        My academic work isn't separate from my design practice — it's what informs it. These papers are the long-form version of the thinking that shows up in every project.<br><br>
+        3 Publications · Peer-reviewed · Conference · Journal
+      </div>
+      <div></div>
+    </div>
+    <div class="cat-intro-bar">
+      <span>3 Publications</span><span>Design · Innovation · AI · Health</span><span>EN · PT</span><span style="text-align:right;">2023–2026</span>
+    </div>
+
+    <div class="divider" style="border-top:1px solid var(--rule);"></div>
+
+    <div class="pub-row">
+      <div class="pub-idx"><div class="pub-idx-num">01</div></div>
+      <div class="pub-body">
+        <div class="pub-year">2025</div>
+        <div class="pub-title">Feminist Futures for Innovation Ecosystems: Toward an Equity-Centred Framework for Design Research</div>
+        <div class="pub-venue">Special Issue — Designing Democratic Innovation</div>
+        <div class="pub-abstract">Proposes the FFIE framework — a structured approach to identifying and addressing structural exclusion in technology innovation ecosystems. Draws on feminist epistemology, speculative design, and empirical data on gender gaps in AI and STEM.</div>
+        <div class="pub-tags">
+          <span class="pub-tag">FFIE Framework</span>
+          <span class="pub-tag">Feminist Epistemology</span>
+          <span class="pub-tag">Innovation Ecosystems</span>
+          <span class="pub-tag">Generative AI</span>
+        </div>
+      </div>
+      <div class="pub-aside">
+        <div><div class="pa-label">Status</div><div class="pa-val">Under review</div></div>
+        <div><div class="pa-label">PhD connection</div><div class="pa-val">Doctoral research · IADE</div></div>
+        <div><div class="pa-label">Design link</div><div class="pa-val">Informs Innovation Practice evaluation frameworks</div></div>
+        <button class="pub-cta">Read Abstract ↗</button>
+      </div>
+    </div>
+
+    <div class="pub-row">
+      <div class="pub-idx"><div class="pub-idx-num">02</div></div>
+      <div class="pub-body">
+        <div class="pub-year">2024</div>
+        <div class="pub-title">Diversicuida: Co-designing a Health Access Platform for LBT Women Through Participatory Research and Active Listening</div>
+        <div class="pub-venue">Design Journal · Cesar School</div>
+        <div class="pub-abstract">Documents the research and co-design methodology behind Diversicuida. Argues for community responsiveness as a core design competency — not a workshop deliverable. Particular attention to the active listening session that resulted in the platform's rebranding.</div>
+        <div class="pub-tags">
+          <span class="pub-tag">Participatory Design</span>
+          <span class="pub-tag">Health Access</span>
+          <span class="pub-tag">Feminist Design</span>
+          <span class="pub-tag">Co-design Ethics</span>
+        </div>
+      </div>
+      <div class="pub-aside">
+        <div><div class="pa-label">Status</div><div class="pa-val">Published · 2024</div></div>
+        <div><div class="pa-label">Project</div><div class="pa-val">Diversicuida case study</div></div>
+        <div><div class="pa-label">Design link</div><div class="pa-val">Methodology replicable for health-sector co-design</div></div>
+        <button class="pub-cta">Open Paper ↗</button>
+      </div>
+    </div>
+
+    <div class="pub-row" style="border-bottom:none;">
+      <div class="pub-idx"><div class="pub-idx-num">03</div></div>
+      <div class="pub-body">
+        <div class="pub-year">2026 (upcoming)</div>
+        <div class="pub-title">Speculative Artifacts and Generative AI in Lusophone Innovation Ecosystems: Feminist Foresight as a Design Method</div>
+        <div class="pub-venue">ICGR 2026 · Wrocław, Poland</div>
+        <div class="pub-abstract">Examines how speculative design artifacts function as feminist foresight tools within AI-adjacent innovation programs, with case studies from Brazilian and European R&D contexts. Presented at ICGR 2026.</div>
+        <div class="pub-tags">
+          <span class="pub-tag">Speculative Design</span>
+          <span class="pub-tag">Generative AI</span>
+          <span class="pub-tag">Foresight</span>
+          <span class="pub-tag">Lusophone Innovation</span>
+        </div>
+      </div>
+      <div class="pub-aside">
+        <div><div class="pa-label">Status</div><div class="pa-val">Conference · May 2026</div></div>
+        <div><div class="pa-label">Venue</div><div class="pa-val">ICGR 2026 · Wrocław</div></div>
+        <div><div class="pa-label">Design link</div><div class="pa-val">Bridges PhD research with CESARE R&D consortium</div></div>
+        <button class="pub-cta">Details ↗</button>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-bar" style="border-top:1px solid var(--rule);">
+        <span>Publications — 3 Papers</span><span></span><span></span>
+        <span style="text-align:right;"><a href="#" style="color:var(--ink-2);text-decoration:none;cursor:pointer;" onclick="go('home')">← Home</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     CASE STUDY: da.tes
+════════════════════════════════════════════ -->
+<div class="page" id="page-cs-dates">
+  <div class="cs-page">
+    <!-- Hero -->
+    <div class="cs-hero">
+      <div class="cs-hero-grid">
+        <div class="csh-left">
+          <div class="csh-category">Product Design · Two-sided Marketplace</div>
+          <div class="csh-title">da.tes</div>
+          <div class="csh-sub">Startup-investor matchmaking platform redesign. The algorithm had no useful signal — both sides were under-delivering data.</div>
+        </div>
+        <div class="csh-right">
+          <div class="cs-meta-row"><span class="cs-meta-k">Role</span><span class="cs-meta-v">Lead Designer · Sprint Facilitator</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Context</span><span class="cs-meta-v">B2B Platform · Brazil · 2023</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Duration</span><span class="cs-meta-v">6-day Sprint + 2 validation rounds</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Users</span><span class="cs-meta-v">Startups + Investors (two-sided)</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="cs-cover cover-dates-art" style="background-color:rgba(255,255,255,.05);">
+      <div class="cda-cell accent" style="height:100%;"></div>
+      <div class="cda-cell" style="height:100%;"></div>
+      <div class="cda-cell" style="height:100%;"></div>
+      <div class="cda-cell" style="height:100%;background:#1A1714;"></div>
+    </div>
+
+    <!-- Sections -->
+    <div class="cs-section">
+      <div class="cs-sec-label">Context<small>Domain understanding + business model awareness</small></div>
+      <div class="cs-sec-body">
+        <p class="cs-lead">da.tes is a startup-investor matchmaking platform in Brazil. The platform had a working product but a fundamental data problem: match quality was only as good as the profiles on both sides — and both sides were under-delivering.</p>
+        <div class="cs-body-text">
+          <p>Startups submitted incomplete profiles. Investors didn't specify their thesis. The result: matches felt arbitrary, users disengaged, and the platform's core value proposition — intelligent connection — wasn't materializing.</p>
+          <p>Understanding the business model before touching the interface was the first decision. In a two-sided marketplace, data quality is a chicken-and-egg problem: neither side invests until they see a return. The design had to create that return before it existed.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Problem<small>Precision of framing, not symptoms</small></div>
+      <div class="cs-sec-body">
+        <p class="cs-lead">The interface wasn't the problem. Misaligned incentives were.</p>
+        <div class="cs-body-text">
+          <p>Startups had no feedback that completeness improved their match score. Investors had no structured way to specify what they actually wanted. Onboarding collected data as if it were a compliance exercise — not a trust-building conversation.</p>
+          <p>The question wasn't "how do we redesign the form?" It was: <strong>how do we make data quality feel immediately valuable to users who have no prior reason to trust the platform?</strong></p>
+          <div class="vis-slot vs-wide">[ Problem diagram: data quality → match quality → engagement → data quality loop ]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">My Role<small>What I owned vs. what I influenced</small></div>
+      <div class="cs-sec-body">
+        <div class="cs-body-text">
+          <p>Lead Designer across Discovery, Strategy, Prototyping, and Validation. Facilitated the 6-day Design Sprint. Led stakeholder interviews for both user types. Owned the information architecture decisions, journey design for both flows, and mid-fidelity prototype delivery.</p>
+          <p><strong>I collaborated with:</strong> product manager (scope), engineering lead (progressive onboarding feasibility), client team (landing strategy alignment).</p>
+          <p><strong>I did not own:</strong> engineering implementation or algorithm weighting — but I designed the UX to surface algorithm output in a way that made its logic legible to users. That boundary matters.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Approach<small>Method selection rationale — not a list</small></div>
+      <div class="cs-sec-body">
+        <div class="methods-wrap">
+          <span class="m-pill">Design Sprint (6 days)</span><span class="m-pill">Stakeholder Interviews × user type</span><span class="m-pill">Jobs-to-be-Done</span><span class="m-pill">Separate Empathy Maps</span><span class="m-pill">Mid-fi Prototype</span><span class="m-pill">Moderated Usability Testing</span>
+        </div>
+        <div class="cs-body-text">
+          <p><strong>Why a Design Sprint?</strong> The client needed stakeholder alignment on priority features before any prototyping began. A sprint compressed 4 weeks of debate into 6 days of structured decisions. The method was itself a strategic intervention — not just a process choice.</p>
+          <p><strong>Why separate interview sessions per user type?</strong> Startups and investors have fundamentally different mental models. Combined sessions produce averaging — not insight. Investors don't want to "browse startups." They want the highest-probability match in the fewest interactions. That reframe changed the entire navigation logic.</p>
+          <div class="vs-2col">
+            <div class="vis-slot vs-med">[ Startup journey map with friction zones ]</div>
+            <div class="vis-slot vs-med">[ Investor journey map with friction zones ]</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Key Decisions<small>Judgment, trade-offs, rationale — this is where seniority shows</small></div>
+      <div class="cs-sec-body">
+        <div class="cs-body-text">
+          <div class="decision-blk">
+            <div class="decision-head">01 — Progressive disclosure tied to live match feedback</div>
+            <p>Staged onboarding so users received a partial match score after each section — creating a visible reason to continue before the full picture emerged.</p>
+          </div>
+          <div class="tradeoff-row">
+            <div class="to-item pro">Higher profile completion rates projected; users had a feedback loop instead of a compliance exercise</div>
+            <div class="to-item con">Higher engineering complexity; match algorithm needed to surface at multiple flow points, not just post-completion</div>
+          </div>
+          <div class="decision-blk">
+            <div class="decision-head">02 — Bifurcated landing experience per user type</div>
+            <p>Removed the generic single-hero page. Investors and startups arrive at distinct first screens with distinct value propositions and distinct CTAs.</p>
+          </div>
+          <div class="tradeoff-row">
+            <div class="to-item pro">Higher conversion intent from self-selecting users; eliminated ambiguity about which side of the marketplace you belong to</div>
+            <div class="to-item con">Reduced single-URL traffic short term; required separate content and SEO strategy per user type</div>
+          </div>
+          <div class="decision-blk">
+            <div class="decision-head">03 — Removed "Browse All" from primary navigation</div>
+            <p>Listings default to compatibility-ranked view. Open browsing demoted to secondary path — the algorithm's judgment becomes the product's default, not a filter layer.</p>
+          </div>
+          <div class="tradeoff-row">
+            <div class="to-item pro">Increased relevant engagement; positions the platform's intelligence as the core product experience</div>
+            <div class="to-item con">Some investors expected open browsing; required an additional secondary path to avoid alienating power users</div>
+          </div>
+          <div class="vis-slot vs-wide">[ Before/After: landing page architecture + navigation decision diagram ]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Solution<small>Coherence between strategy and output</small></div>
+      <div class="cs-sec-body">
+        <div class="cs-body-text">
+          <p>Five integrated changes that work together as a system:</p>
+          <ul>
+            <li><strong>Bifurcated landing</strong> with distinct value proposition and CTA per user type</li>
+            <li><strong>Progressive onboarding</strong> with live match score preview after each section</li>
+            <li><strong>Investor thesis upload</strong> with structured specification criteria (sectors, TRL, geography, ticket size)</li>
+            <li><strong>Compatibility-ranked listings</strong> as default — algorithm output surfaced as primary navigation logic</li>
+            <li><strong>UX writing overhaul</strong> across tooltips, empty states, error messages — reframed every touchpoint from "form to fill" to "signal to improve"</li>
+          </ul>
+          <div class="vis-slot vs-wide">[ Final prototype: landing → progressive onboarding → match result ]</div>
+          <div class="vs-2col">
+            <div class="vis-slot vs-med">[ Startup: profile with match score indicator ]</div>
+            <div class="vis-slot vs-med">[ Investor: opportunity listing ranked by compatibility ]</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section" style="border-bottom:none;">
+      <div class="cs-sec-label">Impact</div>
+      <div class="cs-sec-body">
+        <div class="impact-strip">
+          <div class="impact-cell"><div class="impact-val">5</div><div class="impact-lbl">Flows validated · usability testing</div></div>
+          <div class="impact-cell"><div class="impact-val">Shipped</div><div class="impact-lbl">Landing redesign adopted in production</div></div>
+          <div class="impact-cell"><div class="impact-val">↑ Data</div><div class="impact-lbl">Profile completion rate projected to increase</div></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-bar" style="border-top:1px solid var(--rule);">
+        <span>da.tes — Product Design</span><span></span><span></span>
+        <span style="text-align:right;"><a href="#" style="color:var(--ink-2);text-decoration:none;cursor:pointer;" onclick="go('product')">← Product Design</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     CASE STUDY: Diversicuida / Se Toca
+════════════════════════════════════════════ -->
+<div class="page" id="page-cs-setoca">
+  <div class="cs-page">
+    <div class="cs-hero">
+      <div class="cs-hero-grid">
+        <div class="csh-left">
+          <div class="csh-category">Research & Facilitation · Feminist Design</div>
+          <div class="csh-title">Se Toca,<br>Mana! →<br>Diversicuida</div>
+          <div class="csh-sub">A feminist health platform that changed its own name because the community asked it to.</div>
+        </div>
+        <div class="csh-right">
+          <div class="cs-meta-row"><span class="cs-meta-k">Role</span><span class="cs-meta-v">Lead Researcher & UX Designer</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Origin</span><span class="cs-meta-v">Cesar School Master's in Design</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Recognition</span><span class="cs-meta-v">Armazém da Criatividade Grant</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Output</span><span class="cs-meta-v">Platform + Published Paper</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="cs-cover cover-setoca">
+      <div class="cst-inner" style="position:relative;z-index:2;">
+        <div class="cst-word">se toca<br>mana!</div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Context</div>
+      <div class="cs-sec-body">
+        <p class="cs-lead">LBT women in Brazil are systematically absent from preventive healthcare — not because services don't exist, but because the services that exist were never designed with their realities in mind.</p>
+        <div class="cs-body-text"><p>This is an epistemic problem before it's a design problem. Health systems encode assumptions about who the default patient is — and LBT women are invisible in those assumptions. The brief wasn't to make a healthcare app. It was to ask: what does a trustworthy interface look like for a community that institutions have repeatedly failed?</p></div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Audience<small>Who participated — and why that was a design decision</small></div>
+      <div class="cs-sec-body">
+        <div class="cs-body-text">
+          <p><strong>Research participants:</strong> 6 healthcare professionals and 10 women across public and private health systems in Brazil.</p>
+          <p><strong>Workshop participants:</strong> 12 people from diverse socioeconomic backgrounds, gender identities, and sexual orientations — purposefully not a homogeneous sample. Homogeneous samples produce products that work for one group at the expense of everyone else.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Approach</div>
+      <div class="cs-sec-body">
+        <div class="methods-wrap">
+          <span class="m-pill">16 Qualitative Interviews</span><span class="m-pill">Competitor Benchmarking</span><span class="m-pill">Value Proposition Canvas</span><span class="m-pill">635 Brainstorming</span><span class="m-pill">Lo-fi Wireframing</span><span class="m-pill">Usability Testing (7+3)</span><span class="m-pill">Active Listening Workshop</span>
+        </div>
+        <div class="cs-body-text">
+          <p><strong>Why low-fi before digital?</strong> Paper prototypes make alternatives feel genuinely possible. Digital prototypes anchor people to what already exists. Keeping the prototype on paper during community sessions meant participants felt free to reject ideas entirely.</p>
+          <p><strong>Why an Active Listening workshop?</strong> We needed to surface what wasn't being said in structured interviews. Listening sessions without a predetermined agenda create space for emergent themes — including the rebranding conversation we hadn't anticipated.</p>
+          <div class="vis-slot vs-wide">[ Workshop documentation · Active Listening Session · 12 participants ]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Key Decision</div>
+      <div class="cs-sec-body">
+        <div class="decision-blk">
+          <div class="decision-head">Rebranding: Se Toca, Mana! → Diversicuida</div>
+          <p>During the Active Listening Workshop, participants with non-CIS identities shared that the name felt exclusionary. The team rebranded collectively — not to accommodate feedback, but to honour it. The new name, Diversicuida, centers inclusivity structurally, not rhetorically.</p>
+        </div>
+        <div class="cs-body-text">
+          <p>This is the most important moment in this case study — not because of the name change, but because of what it demonstrates: <strong>co-design as genuine commitment, not as method.</strong></p>
+          <div class="tradeoff-row">
+            <div class="to-item pro">Community trust built through the act of listening and responding — not just through the product itself</div>
+            <div class="to-item con">Mid-project rebrand: new visual identity, re-testing, updated documentation, additional community alignment sessions</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section" style="border-bottom:none;">
+      <div class="cs-sec-label">Impact</div>
+      <div class="cs-sec-body">
+        <div class="impact-strip">
+          <div class="impact-cell"><div class="impact-val">Grant</div><div class="impact-lbl">Armazém da Criatividade Innovation Grant</div></div>
+          <div class="impact-cell"><div class="impact-val">Published</div><div class="impact-lbl">Peer-reviewed · Design Journal · 2024</div></div>
+          <div class="impact-cell"><div class="impact-val">Enterprise</div><div class="impact-lbl">Academic project → funded social enterprise</div></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-bar" style="border-top:1px solid var(--rule);">
+        <span>Diversicuida — Research & Facilitation</span><span></span><span></span>
+        <span style="text-align:right;"><a href="#" style="color:var(--ink-2);text-decoration:none;cursor:pointer;" onclick="go('research')">← Research & Facilitation</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     CASE STUDY: GUIAR
+════════════════════════════════════════════ -->
+<div class="page" id="page-cs-guiar">
+  <div class="cs-page">
+    <div class="cs-hero">
+      <div class="cs-hero-grid">
+        <div class="csh-left">
+          <div class="csh-category">Product Design · ESG</div>
+          <div class="csh-title">GUIAR</div>
+          <div class="csh-sub">ESG investment management platform. Before designing an impact dashboard, you have to define what impact means.</div>
+        </div>
+        <div class="csh-right">
+          <div class="cs-meta-row"><span class="cs-meta-k">Role</span><span class="cs-meta-v">UX Research Lead · Product Designer</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Context</span><span class="cs-meta-v">Social Impact · ESG · Brazil</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Output</span><span class="cs-meta-v">2 Interactive Figma Prototypes</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Users</span><span class="cs-meta-v">Entrepreneurs + Organizations</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="cs-cover cover-guiar" style="height:40vh;">
+      <div class="cg-line" style="margin:6px 0;"></div>
+      <div class="cg-line" style="margin:6px 0;"></div>
+      <div class="cg-line" style="margin:6px 0;"></div>
+      <div class="cg-line" style="margin:6px 0;"></div>
+      <div class="cg-line" style="margin:6px 0;"></div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Problem</div>
+      <div class="cs-sec-body">
+        <p class="cs-lead">The deeper problem wasn't interface design — it was that users lacked a shared language for measuring socio-environmental impact. Without standardized metrics, any dashboard would only reflect noise.</p>
+        <div class="cs-body-text"><p>The design challenge: <em>how do you create a system that imposes just enough structure to enable comparison, without alienating users who resist being measured?</em></p></div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Key Decisions</div>
+      <div class="cs-sec-body">
+        <div class="cs-body-text">
+          <div class="decision-blk">
+            <div class="decision-head">01 — Two separate prototypes, not one</div>
+            <p>Entrepreneur and organization flows had fundamentally different mental models: project execution vs. portfolio governance. A unified product would have compromised both.</p>
+          </div>
+          <div class="tradeoff-row">
+            <div class="to-item pro">Validated by testing: users could not easily switch contexts without disorientation</div>
+            <div class="to-item con">Doubled design effort; required full research cycle for each user type independently</div>
+          </div>
+          <div class="decision-blk">
+            <div class="decision-head">02 — OKR-style impact tracking</div>
+            <p>Structured measurement around OKRs — a framework users could connect to existing reporting processes — rather than a custom metrics system that required institutional buy-in to adopt.</p>
+          </div>
+          <div class="decision-blk">
+            <div class="decision-head">03 — ESG template gallery</div>
+            <p>Organized by ESG dimension (Environmental, Social, Governance). This was a content design decision as much as UX — we had to define the taxonomy of impact before we could design the screen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section" style="border-bottom:none;">
+      <div class="cs-sec-label">Impact</div>
+      <div class="cs-sec-body">
+        <div class="impact-strip">
+          <div class="impact-cell"><div class="impact-val">2</div><div class="impact-lbl">Interactive Figma prototypes delivered</div></div>
+          <div class="impact-cell"><div class="impact-val">Standard</div><div class="impact-lbl">Atomic UX Research adopted as team methodology</div></div>
+          <div class="impact-cell"><div class="impact-val">Gap</div><div class="impact-lbl">Addresses identified gap in Brazilian ESG tooling market</div></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-bar" style="border-top:1px solid var(--rule);">
+        <span>GUIAR — Product Design</span><span></span><span></span>
+        <span style="text-align:right;"><a href="#" style="color:var(--ink-2);text-decoration:none;cursor:pointer;" onclick="go('product')">← Product Design</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     CASE STUDY: Innovation Programs
+════════════════════════════════════════════ -->
+<div class="page" id="page-cs-innov">
+  <div class="cs-page">
+    <div class="cs-hero">
+      <div class="cs-hero-grid">
+        <div class="csh-left">
+          <div class="csh-category">Innovation Practice</div>
+          <div class="csh-title">Open<br>Innovation<br>Programs</div>
+          <div class="csh-sub">Sonae · SEBRAE · CESAR · Intraempreendedorismo · BR + EU</div>
+        </div>
+        <div class="csh-right">
+          <div class="cs-meta-row"><span class="cs-meta-k">Role</span><span class="cs-meta-v">Mentor · Evaluator · Sprint Designer</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Programs</span><span class="cs-meta-v">5 structured programs</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Scale</span><span class="cs-meta-v">Multiple cohorts · BR + EU</span></div>
+          <div class="cs-meta-row"><span class="cs-meta-k">Methods</span><span class="cs-meta-v">BMC · Evaluation Rubrics · Design Thinking</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="cs-cover cover-innov" style="height:36vh;">
+      <div class="ci-ring" style="width:500px;height:500px;top:-160px;right:-160px;"></div>
+      <div class="ci-ring" style="width:320px;height:320px;top:-60px;right:-60px;border-color:rgba(160,110,20,.2);"></div>
+      <div class="ci-ring" style="width:160px;height:160px;top:10px;right:10px;background:rgba(160,110,20,.04);border-color:rgba(160,110,20,.3);"></div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Framing</div>
+      <div class="cs-sec-body">
+        <p class="cs-lead">The question isn't whether this product works — it's whether this model creates sustainable value, and for whom.</p>
+        <div class="cs-body-text"><p>Across 5 programs, my role was never just mentorship. It was <strong>ecosystem design</strong>: creating the conditions, criteria, and facilitation structures that determine which ideas survive and why.</p></div>
+      </div>
+    </div>
+
+    <div class="cs-section">
+      <div class="cs-sec-label">Programs</div>
+      <div class="cs-sec-body">
+        <div class="cs-body-text">
+          <div class="decision-blk">
+            <div class="decision-head">Sonae — Corporate Innovation Scouting</div>
+            <p><strong>Goal:</strong> Identify high-potential startups for strategic partnership.<br><strong>Process:</strong> Designed evaluation rubrics across three axes. Ran structured pitch reviews and shortlisting workshops with internal stakeholders.<br><strong>Impact:</strong> Structured criteria reduced evaluation subjectivity; created a reproducible scouting methodology.</p>
+          </div>
+          <div class="decision-blk">
+            <div class="decision-head">SEBRAE — Early-Stage Founder Mentoring</div>
+            <p><strong>Goal:</strong> Help early-stage founders validate business models before pursuing investment.<br><strong>Process:</strong> BMC workshops, customer discovery validation, go-to-market coaching.<br><strong>Impact:</strong> Founders left with testable hypotheses, not just validated assumptions.</p>
+          </div>
+          <div class="decision-blk">
+            <div class="decision-head">CESAR — Intrapreneurship Programs</div>
+            <p><strong>Goal:</strong> Enable internal teams to validate new service concepts.<br><strong>Process:</strong> Designed the facilitation format, ran design thinking sprints, bridged ideation and institutional go/no-go decisions.<br><strong>Impact:</strong> Teams produced prototypes with clear validation criteria.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-section" style="border-bottom:none;">
+      <div class="cs-sec-label">3-Lens Evaluation Framework</div>
+      <div class="cs-sec-body">
+        <div class="cs-body-text">
+          <p>Most frameworks ask two questions: is there a market? is the product viable? I use three:</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--rule);margin:20px 0;border:1px solid var(--rule);">
+          <div style="padding:20px;background:var(--bg);">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:10px;">Desirability</div>
+            <div style="font-size:12px;color:var(--ink-2);line-height:1.65;">Real evidence of customer pain — or a solution looking for a problem? What was observed vs. assumed?</div>
+          </div>
+          <div style="padding:20px;background:var(--bg);">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:10px;">Viability</div>
+            <div style="font-size:12px;color:var(--ink-2);line-height:1.65;">Does the model create sustainable value — and for whom does it extract it? Who captures value, and who doesn't?</div>
+          </div>
+          <div style="padding:20px;background:var(--bg);border-left:2px solid var(--ink);">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink);margin-bottom:10px;">Systemic Fit ←</div>
+            <div style="font-size:12px;color:var(--ink-2);line-height:1.65;">Does this strengthen or weaken the ecosystem it enters? Who is excluded by design? Most frameworks skip this entirely.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-bar" style="border-top:1px solid var(--rule);">
+        <span>Open Innovation Programs — Innovation Practice</span><span></span><span></span>
+        <span style="text-align:right;"><a href="#" style="color:var(--ink-2);text-decoration:none;cursor:pointer;" onclick="go('innov')">← Innovation Practice</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     JS
+════════════════════════════════════════════ -->
+<script>
+const routes = {
+  home:'page-home', about:'page-about',
+  product:'page-product', research:'page-research',
+  innov:'page-innov', pub:'page-pub',
+  'cs-dates':'page-cs-dates',
+  'cs-setoca':'page-cs-setoca',
+  'cs-guiar':'page-cs-guiar',
+  'cs-innov':'page-cs-innov',
+};
+const navLinks = ['product','research','innov','pub','about'];
+const caseParent = {'cs-dates':'product','cs-setoca':'research','cs-guiar':'product','cs-innov':'innov'};
+
+function go(id) {
+  Object.values(routes).forEach(p=>{
+    const el=document.getElementById(p);
+    if(el) el.classList.remove('active');
+  });
+  const pg = document.getElementById(routes[id]||'page-home');
+  if(pg) pg.classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+
+  navLinks.forEach(k=>{
+    const el=document.getElementById('nl-'+k);
+    if(el) el.classList.remove('nav-active');
+  });
+
+  const parent = caseParent[id]||id;
+  const nl = document.getElementById('nl-'+parent);
+  if(nl) nl.classList.add('nav-active');
+
+  const nr = document.getElementById('nav-right');
+  if(caseParent[id]) {
+    const cats={'product':'Product Design','research':'Research & Facilitation','innov':'Innovation Practice'};
+    nr.innerHTML=`<span onclick="go('${caseParent[id]}')" style="cursor:pointer;font-size:12px;color:var(--ink);">← ${cats[caseParent[id]]}</span>`;
+  } else {
+    nr.innerHTML=`<a href="#" style="font-size:12px;color:var(--ink);text-decoration:none;">Email, LinkedIn ↗</a>`;
+  }
+}
+
+function filterProjects(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.proj-row').forEach(row=>{
+    row.dataset.hidden = (cat !== 'all' && row.dataset.cat !== cat) ? 'true' : 'false';
+  });
+}
+
+// Guiar cover lines
+document.querySelectorAll('.cg-line').forEach((l,i)=>{
+  const w=[72,45,88,33,60,50,78][i]||50;
+  l.style.cssText+='margin:8px 0;';
+  const after=document.createElement('style');
+  after.textContent='';
+  l.setAttribute('data-w',w);
+  l.style.setProperty('--w',w+'%');
+  l.style.background='rgba(255,255,255,0.06)';
+  l.style.position='relative';
+  const bar=document.createElement('div');
+  bar.style.cssText=`position:absolute;height:1px;background:rgba(60,160,80,.4);left:0;top:0;width:${w}%;`;
+  l.appendChild(bar);
+});
+
+// Clock
+function tick(){
+  const el=document.getElementById('clock');
+  if(el) el.textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+tick(); setInterval(tick,1000);
+</script>
+</body>
+</html>
