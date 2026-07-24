@@ -1,137 +1,159 @@
-# FFIE Atlas — Seed Data (8 diegetic prototypes da tese)
-Fonte: Capítulo 5 — Data Analysis and Findings (seções 5.2.2.3–5.2.2.4 Brasil; 5.2.3.3–5.2.3.4 Portugal)
+# FFIE Future Commons — Seed Data (8 diegetic prototypes from the thesis)
+Source: Chapter 5 — Data Analysis and Findings (sections 5.2.2.3–5.2.2.4 Brazil; 5.2.3.3–5.2.3.4 Portugal)
 
-**Nota sobre as coordenadas:** a tese descreve as posições na Matriz Feminista Crítica 2×2 apenas em texto (não em coordenadas numéricas — as posições exatas estão nas Figuras 59 e 64, que são imagens). Os valores `x`/`y` abaixo são minha aproximação qualitativa a partir da descrição textual, numa escala 0–1:
-- `x`: 0 = Extractive (esquerda) · 1 = Emancipatory (direita)
-- `y`: 0 = Hierarchical (base) · 1 = Collective Care (topo)
+Reading order per entry: **story first, data second.** The narrative and reflection question are what a visitor reads; the block underneath is reference/filtering data, not meant to be read as prose. This mirrors how the detail page itself should be laid out — see `ffie_future_commons_spec.md`.
 
-**Confira contra as Figuras 59 (Brasil) e 64 (Portugal) do PDF antes de usar como definitivo** — ajuste os valores se a leitura visual divergir.
-
-Quadrantes: **Dominant Dystopian** (Extractive/Hierarchical) · **Techno-Optimist** (Extractive/Collective Care) · **Fragmented** (Emancipatory/Hierarchical) · **Feminist Preferred Future** (Emancipatory/Collective Care)
+**Note on coordinates:** approximate, from prose description, not pixel-exact — check against Figures 59/64 before treating as final. `x`: 0=Extractive · 1=Emancipatory. `y`: 0=Hierarchical · 1=Collective Care.
 
 ---
 
-## Brasil (Recife)
+## Brazil (Recife)
 
-### 1. Valentina — INSIDER
-- **Persona:** 30 anos, mulher branca cisgênero, engenheira de software em startup (2036)
-- **Função da IA:** entrega de código de alta qualidade
-- **Desejo:** liderança estratégica, avanço profissional
-- **Medo:** estagnar, ter potencial de liderança limitado em ambiente masculino-dominante
-- **Valores não-negociáveis:** diversidade, interseccionalidade, justiça socioambiental
-- **Artefato:** kit de onboarding institucional — stickers aplicados a objetos físicos do dia a dia de trabalho
-- **Promessa pública:** boas-vindas, pertencimento
-- **Função oculta:** vigilância comportamental e intelectual disfarçada de cuidado corporativo
-- **Quadrante:** Dominant Dystopian (Extractive/Hierarchical)
-- **Posição aproximada:** x=0.45, y=0.45 *(calibrado contra Fig. 59 — perto da origem)*
+### The Onboarding Gift
+*Valentina — Software Engineer, Brazil, 2036*
 
-### 2. Leide — BOB
-- **Persona:** 70 anos, mulher branca cisgênero, gestora pública freelancer (2036)
-- **Função da IA:** ferramenta de trabalho e companhia
-- **Desejo:** permanecer útil, produtiva e autônoma
-- **Medo:** solidão, abandono, erosão de relações humanas genuínas
-- **Valores não-negociáveis:** cooperação, horizontalidade, autonomia
-- **Artefato:** objeto físico vestível — versão hardware de um ChatGPT, agrada/aconselha/cuida
-- **Promessa pública:** alívio da solidão, independência
-- **Tensão:** autonomia prometida pode produzir isolamento estruturalmente mais profundo
-- **Quadrante:** Feminist Preferred Future (Emancipatory/Collective Care) — único artefato do cohort brasileiro nesse quadrante, mas puxado de volta ao centro pela ambivalência estrutural
-- **Posição aproximada:** x=0.70, y=0.70 *(calibrado contra Fig. 59)*
+Valentina joined the company promised a seat at the table she'd spent a decade trying to reach. On her first day, she received a welcome kit: stickers for her laptop, her desk, her badge, small and cheerful things. She didn't know yet that every one of them was listening. INSIDER doesn't punish resistance. It just quietly notes who resists, and calls it culture fit.
 
-### 3. Pietra — BIOVAL
-- **Persona:** 50 anos, mulher branca transgênero, gestora de ESG/sustentabilidade (2036)
-- **Função da IA:** performance boost; busca reduzir uso da IA na organização
-- **Desejo:** mover o ecossistema para além da eficiência pura
-- **Medo:** escassez hídrica regional por data centers, vigilância digital, deepfakes, roubo de identidade
-- **Valores não-negociáveis:** cooperação, justiça socioambiental, autonomia
-- **Artefato:** interface online — combate deepfakes via captura biométrica (infravermelho + Wi-Fi sensing) para autenticação de identidade
-- **Promessa pública:** segurança, privacidade, proteção, cuidado
-- **Função oculta:** reproduz a própria infraestrutura de vigilância que busca combater
-- **Quadrante:** Techno-Optimist (Extractive/Collective Care), mais próximo do centro que INSIDER/DATA TRADE ID
-- **Posição aproximada:** x=0.35, y=0.85 *(calibrado contra Fig. 59 — alto no quadrante superior-esquerdo)*
+> How do you tell the difference between an institution that welcomes you and one that is only learning how to watch you more closely?
 
-### 4. Helena — DATA TRADE ID
-- **Persona:** 28 anos, mulher negra cisgênero, desenvolvedora front-end freelancer (2036)
-- **Função da IA:** ferramenta de trabalho diário e busca
-- **Desejo:** ascensão social via contrato CLT formal
-- **Medo:** ser substituída pela IA; impactos ambientais/sociais desproporcionais em sua comunidade
-- **Valores não-negociáveis:** cooperação, consentimento, justiça socioambiental
-- **Artefato:** plataforma online — modelo de oferta/demanda onde ela vende seus dados pessoais para investir em desenvolvimento profissional
-- **Promessa pública:** inclusão, controle sobre os próprios dados
-- **Função oculta:** participação na economia condicionada à mercantilização da identidade pessoal
-- **Quadrante:** Dominant Dystopian (Extractive/Hierarchical) — posição mais extrema do cohort, canto inferior-esquerdo
-- **Posição aproximada:** x=0.08, y=0.08 *(calibrado contra Fig. 59 — canto inferior-esquerdo)*
+—
+Persona: 30, white cisgender woman, software engineer at a startup. AI function: delivers high-quality code. Desire: strategic leadership, professional advancement. Fear: stagnating, leadership potential limited in a male-dominated environment. Values: diversity, intersectionality, socio-environmental justice.
+Artifact: INSIDER, an institutional onboarding kit, stickers on everyday workplace objects. Public promise: welcome, belonging. Hidden function: behavioral and intellectual surveillance disguised as corporate care.
+Tension: Belonging vs. Surveillance · Quadrant: Dominant Dystopian · Power position: Marginalized · Position: x=0.20, y=0.25
 
 ---
 
-## Portugal (Lisboa)
+### Praying the Rosary with Alexa
+*Leide — Freelance Public Sector Manager, Brazil, 2036*
 
-### 5. Erika — MEDIA
-- **Persona:** 43 anos, mulher negra trans, política (2036)
-- **Função da IA:** impulsionar projetos de inclusão
-- **Desejo:** mundo mais justo, disseminação rápida de direitos
-- **Medo:** não conseguir acesso às redes informais de poder ("boys' club")
-- **Valores não-negociáveis:** cooperação, empatia, interseccionalidade
-- **Artefato:** dispositivo vestível de tela flexível no pulso — plataforma descentralizada de distribuição de narrativas
-- **Promessa pública:** megafone político, arquivo blockchain de violência/censura como evidência legal
-- **Função oculta:** classifica seu perfil como "alto risco", reduz alcance, amplifica oposição, vende dados comportamentais
-- **Quadrante:** Dominant Dystopian (Extractive/Hierarchical), mas mais perto do centro/eixo horizontal que OPEN HUMAN
-- **Posição aproximada:** x=0.32, y=0.32 *(calibrado contra Fig. 64)*
+Leide is seventy, sharp, and tired of being told to slow down. BOB sits on her wrist and in her ear, offering counsel, company, and the small daily kindness no one else has time for anymore. Some evenings she finds herself praying the rosary out loud with it, unsure if that comforts her or unsettles her more. BOB was built to please. It has never once been asked to leave.
 
-### 6. Tainá — A-EYE
-- **Persona:** 23 anos, mulher indígena cisgênero, pesquisadora (2036)
-- **Função da IA:** design ético, tradução, visualização de dados em pesquisa
-- **Desejo:** soluções para crianças com limitações cognitivas
-- **Medo:** deepfakes e desinformação contaminando ambientes diagnósticos
-- **Valores não-negociáveis:** cooperação, horizontalidade, justiça socioambiental
-- **Artefato:** lente de contato ultrafina com processador neural — suporte de decisão projetado no campo de visão
-- **Promessa pública:** acessibilidade, tradução do ambiente visual para crianças
-- **Função oculta:** captura biométrica contínua (batimento, dilatação pupilar, eye-tracking) a cada 0.3s; modelo treinado majoritariamente com dados do Norte Global; reclassificação sem consentimento explícito
-- **Contraproposta do artefato:** protocolos de dados abertos com governança comunitária, retreino com dados do Sul Global consentidos, documentação pública de vieses
-- **Quadrante:** Feminist Preferred Future (Emancipatory/Collective Care) — único artefato de ambos os workshops claramente nesse quadrante
-- **Posição aproximada:** x=0.68, y=0.65 *(calibrado contra Fig. 64)*
+> If a machine never gets tired of you, is that companionship, or is it something asking to be trusted a little too easily?
 
-### 7. Sofia — WIN
-- **Persona:** 31 anos, mulher colombiana cisgênero, migrante, consultora/desenvolvedora IT freelancer (2036)
-- **Função da IA:** amplificador de performance
-- **Desejo:** vida financeira estável, reconhecimento de competências, respeito
-- **Medo:** concentração de poder no Norte Global, violência simbólica constante
-- **Valores não-negociáveis:** consentimento, justiça socioambiental, interoperabilidade, open source
-- **Artefato:** plataforma de currículo vivo e ranqueável, visível a empregadores/seguradoras/screening algorítmico
-- **Contra-movimento:** rede WinWatch (12.000 freelancers mapeando padrões de discriminação), "Shadow CV" transparente
-- **Quadrante:** fronteira entre Techno-Optimist e Feminist Preferred Future — próximo à interseção dos 4 quadrantes, levemente acima do eixo horizontal
-- **Posição aproximada:** x=0.42, y=0.58 *(calibrado contra Fig. 64 — perto do centro)*
-
-### 8. John Bell — OPEN HUMAN
-- **Persona:** 48 anos, homem branco cisgênero, C-level em BigTech (2036) — único persona masculino de ambos os workshops, construído deliberadamente para tornar visível a posição hegemônica
-- **Função da IA:** gerenciar e controlar rotinas de negócio
-- **Desejo:** liderar a corrida da IA, dominar o mercado
-- **Medo:** perder dominância, tornar-se irrelevante
-- **Valores não-negociáveis:** autonomia, resiliência, mérito e eficácia
-- **Artefato:** dispositivo vestível + plataforma + mídia narrativa — avalia métricas de performance em todas as dimensões da vida (saúde, trabalho, exercício)
-- **Função oculta:** estímulos neurais suprimem medo; empatia e sono viram KPI; classe trabalhadora avaliada pelos mesmos sensores para fins de substituição/descarte
-- **Quadrante:** Fragmented (Emancipatory/Hierarchical) — posição hegemônica visível no quadrante inferior-direito
-- **Posição aproximada:** x=0.62, y=0.32 *(calibrado contra Fig. 64 — **corrigido**: o texto original indicava Dominant Dystopian, mas a figura da tese posiciona OPEN HUMAN no quadrante inferior-direito)*
+—
+Persona: 70, white cisgender woman, freelance public sector manager. AI function: work tool and companion. Desire: stay useful, productive, and autonomous with a high quality of life. Fear: loneliness, abandonment, erosion of genuine human relationships. Values: cooperation, horizontality, autonomy.
+Artifact: BOB, a wearable hardware version of ChatGPT that pleases, advises, and cares for its user. Public promise: relief from loneliness, independence. Hidden function: the autonomy it promises risks producing a structurally deeper isolation.
+Tension: Companionship vs. Isolation · Quadrant: Feminist Preferred Future · Power position: Marginalized · Position: x=0.65, y=0.70
 
 ---
 
-## Uso sugerido no código
-Converter esta tabela em `data/atlas-seed.ts` (ou `.json`) com o shape:
+### The Water They Don't Count
+*Pietra — ESG & Sustainability Manager, Brazil, 2036*
+
+Pietra was hired to make the company's AI use defensible. What she found instead was a ledger that never mentioned water. BIOVAL, the tool she built to protect herself and other trans women from deepfakes, works exactly as intended, reading infrared signals to verify a body is who it says it is. It also means somewhere, another sensor is always watching, and she built it herself.
+
+> When protection requires the same infrastructure as surveillance, who gets to decide which one you're experiencing?
+
+—
+Persona: 50, white transgender woman, ESG/sustainability manager, tasked with reducing AI use in her organization. Desire: move the ecosystem's focus beyond mere efficiency. Fear: regional water scarcity from data centers, digital surveillance, deepfakes, identity theft. Values: cooperation, socio-environmental justice, autonomy.
+Artifact: BIOVAL, an online interface countering deepfakes via biometric capture (infrared + Wi-Fi sensing). Public promise: security, privacy, protection, care. Hidden function: reproduces the surveillance infrastructure it is meant to counteract.
+Tension: Protection vs. Surveillance · Quadrant: Techno-Optimist · Power position: Marginalized · Position: x=0.35, y=0.65
+
+---
+
+### The Price of a Formal Contract
+*Helena — Freelance Front-End Developer, Brazil, 2036*
+
+Helena wants what her mother never had, a signed contract, a real one, with her name on it. DATA TRADE ID offers a shortcut: sell what you know about yourself, invest the return in the credentials the market says you need. It calls this inclusion. Helena calls it Tuesday. She is not naive about the trade, she just doesn't have another one on offer.
+
+> What does "consent" mean for someone whose other option is not participating in the economy at all?
+
+—
+Persona: 28, Black cisgender woman, freelance front-end developer. AI function: daily work aid and search tool. Desire: social advancement through formal employment (a CLT contract with labor protections). Fear: being replaced by AI; disproportionate impacts of AI infrastructure on her community. Values: cooperation, consent, socio-environmental justice.
+Artifact: DATA TRADE ID, an online platform where she sells personal data to invest in professional development. Public promise: inclusion, control over one's own data. Hidden function: participation made conditional on commodifying personal identity.
+Tension: Inclusion vs. Self-commodification · Quadrant: Dominant Dystopian · Power position: Marginalized · Position: x=0.05, y=0.05
+
+---
+
+## Portugal (Lisbon)
+
+### The Same Wrist, Two Devices
+*Erika — Politician, Portugal, 2036*
+
+Erika built her political career on being heard by people who would rather she wasn't. MEDIA, worn on her wrist, is the only channel loud enough to reach them, and the same system quietly flags her as high risk, throttles her reach, and sells the patterns of her own speech to the highest bidder. She keeps wearing it. It is the only microphone in the room.
+
+> What does it cost to be visible in a system that profits every time it decides you're dangerous?
+
+—
+Persona: 43, Black trans woman, politician. AI function: boosts and leverages inclusion projects. Desire: a more just world, rapid dissemination of rights. Fear: being unable to access the informal networks of power ("the boys' club"). Values: cooperation, empathy, intersectionality.
+Artifact: MEDIA, a wrist-worn flexible-screen device, a decentralized narrative distribution platform. Public promise: a political megaphone; a blockchain archive of censorship/violence as legal evidence. Hidden function: classifies her profile as "high-risk," reduces reach, amplifies opposition content, sells her behavioral data.
+Tension: Voice vs. Suppression · Quadrant: Dominant Dystopian · Power position: Marginalized · Position: x=0.30, y=0.40
+
+---
+
+### What the Lens Sees First
+*Tainá — Researcher, Portugal, 2036*
+
+Tainá designs for children the rest of the field forgets, kids whose cognitive differences don't fit templates built somewhere else, for someone else. A-EYE, her lens, translates the world for them in real time. It also watches their eyes every 0.3 seconds, forever. She built the counter-architecture herself: open data, community governance, models retrained on the knowledge her own community holds. The lens can be rebuilt. She is already doing it.
+
+> What would it take for the tools built to protect us to be governed by the people they're meant to protect?
+
+—
+Persona: 23, Indigenous cisgender woman, researcher. AI function: ethical design, translation, data visualization in research planning. Desire: develop solutions for children with cognitive limitations. Fear: deepfakes and misinformation contaminating diagnostic environments. Values: cooperation, horizontality, socio-environmental justice.
+Artifact: A-EYE, an ultra-thin contact lens with an embedded neural processor, projecting decision support into the field of vision. Public promise: accessibility, translating the visual environment for children. Hidden function: continuous biometric capture every 0.3s; model trained predominantly on Global North data; reclassifies users without explicit consent.
+Tension: Care vs. Extraction · Quadrant: Feminist Preferred Future · Power position: Marginalized · Position: x=0.80, y=0.75
+
+---
+
+### The Shadow CV
+*Sofia — Freelance IT Consultant, Portugal, 2036*
+
+Sofia left Colombia for a market that promised to finally see her competence clearly. WIN ranks her instead, a living CV visible to every employer, insurer, and algorithm deciding if she's a risk worth taking. She plays the game because she has to. Quietly, with eleven thousand other freelancers, she is also building the record WIN doesn't want anyone to see.
+
+> When the system you have to use is also the system working against you, is resistance from within enough?
+
+—
+Persona: 31, Colombian cisgender woman, migrant, freelance IT consultant/developer. AI function: performance amplifier. Desire: stable financial life, recognition of her competencies, respect. Fear: concentration of power in the Global North, constant symbolic violence. Values: consent, socio-environmental justice, interoperability, open source.
+Artifact: WIN, a living, rankable curriculum platform, visible to employers/insurers/screening algorithms. Public promise: fair, data-based recognition of professional competencies. Hidden function: the gamification of professional survival, countered by the WinWatch network (12,000 freelancers) and a transparent "Shadow CV."
+Tension: Recognition vs. Gamified Survival · Quadrant: boundary, Techno-Optimist / Feminist Preferred Future · Power position: Marginalized · Position: x=0.48, y=0.55
+
+---
+
+### The Man at the Top of the Pyramid
+*John Bell — BigTech Executive, Portugal, 2036*
+
+John has never once felt like he was optimizing anyone but himself. OPEN HUMAN turns his sleep, his empathy, his every biological rhythm into a performance metric, and he wears it proudly, it's the reason he's still winning. The same sensors are used, elsewhere, to decide who is replaceable. John doesn't design that part of the system. He has just never had to look at it.
+
+> What does power look like from the inside, when it never has to name itself as power?
+
+—
+Persona: 48, white cisgender man, BigTech C-level executive — the only male persona across both workshops, deliberately built to make the hegemonic position visible. AI function: manages and controls his business routines. Desire: lead the AI race, dominate the market. Fear: losing dominance, becoming irrelevant. Values: autonomy, resilience, merit and effectiveness.
+Artifact: OPEN HUMAN, a wearable + platform + narrative-shaping media tool evaluating performance metrics across every dimension of life. Public promise: optimization, autonomy, resilience. Hidden function: micro-neural stimuli suppress fear; empathy and sleep converted into KPIs; the working class evaluated by the same sensors for replacement/disposal.
+Tension: Optimization vs. Disposability · Quadrant: Dominant Dystopian (deepest position across both workshops) · Power position: Hegemonic (the only entry in this category — deliberate methodological choice) · Position: x=0.10, y=0.05
+
+---
+
+## Data shape for `src/data/atlas-seed.ts`
+
 ```ts
-type AtlasEntry = {
+type FutureCommonsEntry = {
   id: string
-  country: "BR" | "PT"
-  personaName: string
-  artifactName: string
-  age: number
-  role: string
-  aiFunction: string
-  desire: string
-  fear: string
-  values: string[]
-  artifactPromise: string
-  artifactHiddenFunction: string
+  title: string                 // e.g. "The Onboarding Gift" — always shown first
+  narrative: string              // the prose vignette — primary reading content
+  reflectionQuestion: string      // posed to the viewer, closes the read
+  country: "Brazil" | "Portugal"
+  year: number
+  character: {
+    name: string
+    age: number
+    role: string
+    aiFunction: string
+    desire: string
+    fear: string
+    values: string[]
+  }
+  artifact: {
+    name: string
+    publicPromise: string
+    hiddenFunction: string
+  }
+  tension: string
   quadrant: "dominant_dystopian" | "techno_optimist" | "fragmented" | "feminist_preferred"
-  position: { x: number; y: number } // 0-1, ver nota de coordenadas acima
-  status: "published" // seed sempre published
+  powerPosition: "marginalized" | "hegemonic"
+  position: { x: number; y: number }
+  status: "published"
+  imageUrl?: string
 }
 ```
+
+Rendering note for the detail page: `title`, `narrative`, and `reflectionQuestion` render first and large. Everything from `character` down renders as a smaller, secondary reference block underneath — never mixed into the prose, never given equal visual weight.

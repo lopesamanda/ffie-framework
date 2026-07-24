@@ -1,95 +1,111 @@
-# FFIE — Product Brief v1
-**Feminist Foresight in Innovation Ecosystems — site + ferramenta individual**
-Definido em sessão de ideação PM/Design · para levar ao Cursor
+# FFIE — Product Brief v3
+**Feminist Foresight in Innovation Ecosystems — site + individual tool**
+Supersedes v2. Incorporates: Research Findings / Future Commons structural separation, and the Card Oracle as the default `Create a Future` flow (see `docs/ffie_product_concepts.md` for the full critical rationale — Concept A default, Concept C folded into Explore, Concept B kept as an optional deeper path).
 
 ---
 
-## 1. Posicionamento
+## 1. Positioning
 
-O site não tenta operacionalizar o protocolo de workshop completo do FFIE (facilitação em grupo, Situated Check-in coletivo, timers, etc.) — isso permanece narrado editorialmente. O que é replicável e vale virar produto é a unidade atômica do framework, já validada nos dois cohorts da tese: **persona + artefato diegético, posicionado na Matriz Feminista Crítica 2×2**.
+Two verbs: **Explore** and **Create**. The product is not a website explaining an academic framework — it is an instrument for engaging with feminist foresight directly, at whatever depth a visitor chooses. Language: English, site-wide.
 
-Prioridade definida: **ferramenta primeiro**. A camada editorial (case study da tese) existe, mas enxuta — o peso do v1 vai para o Atlas de Futuros e a jornada individual.
-
----
-
-## 2. Arquitetura de informação
-
-- **Home** — manifesto curto + entrada direta para "Crie o seu Futuro" e "Atlas de Futuros"
-- **Atlas de Futuros** — a matriz 2×2 viva, feature central
-- **Crie o seu Futuro** — jornada individual (persona → artefato → posicionamento)
-- **O Framework** — as 5 fases explicadas editorialmente (Understand, Situate, Embody, Materialize, Share), enxuto
-- **Sobre a pesquisa** — tese, autora, deck de cartas como referência
+Grounding references for every future decision:
+- `docs/ffie_product_ux_foundations.md` — what the method actually is, what must never be simplified or gamified
+- `docs/ffie_product_concepts.md` — why the default individual journey is a card-drawing experience, not a form
 
 ---
 
-## 3. Atlas de Futuros — a feature central
+## 2. Information architecture
 
-Mapa 2×2 clicável, eixos herdados diretamente da tese:
-- **Horizontal:** System Logic — Extractive ↔ Emancipatory
-- **Vertical:** Power Organization — Hierarchical ↔ Collective Care
+```
+FFIE
+├── Explore Futures     (Research Findings ⇄ Future Commons, each with Map/Grid toggle)
+├── Create a Future       (Card Oracle by default → optional "Go Deeper" full builder)
+└── About FFIE             (manifesto + the 5 phases + the research)
+```
 
-**Seed inicial (8 pontos fixos, direto do Cap. 5):**
-Brasil — Valentina/INSIDER, Leide/BOB, Pietra/BIOVAL, Helena/DATA TRADE ID
-Portugal — Erika/MEDIA, Tainá/A-EYE, Sofia/WIN, John Bell/OPEN HUMAN
-
-Cada ponto abre um card: persona (idade, papel, desejo, medo, valores não-negociáveis) + artefato (nome, o que promete vs. o que esconde) + posição justificada no quadrante.
-
-**Modelo híbrido de curadoria (decisão confirmada):**
-1. Visitante completa a jornada individual e submete seu par persona+artefato
-2. Entra em fila de moderação (status `pending`)
-3. Amanda aprova manualmente → status `published` → ponto aparece no Atlas público, ao lado dos 8 originais
-
-Estados necessários no data model: `pending`, `published`, `rejected`. Painel de moderação simples (lista + aprovar/rejeitar) — não precisa ser sofisticado no v1, pode ser uma view admin protegida por senha.
+Four nav items. No standalone `/framework` route — folded into About FFIE.
 
 ---
 
-## 4. Jornada individual — "Crie o seu Futuro"
+## 3. Explore Futures
 
-Versão solo e assíncrona das fases Embody → Materialize → Share (Situate reduzido a uma micro-reflexão inicial). ~5-8 min.
+Two structurally separate collections — never merged, never visually ambiguous about which is which.
 
-1. **Situate (leve):** 2-3 cartas do deck apresentadas, escolha guiada — substitui o check-in em grupo por reflexão pessoal ("de onde eu folo sobre IA")
-2. **Embody:** monta a persona 2036 — papel no ecossistema, função da IA no dia a dia, 1 desejo, 1 medo, 3 valores não-negociáveis (lista pré-definida, mesma lógica do workshop)
-3. **Materialize (assistido por IA — decisão confirmada):**
-   - A plataforma **gera um prompt pronto** a partir das respostas do usuário (persona + tensão + valores), para ele copiar
-   - O usuário cola esse prompt na ferramenta de IA de sua escolha (GPT, Gemini, Claude, etc.) — fora da plataforma
-   - Ele volta e **faz upload da imagem gerada**
-   - Não há integração de API de geração de imagem no v1 — reduz custo e complexidade técnica
-4. **Share:** posiciona o artefato na matriz (drag ou clique nos dois eixos), justifica a posição em texto curto, revisa e submete para moderação
+### Research Findings
+The 8 diegetic prototypes from the thesis. Fixed, immutable, always `published`. Matrix view is the default; **Country filter (Brazil/Portugal) reproduces Figures 59 and 64 from the thesis exactly** — no separate component needed, this reuses the filter already planned.
 
----
+**New: the Reposition mechanic (Concept C, folded in).** On any Research Findings entry, a visitor can drag a *copy* of the artifact to where they think it belongs on the matrix, then reveal and compare their placement against the thesis's original. This is the primary teaching device for how the matrix actually works — experienced through disagreement, not read as an explainer. Aggregate visitor placements are stored per entry (simple average/spread, not a full heatmap in v1) and can quietly become interesting data for Amanda's own future analysis. Copy must make unambiguous that there is no "correct" answer being scored — this is reflection, not a quiz.
 
-## 5. Escopo v1 vs v2
+### Future Commons
+Grows only from completed **Diegetic Prototypes** (the "Go Deeper" output of the Create flow, see §4). Same card/matrix shape as Research Findings, same Map/Grid toggle, but visually and structurally distinct (different section, different framing copy: "created by visitors," never blended into the same view as Research Findings by default).
 
-**v1 (MVP):**
-- Atlas com 8 pontos seed + pontos publicados por moderação manual
-- Jornada individual completa (texto + upload de imagem, sem geração via API)
-- Fila de moderação simples (admin view)
-- Camada editorial enxuta (Home + O Framework + Sobre)
-
-**v2 (depois):**
-- Geração de imagem via API integrada (remove a etapa de "sair da plataforma")
-- Filtros no Atlas (por quadrante, por país, por data)
-- Reações/comentários nos pontos publicados
-- Exportação do resultado pessoal (imagem/PDF para compartilhar em redes)
+Moderation: hybrid model, unchanged from earlier decisions — `pending` → manual review → `published`/`rejected`.
 
 ---
 
-## 6. Stack sugerida (leve, compatível com Cursor)
+## 4. Create a Future
 
-- Frontend: Next.js/React + Tailwind (scrollytelling na camada editorial, Framer Motion se quiser transições na matriz)
-- Persistência: Supabase (Postgres + auth simples + storage para upload de imagem) — cobre banco de dados, fila de moderação e storage num único serviço, baixo esforço de setup
-- Admin/moderação: rota protegida (`/admin`) com autenticação simples, lista de submissões `pending` com aprovar/rejeitar
+### Default flow — Card Oracle
+Fast, evocative, true to the Narrative Cards' original role as a provocation device (see foundations doc). No persona form, no artifact form as the entry point.
+
+1. Draw 2–3 cards (weighted randomness from the 18-card deck, not a checklist)
+2. The system surfaces a generated tension statement from the specific combination drawn
+3. 2–3 short reflective prompts, answered in a sentence or two ("where do you feel this tension in your own work/life?")
+4. A **Future Reading** card is generated — the cards drawn, the tension, the person's own words
+
+The Future Reading is downloadable/shareable immediately. The person chooses whether to publish it to a public, lightweight **Readings feed** (opt-in, not the Future Commons matrix — a Reading has no persona/artifact/matrix position, it is a different, lighter content type). Readings use lightweight community moderation (report/flag), not the pre-publish review queue — volume will be higher and individual stakes lower than full submissions.
+
+### Optional deeper path — "Go Deeper" (full builder, Concept B)
+Offered as a clear CTA at the end of a Future Reading, for whoever wants to continue past the quick reflection into building a complete diegetic prototype:
+
+1. **Embody:** the cards and reflection already given seed the persona — role, AI function, one desire, one fear, three non-negotiable values. Framed as first-person narrative authorship ("a letter from 2036"), not a labeled form.
+2. **Materialize (AI-assisted):** the platform generates a ready-to-use image prompt from the persona; the user runs it in their AI tool of choice and uploads the result. No in-platform generation API in v1.
+3. **Share:** the user positions the resulting artifact on the matrix and writes a short justification.
+
+This produces a full **Diegetic Prototype**, submitted to the moderation queue exactly as speced in earlier versions of this brief. If approved, it joins Future Commons.
 
 ---
 
-## 7. Referências visuais/UX levantadas
+## 5. Content model summary
 
-- **With Company** (with-company.com) — tom editorial "Systems x Time", vídeo de abertura, cases como unidades narrativas curtas antes de aprofundar. Referência principal para a camada editorial.
-- **Ferramentas de 2×2 scenario matrix** (Futures Platform, Kinetic Futures Lab, GOV.UK Futures Toolkit) — padrões de interação para posicionar um item num quadrante; usar como base em vez de reinventar.
-- **Card-based method tools** (IDEO/18F Method Cards) — convenções de UI para apresentação e seleção de cartas.
+| Type | Produced by | Has matrix position? | Moderation | Where it lives |
+|---|---|---|---|---|
+| Diegetic Prototype (seed) | Amanda / thesis | Yes, fixed | N/A — immutable | Research Findings |
+| Diegetic Prototype (submitted) | "Go Deeper" flow | Yes, self-placed | Pre-publish review queue | Future Commons |
+| Future Reading | Card Oracle flow | No | Report/flag, opt-in publish | Readings feed |
 
 ---
 
-## 8. Conteúdo seed — fonte
+## 6. Scope v1 vs v2
 
-Os 8 pares persona+artefato, suas posições exatas na matriz e as justificativas analíticas estão detalhados no Capítulo 5 da tese (seções 5.2.2.3–5.2.2.4 para Brasil; 5.2.3.3–5.2.3.4 para Portugal). Usar como copy-source direto para popular o Atlas seed.
+**v1:**
+- Explore Futures: Research Findings (country filter reproduces Fig. 59/64) + Future Commons, both with Map/Grid toggle
+- Reposition/compare mechanic on Research Findings entries (simple aggregate storage, no heatmap)
+- Create a Future: Card Oracle as default, shareable Future Reading, opt-in Readings feed
+- Go Deeper: full diegetic-prototype builder → moderation queue → Future Commons
+- Admin: moderation queue for prototype submissions + lightweight report handling for Readings
+- Lean editorial layer (Home manifesto + About FFIE with the 5 phases)
+
+**v2:**
+- In-platform AI image generation (removes the "leave the platform" step in Go Deeper)
+- Full heatmap/aggregate visualization of Reposition data
+- PT/EN language toggle
+- Reactions/comments on published Future Commons entries
+
+---
+
+## 7. Suggested stack (unchanged)
+
+Next.js 15 (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion. Supabase for persistence (prototype submissions with `pending/published/rejected`, Readings with a simple `reported` flag, storage for uploaded images, aggregate reposition stats per Research Findings entry). Admin route protected by simple auth.
+
+---
+
+## 8. Visual references (unchanged)
+
+With Company (with-company.com) for the editorial layer's tone. 2×2 scenario matrix tools (Futures Platform, Kinetic Futures Lab, GOV.UK Futures Toolkit) for positioning interaction patterns. IDEO/18F Method Cards for card presentation conventions, now extended into both the Card Oracle draw mechanic and the Future Commons grid.
+
+---
+
+## 9. Content source
+
+Seed data: `docs/ffie_atlas_seed.md` (unchanged — the 8 prototypes and their shape remain accurate; only the surrounding product structure changed in this revision). Narrative Card content (all 18 cards, categories, and the tension each names) needs to be extracted from thesis section 5.1.3 into its own structured doc before the Card Oracle can be built — **not yet created**, needed before the next Cursor increment that builds Create a Future.

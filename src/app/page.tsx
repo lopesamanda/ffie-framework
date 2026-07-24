@@ -8,51 +8,51 @@ export default function HomePage() {
           Feminist Foresight in Innovation Ecosystems
         </p>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ffie-ink md:text-5xl">
-          Imaginar ecossistemas de IA a partir de cuidado coletivo, não de
-          extração.
+          Explore futures. Create your own. See where power and care collide.
         </h1>
         <p className="mt-6 text-lg leading-relaxed text-ffie-muted">
-          O FFIE é um framework de pesquisa-ação para futuros feministas em
-          ecossistemas de inovação. A unidade replicável do método — validada
-          em workshops no Brasil e em Portugal — é simples e poderosa:{" "}
+          FFIE is a research-validated foresight method for innovation
+          ecosystems. Its replicable unit is simple and powerful:{" "}
           <strong className="font-medium text-ffie-ink">
-            persona + artefato diegético, posicionado na Matriz Feminista
-            Crítica 2×2
+            persona + diegetic artifact, positioned on the Critical Feminist
+            2×2 Matrix
           </strong>
-          .
+          . This is an instrument for engaging with feminist foresight
+          directly — not a site that explains a framework from the sidelines.
         </p>
       </section>
 
       <section className="mt-14 grid gap-6 md:grid-cols-2">
         <Link
-          href="/crie-o-seu-futuro"
-          className="group rounded-2xl border border-ffie-line bg-ffie-surface p-8 transition hover:border-ffie-accent/40 hover:shadow-md"
+          href="/explore"
+          className="group rounded-2xl border border-ffie-accent/20 bg-ffie-accent-soft p-8 transition hover:border-ffie-accent/40 hover:shadow-md"
         >
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ffie-muted">
-            Jornada individual
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ffie-accent">
+            Explore Futures
           </p>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight group-hover:text-ffie-accent">
-            Crie o seu Futuro
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-ffie-accent">
+            Research Findings & Future Commons
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ffie-muted">
-            Construa uma persona 2036, materialize um artefato diegético e
-            posicione-o na matriz. Em breve.
+            Browse the eight thesis prototypes on the Critical Feminist Matrix,
+            then discover futures created by visitors — two collections, never
+            blended.
           </p>
         </Link>
 
         <Link
-          href="/atlas"
-          className="group rounded-2xl border border-ffie-accent/20 bg-ffie-accent-soft p-8 transition hover:border-ffie-accent/40 hover:shadow-md"
+          href="/create"
+          className="group rounded-2xl border border-ffie-line bg-ffie-surface p-8 transition hover:border-ffie-accent/40 hover:shadow-md"
         >
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ffie-accent">
-            Feature central
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ffie-muted">
+            Create a Future
           </p>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-ffie-accent">
-            Atlas de Futuros
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight group-hover:text-ffie-accent">
+            Draw cards. Build a future.
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ffie-muted">
-            Explore os 8 protótipos diegéticos da tese — Valentina, Leide,
-            Pietra, Helena, Erika, Tainá, Sofia e John Bell — na matriz viva.
+            A guided journey from Narrative Cards to a shareable Future Output —
+            coming in the next increment.
           </p>
         </Link>
       </section>

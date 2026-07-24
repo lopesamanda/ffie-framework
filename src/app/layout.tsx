@@ -12,11 +12,11 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: {
-    default: "FFIE Framework",
-    template: "%s · FFIE Framework",
+    default: "FFIE",
+    template: "%s · FFIE",
   },
   description:
-    "Feminist Foresight in Innovation Ecosystems — ferramenta e atlas de futuros para imaginar ecossistemas de IA em 2036.",
+    "Feminist Foresight in Innovation Ecosystems — explore futures and create your own on the Critical Feminist Matrix.",
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="en">
       <body className={`${spaceGrotesk.variable} min-h-screen antialiased`}>
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
