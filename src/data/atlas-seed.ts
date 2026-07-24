@@ -47,7 +47,8 @@ export const atlasSeed: AtlasEntry[] = [
     artifactHiddenFunction:
       "Vigilância comportamental e intelectual disfarçada de cuidado corporativo",
     quadrant: "dominant_dystopian",
-    position: { x: 0.2, y: 0.25 },
+    // Fig. 59 — perto da origem, quadrante inferior-esquerdo
+    position: { x: 0.45, y: 0.45 },
     status: "published",
   },
   {
@@ -65,7 +66,8 @@ export const atlasSeed: AtlasEntry[] = [
     artifactHiddenFunction:
       "Autonomia prometida pode produzir isolamento estruturalmente mais profundo",
     quadrant: "feminist_preferred",
-    position: { x: 0.65, y: 0.7 },
+    // Fig. 59 — quadrante superior-direito, área superior-esquerda do quadrante
+    position: { x: 0.7, y: 0.7 },
     status: "published",
   },
   {
@@ -85,7 +87,8 @@ export const atlasSeed: AtlasEntry[] = [
     artifactHiddenFunction:
       "Reproduz a própria infraestrutura de vigilância que busca combater",
     quadrant: "techno_optimist",
-    position: { x: 0.35, y: 0.65 },
+    // Fig. 59 — quadrante superior-esquerdo, alto e levemente à esquerda
+    position: { x: 0.35, y: 0.85 },
     status: "published",
   },
   {
@@ -104,7 +107,8 @@ export const atlasSeed: AtlasEntry[] = [
     artifactHiddenFunction:
       "Participação na economia condicionada à mercantilização da identidade pessoal",
     quadrant: "dominant_dystopian",
-    position: { x: 0.05, y: 0.05 },
+    // Fig. 59 — canto inferior-esquerdo extremo
+    position: { x: 0.08, y: 0.08 },
     status: "published",
   },
   {
@@ -123,7 +127,8 @@ export const atlasSeed: AtlasEntry[] = [
     artifactHiddenFunction:
       'Classifica seu perfil como "alto risco", reduz alcance, amplifica oposição, vende dados comportamentais',
     quadrant: "dominant_dystopian",
-    position: { x: 0.3, y: 0.4 },
+    // Fig. 64 — centro do quadrante inferior-esquerdo
+    position: { x: 0.32, y: 0.32 },
     status: "published",
   },
   {
@@ -144,7 +149,8 @@ export const atlasSeed: AtlasEntry[] = [
     artifactHiddenFunction:
       "Captura biométrica contínua (batimento, dilatação pupilar, eye-tracking) a cada 0.3s; modelo treinado majoritariamente com dados do Norte Global; reclassificação sem consentimento explícito",
     quadrant: "feminist_preferred",
-    position: { x: 0.8, y: 0.75 },
+    // Fig. 64 — centro do quadrante superior-direito
+    position: { x: 0.68, y: 0.65 },
     status: "published",
   },
   {
@@ -170,7 +176,8 @@ export const atlasSeed: AtlasEntry[] = [
     artifactHiddenFunction:
       'Rede WinWatch (12.000 freelancers mapeando padrões de discriminação), "Shadow CV" transparente como contra-movimento',
     quadrant: "techno_optimist",
-    position: { x: 0.48, y: 0.55 },
+    // Fig. 64 — perto do centro, levemente no quadrante superior-esquerdo
+    position: { x: 0.42, y: 0.58 },
     status: "published",
   },
   {
@@ -188,8 +195,9 @@ export const atlasSeed: AtlasEntry[] = [
       "Avalia métricas de performance em todas as dimensões da vida (saúde, trabalho, exercício)",
     artifactHiddenFunction:
       "Estímulos neurais suprimem medo; empatia e sono viram KPI; classe trabalhadora avaliada pelos mesmos sensores para fins de substituição/descarte",
-    quadrant: "dominant_dystopian",
-    position: { x: 0.1, y: 0.05 },
+    quadrant: "fragmented",
+    // Fig. 64 — quadrante inferior-direito (Emancipatory/Hierarchical), não inferior-esquerdo
+    position: { x: 0.62, y: 0.32 },
     status: "published",
   },
 ];

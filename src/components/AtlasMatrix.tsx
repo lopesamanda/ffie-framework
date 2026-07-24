@@ -101,35 +101,71 @@ export function AtlasMatrix() {
         >
           <title>Atlas de Futuros — Matriz 2×2</title>
 
-          {/* Quadrant backgrounds */}
+          {/* Quadrant backgrounds — cores alinhadas às Fig. 59 e 64 */}
           <rect
             x={PLOT.padding}
             y={PLOT.padding}
             width={(PLOT.width - PLOT.padding * 2) / 2}
             height={(PLOT.height - PLOT.padding * 2) / 2}
-            fill="#f3efea"
+            fill="#dbeafe"
           />
           <rect
             x={midX}
             y={PLOT.padding}
             width={(PLOT.width - PLOT.padding * 2) / 2}
             height={(PLOT.height - PLOT.padding * 2) / 2}
-            fill="#eef3ef"
+            fill="#dcfce7"
           />
           <rect
             x={PLOT.padding}
             y={midY}
             width={(PLOT.width - PLOT.padding * 2) / 2}
             height={(PLOT.height - PLOT.padding * 2) / 2}
-            fill="#eef0f4"
+            fill="#fecdd3"
           />
           <rect
             x={midX}
             y={midY}
             width={(PLOT.width - PLOT.padding * 2) / 2}
             height={(PLOT.height - PLOT.padding * 2) / 2}
-            fill="#f0edf3"
+            fill="#fef08a"
           />
+
+          {/* Quadrant labels */}
+          <text
+            x={PLOT.padding + 12}
+            y={PLOT.padding + 18}
+            className="fill-ffie-muted text-[9px] uppercase tracking-[0.12em]"
+            style={{ fontFamily: "var(--font-space-grotesk)" }}
+          >
+            Techno-Optimist
+          </text>
+          <text
+            x={PLOT.width - PLOT.padding - 12}
+            y={PLOT.padding + 18}
+            textAnchor="end"
+            className="fill-ffie-muted text-[9px] uppercase tracking-[0.12em]"
+            style={{ fontFamily: "var(--font-space-grotesk)" }}
+          >
+            Feminist Preferred
+          </text>
+          <text
+            x={PLOT.padding + 12}
+            y={PLOT.height - PLOT.padding - 8}
+            className="fill-ffie-muted text-[9px] uppercase tracking-[0.12em]"
+            style={{ fontFamily: "var(--font-space-grotesk)" }}
+          >
+            Dominant Dystopian
+          </text>
+          <text
+            x={PLOT.width - PLOT.padding - 12}
+            y={PLOT.height - PLOT.padding - 8}
+            textAnchor="end"
+            className="fill-ffie-muted text-[9px] uppercase tracking-[0.12em]"
+            style={{ fontFamily: "var(--font-space-grotesk)" }}
+          >
+            Fragmented
+          </text>
 
           {/* Plot area border */}
           <rect

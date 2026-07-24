@@ -23,7 +23,7 @@ Quadrantes: **Dominant Dystopian** (Extractive/Hierarchical) · **Techno-Optimis
 - **Promessa pública:** boas-vindas, pertencimento
 - **Função oculta:** vigilância comportamental e intelectual disfarçada de cuidado corporativo
 - **Quadrante:** Dominant Dystopian (Extractive/Hierarchical)
-- **Posição aproximada:** x=0.20, y=0.25
+- **Posição aproximada:** x=0.45, y=0.45 *(calibrado contra Fig. 59 — perto da origem)*
 
 ### 2. Leide — BOB
 - **Persona:** 70 anos, mulher branca cisgênero, gestora pública freelancer (2036)
@@ -35,7 +35,7 @@ Quadrantes: **Dominant Dystopian** (Extractive/Hierarchical) · **Techno-Optimis
 - **Promessa pública:** alívio da solidão, independência
 - **Tensão:** autonomia prometida pode produzir isolamento estruturalmente mais profundo
 - **Quadrante:** Feminist Preferred Future (Emancipatory/Collective Care) — único artefato do cohort brasileiro nesse quadrante, mas puxado de volta ao centro pela ambivalência estrutural
-- **Posição aproximada:** x=0.65, y=0.70
+- **Posição aproximada:** x=0.70, y=0.70 *(calibrado contra Fig. 59)*
 
 ### 3. Pietra — BIOVAL
 - **Persona:** 50 anos, mulher branca transgênero, gestora de ESG/sustentabilidade (2036)
@@ -47,7 +47,7 @@ Quadrantes: **Dominant Dystopian** (Extractive/Hierarchical) · **Techno-Optimis
 - **Promessa pública:** segurança, privacidade, proteção, cuidado
 - **Função oculta:** reproduz a própria infraestrutura de vigilância que busca combater
 - **Quadrante:** Techno-Optimist (Extractive/Collective Care), mais próximo do centro que INSIDER/DATA TRADE ID
-- **Posição aproximada:** x=0.35, y=0.65
+- **Posição aproximada:** x=0.35, y=0.85 *(calibrado contra Fig. 59 — alto no quadrante superior-esquerdo)*
 
 ### 4. Helena — DATA TRADE ID
 - **Persona:** 28 anos, mulher negra cisgênero, desenvolvedora front-end freelancer (2036)
@@ -59,7 +59,7 @@ Quadrantes: **Dominant Dystopian** (Extractive/Hierarchical) · **Techno-Optimis
 - **Promessa pública:** inclusão, controle sobre os próprios dados
 - **Função oculta:** participação na economia condicionada à mercantilização da identidade pessoal
 - **Quadrante:** Dominant Dystopian (Extractive/Hierarchical) — posição mais extrema do cohort, canto inferior-esquerdo
-- **Posição aproximada:** x=0.05, y=0.05
+- **Posição aproximada:** x=0.08, y=0.08 *(calibrado contra Fig. 59 — canto inferior-esquerdo)*
 
 ---
 
@@ -75,7 +75,7 @@ Quadrantes: **Dominant Dystopian** (Extractive/Hierarchical) · **Techno-Optimis
 - **Promessa pública:** megafone político, arquivo blockchain de violência/censura como evidência legal
 - **Função oculta:** classifica seu perfil como "alto risco", reduz alcance, amplifica oposição, vende dados comportamentais
 - **Quadrante:** Dominant Dystopian (Extractive/Hierarchical), mas mais perto do centro/eixo horizontal que OPEN HUMAN
-- **Posição aproximada:** x=0.30, y=0.40
+- **Posição aproximada:** x=0.32, y=0.32 *(calibrado contra Fig. 64)*
 
 ### 6. Tainá — A-EYE
 - **Persona:** 23 anos, mulher indígena cisgênero, pesquisadora (2036)
@@ -88,7 +88,7 @@ Quadrantes: **Dominant Dystopian** (Extractive/Hierarchical) · **Techno-Optimis
 - **Função oculta:** captura biométrica contínua (batimento, dilatação pupilar, eye-tracking) a cada 0.3s; modelo treinado majoritariamente com dados do Norte Global; reclassificação sem consentimento explícito
 - **Contraproposta do artefato:** protocolos de dados abertos com governança comunitária, retreino com dados do Sul Global consentidos, documentação pública de vieses
 - **Quadrante:** Feminist Preferred Future (Emancipatory/Collective Care) — único artefato de ambos os workshops claramente nesse quadrante
-- **Posição aproximada:** x=0.80, y=0.75
+- **Posição aproximada:** x=0.68, y=0.65 *(calibrado contra Fig. 64)*
 
 ### 7. Sofia — WIN
 - **Persona:** 31 anos, mulher colombiana cisgênero, migrante, consultora/desenvolvedora IT freelancer (2036)
@@ -99,7 +99,7 @@ Quadrantes: **Dominant Dystopian** (Extractive/Hierarchical) · **Techno-Optimis
 - **Artefato:** plataforma de currículo vivo e ranqueável, visível a empregadores/seguradoras/screening algorítmico
 - **Contra-movimento:** rede WinWatch (12.000 freelancers mapeando padrões de discriminação), "Shadow CV" transparente
 - **Quadrante:** fronteira entre Techno-Optimist e Feminist Preferred Future — próximo à interseção dos 4 quadrantes, levemente acima do eixo horizontal
-- **Posição aproximada:** x=0.48, y=0.55
+- **Posição aproximada:** x=0.42, y=0.58 *(calibrado contra Fig. 64 — perto do centro)*
 
 ### 8. John Bell — OPEN HUMAN
 - **Persona:** 48 anos, homem branco cisgênero, C-level em BigTech (2036) — único persona masculino de ambos os workshops, construído deliberadamente para tornar visível a posição hegemônica
@@ -109,8 +109,8 @@ Quadrantes: **Dominant Dystopian** (Extractive/Hierarchical) · **Techno-Optimis
 - **Valores não-negociáveis:** autonomia, resiliência, mérito e eficácia
 - **Artefato:** dispositivo vestível + plataforma + mídia narrativa — avalia métricas de performance em todas as dimensões da vida (saúde, trabalho, exercício)
 - **Função oculta:** estímulos neurais suprimem medo; empatia e sono viram KPI; classe trabalhadora avaliada pelos mesmos sensores para fins de substituição/descarte
-- **Quadrante:** Dominant Dystopian (Extractive/Hierarchical), posição mais extrema de ambos os workshops
-- **Posição aproximada:** x=0.10, y=0.05
+- **Quadrante:** Fragmented (Emancipatory/Hierarchical) — posição hegemônica visível no quadrante inferior-direito
+- **Posição aproximada:** x=0.62, y=0.32 *(calibrado contra Fig. 64 — **corrigido**: o texto original indicava Dominant Dystopian, mas a figura da tese posiciona OPEN HUMAN no quadrante inferior-direito)*
 
 ---
 
