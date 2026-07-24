@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import {
   COUNTRY_COLORS,
   QUADRANT_LABELS,
+  QUADRANT_MATRIX_LABELS,
   type FutureCountry,
   type FutureEntry,
 } from "@/types/future";
@@ -114,6 +115,41 @@ export function FutureMatrix({
           strokeDasharray="4 4"
           opacity={0.35}
         />
+
+        <text
+          x={PLOT.padding + 8}
+          y={PLOT.padding + 14}
+          className="fill-ffie-muted text-[8px] uppercase tracking-[0.08em]"
+          style={{ fontFamily: "var(--font-space-grotesk)" }}
+        >
+          {QUADRANT_MATRIX_LABELS.techno_optimist}
+        </text>
+        <text
+          x={PLOT.width - PLOT.padding - 8}
+          y={PLOT.padding + 14}
+          textAnchor="end"
+          className="fill-ffie-muted text-[8px] uppercase tracking-[0.08em]"
+          style={{ fontFamily: "var(--font-space-grotesk)" }}
+        >
+          {QUADRANT_MATRIX_LABELS.feminist_preferred}
+        </text>
+        <text
+          x={PLOT.padding + 8}
+          y={PLOT.height - PLOT.padding - 6}
+          className="fill-ffie-muted text-[8px] uppercase tracking-[0.08em]"
+          style={{ fontFamily: "var(--font-space-grotesk)" }}
+        >
+          {QUADRANT_MATRIX_LABELS.dominant_dystopian}
+        </text>
+        <text
+          x={PLOT.width - PLOT.padding - 8}
+          y={PLOT.height - PLOT.padding - 6}
+          textAnchor="end"
+          className="fill-ffie-muted text-[8px] uppercase tracking-[0.08em]"
+          style={{ fontFamily: "var(--font-space-grotesk)" }}
+        >
+          {QUADRANT_MATRIX_LABELS.fragmented}
+        </text>
 
         <text
           x={PLOT.padding}

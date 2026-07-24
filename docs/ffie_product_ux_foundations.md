@@ -5,7 +5,7 @@ Grounding analysis before implementation. Source: PhD thesis *Designing Feminist
 
 ## 1. What is FFIE?
 
-FFIE (Feminist Foresight in Innovation Ecosystems) is a five-phase participatory foresight methodology — **Understand, Situate, Embody, Materialize, Share** — and the original methodological contribution of the thesis. It is built on the F-D-P model (Ollenburg, 2019) as scaffolding, not authored by Amanda, but the FFIE Framework itself is her contribution, developed and validated through two independent workshop cohorts (Recife and Lisbon, 2026). It produces three concrete instruments: the **FFIE Narrative Card Deck** (18 cards), the **Critical Feminist 2×2 Matrix**, and the **Situated Check-in**. Its output unit is the **diegetic prototype**: a persona situated in 2036, paired with a speculative artifact that both serves and constrains her.
+FFIE (Feminist Foresight in Innovation Ecosystems) is a five-phase participatory foresight methodology — **Understand, Situate, Embody, Materialize, Share** — and the original methodological contribution of the thesis. It is built on the F-D-P model (Ollenburg, 2019) as scaffolding, not authored by Amanda, but the FFIE Framework itself is her contribution, developed and validated through two independent workshop cohorts (Recife and Lisbon, 2026). It produces three concrete instruments: the **FFIE Narrative Card Deck** (19 cards in two registers), the **Critical Feminist 2×2 Matrix**, and the **Situated Check-in**. Its output unit is the **diegetic prototype**: a persona situated in 2036, paired with a speculative artifact that both serves and constrains her.
 
 ## 2. What problem does it address?
 
@@ -29,7 +29,7 @@ Not a backdrop — the site of contestation. Every persona holds a concrete prof
 
 ## 6. How does the framework currently work?
 
-- **Understand** (pre-workshop, facilitator/researcher-led): bilingual survey (n=134) + interviews (n=23) → thematic analysis → the 18-card Narrative Card Deck. This phase is not participant-facing — it is already "baked" before any workshop begins.
+- **Understand** (pre-workshop, facilitator/researcher-led): bilingual survey (n=134) + interviews (n=23) → thematic analysis → the 19-card Narrative Card Deck (Tension Cards: AI Risks + Ecosystem Barriers; Potential Cards: AI Benefits + Trust in AI). This phase is not participant-facing — it is already "baked" before any workshop begins.
 - **Situate**: participants complete an individual check-in ("Where am I speaking from regarding AI?"), then engage the card deck collectively to frame the tension their group will work with.
 - **Embody**: the group builds a persona situated in 2036 — role, AI function in daily life, one desire, one fear, three non-negotiable values drawn from a fixed list.
 - **Materialize**: the group designs a speculative artifact responding to or exacerbating the persona's central tension, visualized through a structured GenAI prompt.
@@ -39,14 +39,14 @@ Output to date: 8 validated diegetic prototypes (4 per cohort) — the current s
 
 ## 7. What are the Narrative Cards and how are they used?
 
-18 cards across four categories — **AI Risks (A)**, **AI Benefits (B)**, **Trust in AI (C)**, **Barriers in Innovation Ecosystems (D)** — plus one transversal card, **Environmental Impact**, which sits outside the four categories because it names the material infrastructure underwriting all of them (energy, water, mineral extraction, disproportionately outsourced to peripheral geographies). Every card is derived from **triangulated convergence** between the survey's open-response corpus and the interview corpus — never from one data stream alone, and never from the researcher's intuition. Each card names a **tension**, not a fact (e.g., Card A2 — *Amplification of Historical Biases*: "racism, sexism, and transphobia are reproduced by historical data. Tension: the automation of injustice").
+19 cards in two registers — **Tension Cards** (AI Risks + Ecosystem Barriers) and **Potential Cards** (AI Benefits + Trust in AI) — plus one transversal card, **Environmental Impact**, which sits outside the four draw categories because it names the material infrastructure underwriting all of them (energy, water, mineral extraction, disproportionately outsourced to peripheral geographies). Every card is derived from **triangulated convergence** between the survey's open-response corpus and the interview corpus — never from one data stream alone, and never from the researcher's intuition. Each card names a **tension**, not a fact (e.g., Card A2 — *Amplification of Historical Biases*: "racism, sexism, and transphobia are reproduced by historical data. Tension: the automation of injustice").
 
 The deck functions in three interrelated registers: a **condensation device** (compresses hundreds of coded units of meaning from 140 participants into 18 workshoppable propositions), a **provocation device** (the tension format sustains productive discomfort rather than resolving into consensus), and an **equity device** (it makes structural inequities discussable by participants who have no direct lived experience of them). In the workshop, groups select and combine 2–3 cards during Situate to define the tension their persona and artifact will respond to.
 
 ## 8. What is essential to preserve?
 
 - The **tension-based, empirically-triangulated card format**. Strip the empirical grounding and the cards become generic ideation prompts — the "equity device" and "audit trail" functions collapse.
-- The **Critical Feminist 2×2 Matrix's** actual axes and quadrant names (Power Organization: Hierarchical↔Collective Care; System Logic: Extractive↔Emancipatory; Dominant Dystopian / Techno-Optimist / Fragmented / Feminist Preferred Future). These are the analytical payload, not decoration.
+- The **Critical Feminist 2×2 Matrix's** actual axes and quadrant names (Power Organization: Hierarchical↔Collective Care; System Logic: Extractive↔Emancipatory; Dominant Dystopian Future / Naïve Techno-Optimist Future / Fragmented or Precarious Future / Feminist Preferable Future). These are the analytical payload, not decoration.
 - The **public-promise-vs-hidden-function duality** every artifact must hold. This is what makes them critical design objects rather than solutionist mockups — an artifact that only does good is not a diegetic prototype in this framework's sense.
 - The **deliberate inclusion of hegemonic-position entries**, not only marginalized ones — a direct methodological safeguard, not an optional variety feature.
 - **No resolution into comfortable consensus.** No scoring, no ranking of artifacts as good/bad, no declared "winning" future.
@@ -58,7 +58,7 @@ The deck functions in three interrelated registers: a **condensation device** (c
 - **Group card negotiation → guided individual selection.** Picking 2–3 cards from a shorter, curated subset rather than open-table group debate.
 - **Researcher-run GenAI visualization → user-directed generation.** The platform generates the prompt; the person runs it in their own AI tool and uploads the result — the individual equivalent of what Amanda did with Manus AI for the workshop cohorts.
 - **Group-negotiated matrix placement → guided self-assessment.** A structured placement exercise with a required written justification, replacing verbal group defense.
-- **Understand phase → not reproducible per session.** Individuals don't run new surveys or generate new cards; they inherit the fixed, already-validated 18-card deck.
+- **Understand phase → not reproducible per session.** Individuals don't run new surveys or generate new cards; they inherit the fixed, already-validated 19-card deck.
 
 ## 10. Relationship between the academic framework and the digital product
 

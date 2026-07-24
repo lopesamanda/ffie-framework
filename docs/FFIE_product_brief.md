@@ -48,7 +48,7 @@ Moderation: hybrid model, unchanged from earlier decisions — `pending` → man
 ### Default flow — Card Oracle
 Fast, evocative, true to the Narrative Cards' original role as a provocation device (see foundations doc). No persona form, no artifact form as the entry point.
 
-1. Draw 2–3 cards (weighted randomness from the 18-card deck, not a checklist)
+1. Draw one card from each category (Risk, Benefit, Trust, Barrier) — four cards total — with the Environmental Impact transversal card always applied as a fixed lens (see `docs/ffie_narrative_cards.md`)
 2. The system surfaces a generated tension statement from the specific combination drawn
 3. 2–3 short reflective prompts, answered in a sentence or two ("where do you feel this tension in your own work/life?")
 4. A **Future Reading** card is generated — the cards drawn, the tension, the person's own words
@@ -108,4 +108,4 @@ With Company (with-company.com) for the editorial layer's tone. 2×2 scenario ma
 
 ## 9. Content source
 
-Seed data: `docs/ffie_atlas_seed.md` (unchanged — the 8 prototypes and their shape remain accurate; only the surrounding product structure changed in this revision). Narrative Card content (all 18 cards, categories, and the tension each names) needs to be extracted from thesis section 5.1.3 into its own structured doc before the Card Oracle can be built — **not yet created**, needed before the next Cursor increment that builds Create a Future.
+Seed data: `docs/ffie_atlas_seed.md` (unchanged — the 8 prototypes and their shape remain accurate; only the surrounding product structure changed in this revision). Narrative Card content (all 19 cards, two registers, and the tension each names) lives in `docs/ffie_narrative_cards.md`.

@@ -33,7 +33,7 @@ Leide is seventy, sharp, and tired of being told to slow down. BOB sits on her w
 —
 Persona: 70, white cisgender woman, freelance public sector manager. AI function: work tool and companion. Desire: stay useful, productive, and autonomous with a high quality of life. Fear: loneliness, abandonment, erosion of genuine human relationships. Values: cooperation, horizontality, autonomy.
 Artifact: BOB, a wearable hardware version of ChatGPT that pleases, advises, and cares for its user. Public promise: relief from loneliness, independence. Hidden function: the autonomy it promises risks producing a structurally deeper isolation.
-Tension: Companionship vs. Isolation · Quadrant: Feminist Preferred Future · Power position: Marginalized · Position: x=0.65, y=0.70
+Tension: Companionship vs. Isolation · Quadrant: Feminist Preferable Future · Power position: Marginalized · Position: x=0.65, y=0.70
 
 ---
 
@@ -47,7 +47,7 @@ Pietra was hired to make the company's AI use defensible. What she found instead
 —
 Persona: 50, white transgender woman, ESG/sustainability manager, tasked with reducing AI use in her organization. Desire: move the ecosystem's focus beyond mere efficiency. Fear: regional water scarcity from data centers, digital surveillance, deepfakes, identity theft. Values: cooperation, socio-environmental justice, autonomy.
 Artifact: BIOVAL, an online interface countering deepfakes via biometric capture (infrared + Wi-Fi sensing). Public promise: security, privacy, protection, care. Hidden function: reproduces the surveillance infrastructure it is meant to counteract.
-Tension: Protection vs. Surveillance · Quadrant: Techno-Optimist · Power position: Marginalized · Position: x=0.35, y=0.65
+Tension: Protection vs. Surveillance · Quadrant: Naïve Techno-Optimist Future · Power position: Marginalized · Position: x=0.35, y=0.65
 
 ---
 
@@ -91,7 +91,7 @@ Tainá designs for children the rest of the field forgets, kids whose cognitive 
 —
 Persona: 23, Indigenous cisgender woman, researcher. AI function: ethical design, translation, data visualization in research planning. Desire: develop solutions for children with cognitive limitations. Fear: deepfakes and misinformation contaminating diagnostic environments. Values: cooperation, horizontality, socio-environmental justice.
 Artifact: A-EYE, an ultra-thin contact lens with an embedded neural processor, projecting decision support into the field of vision. Public promise: accessibility, translating the visual environment for children. Hidden function: continuous biometric capture every 0.3s; model trained predominantly on Global North data; reclassifies users without explicit consent.
-Tension: Care vs. Extraction · Quadrant: Feminist Preferred Future · Power position: Marginalized · Position: x=0.80, y=0.75
+Tension: Care vs. Extraction · Quadrant: Feminist Preferable Future · Power position: Marginalized · Position: x=0.80, y=0.75
 
 ---
 
@@ -105,7 +105,7 @@ Sofia left Colombia for a market that promised to finally see her competence cle
 —
 Persona: 31, Colombian cisgender woman, migrant, freelance IT consultant/developer. AI function: performance amplifier. Desire: stable financial life, recognition of her competencies, respect. Fear: concentration of power in the Global North, constant symbolic violence. Values: consent, socio-environmental justice, interoperability, open source.
 Artifact: WIN, a living, rankable curriculum platform, visible to employers/insurers/screening algorithms. Public promise: fair, data-based recognition of professional competencies. Hidden function: the gamification of professional survival, countered by the WinWatch network (12,000 freelancers) and a transparent "Shadow CV."
-Tension: Recognition vs. Gamified Survival · Quadrant: boundary, Techno-Optimist / Feminist Preferred Future · Power position: Marginalized · Position: x=0.48, y=0.55
+Tension: Recognition vs. Gamified Survival · Quadrant: boundary, Naïve Techno-Optimist Future / Feminist Preferable Future · Power position: Marginalized · Position: x=0.48, y=0.55
 
 ---
 

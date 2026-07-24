@@ -71,7 +71,7 @@ Chapter 5's Table 31 doesn't include a description column like the other three t
 - **Q1 — Naïve Techno-Optimist Future** (Extractive × Collective Care): AI for good without redistribution. Diversity as branding.
 - **Q2 — Feminist Preferable Future** (Emancipatory × Collective Care): AI as care infrastructure. Power redistributed to historically marginalized subjects.
 - **Q3 — Dominant Dystopian Future** (Extractive × Hierarchical): Automation of control. Bias amplified. Data and capital concentrated.
-- **Q4 — Fragmented / Precarious Future** (Emancipatory × Hierarchical): Point-of-need innovation without systemic justice. Individual heroism required.
+- **Q4 — Fragmented or Precarious Future** (Emancipatory × Hierarchical): Point-of-need innovation without systemic justice. Individual heroism required.
 
 Note: the toolkit document's quadrant descriptions are slightly longer/different in wording than the matrix poster's — both are given here where they diverge; treat as equivalent, not contradictory.
 

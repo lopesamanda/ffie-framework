@@ -45,8 +45,16 @@ export type FutureEntry = {
 export const QUADRANT_LABELS: Record<FutureQuadrant, string> = {
   dominant_dystopian: "Dominant Dystopian Future",
   techno_optimist: "Naïve Techno-Optimist Future",
-  fragmented: "Fragmented / Precarious Future",
+  fragmented: "Fragmented or Precarious Future",
   feminist_preferred: "Feminist Preferable Future",
+};
+
+/** Short labels for matrix corners where space is limited */
+export const QUADRANT_MATRIX_LABELS: Record<FutureQuadrant, string> = {
+  dominant_dystopian: "Dominant Dystopian",
+  techno_optimist: "Naïve Techno-Optimist",
+  fragmented: "Fragmented or Precarious",
+  feminist_preferred: "Feminist Preferable",
 };
 
 export const COUNTRY_COLORS: Record<FutureCountry, string> = {
