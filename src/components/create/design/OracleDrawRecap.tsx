@@ -1,7 +1,7 @@
 "use client";
 
 import { OracleSynthesisCallout } from "@/components/create/design/OracleSynthesisCallout";
-import { EnvironmentalImpactBadge } from "@/components/create/design/EnvironmentalImpactBadge";
+import { EnvironmentalImpactCard } from "@/components/create/design/EnvironmentalImpactBadge";
 import {
   ORACLE_DRAW_ORDER,
   OracleFanRevealedCard,
@@ -34,7 +34,7 @@ export function OracleDrawRecap({ hand }: { hand: CardHand }) {
         </div>
       </div>
 
-      <EnvironmentalImpactBadge />
+      <EnvironmentalImpactCard card={hand.transversal} />
     </div>
   );
 }

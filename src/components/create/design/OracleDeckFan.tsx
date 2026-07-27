@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { NarrativeCardFace } from "@/components/create/NarrativeCardFace";
 import type { CardHand } from "@/lib/journey/types";
 import type { CardCategory, NarrativeCard } from "@/data/narrative-cards";
 import {
@@ -247,7 +248,6 @@ export type OracleDeckFanProps = {
   onDraw: () => void;
   onAdvance: () => void;
   onShuffle: () => void;
-  environmentalCard: React.ReactNode;
 };
 
 export function OracleDeckFan({
@@ -258,7 +258,6 @@ export function OracleDeckFan({
   onDraw,
   onAdvance,
   onShuffle,
-  environmentalCard,
 }: OracleDeckFanProps) {
   const reduceMotion = useReducedMotion();
   const remaining = DRAW_ORDER.slice(drawIndex);
@@ -272,7 +271,6 @@ export function OracleDeckFan({
       <p className="max-w-xl text-[13px] leading-relaxed text-ffie-muted">
         Tap the front card to draw it. Your reflection question appears once the
         card is revealed. After reading, advance to the next card in the stack.
-        The Environmental Impact card is always present — no draw needed.
       </p>
 
       <button
@@ -348,7 +346,7 @@ export function OracleDeckFan({
         </div>
       )}
 
-      <div className={allComplete ? undefined : "opacity-35"}>{environmentalCard}</div>
+      <NarrativeCardFace card={hand.transversal} />
     </div>
   );
 }

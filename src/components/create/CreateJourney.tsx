@@ -14,7 +14,6 @@ import {
 } from "@/components/create/design/CategoryRegisterTiles";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan, OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
-import { EnvironmentalImpactBadge } from "@/components/create/design/EnvironmentalImpactBadge";
 import {
   MATRIX_EXPLANATION,
   MatrixArrivalScene,
@@ -439,7 +438,6 @@ export function CreateJourney() {
                         }
                       }}
                       onShuffle={handleShuffleCards}
-                      environmentalCard={<EnvironmentalImpactBadge />}
                     />
                   )}
                 </CreateStageShell>

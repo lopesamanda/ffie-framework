@@ -16,14 +16,11 @@ import {
 export function NarrativeCardFace({
   card,
   revealed = true,
-  fixedLens = false,
   showReflection = false,
   embedded = false,
 }: {
   card: NarrativeCard;
   revealed?: boolean;
-  fixedLens?: boolean;
-  /** Show per-card reflection question (Oracle Draw reveal moment) */
   showReflection?: boolean;
   /** Strip outer chrome when nested inside OracleCard */
   embedded?: boolean;
@@ -39,7 +36,6 @@ export function NarrativeCardFace({
             card={card}
             label={label}
             style={style}
-            fixedLens={fixedLens}
             showReflection={showReflection}
           />
         ) : (
@@ -69,7 +65,6 @@ export function NarrativeCardFace({
             card={card}
             label={label}
             style={style}
-            fixedLens={fixedLens}
             showReflection={showReflection}
           />
         ) : (
@@ -86,27 +81,18 @@ function NarrativeCardContent({
   card,
   label,
   style,
-  fixedLens,
   showReflection,
 }: {
   card: NarrativeCard;
   label: string;
   style: (typeof CATEGORY_STYLES)[keyof typeof CATEGORY_STYLES];
-  fixedLens: boolean;
   showReflection: boolean;
 }) {
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className={ffieCardCategory} style={{ color: style.text }}>
-          {label}
-        </span>
-        {fixedLens && (
-          <span className={ffieCardCategory} style={{ color: style.text }}>
-            Always applied
-          </span>
-        )}
-      </div>
+      <span className={ffieCardCategory} style={{ color: style.text }}>
+        {label}
+      </span>
 
       <h3
         className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}

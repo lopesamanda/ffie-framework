@@ -1,5 +1,6 @@
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
+import { NarrativeCardFace } from "@/components/create/NarrativeCardFace";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import {
   FFIE_CARD_TEXT,
@@ -140,16 +141,19 @@ export function FutureCardPreview({
 }
 
 function CardProvenance({ hand }: { hand: CardHand }) {
-  const cards = [hand.risk, hand.benefit, hand.trust, hand.barrier, hand.transversal];
+  const drawn = [hand.risk, hand.benefit, hand.trust, hand.barrier];
   return (
     <div className="mt-4 border-t border-ffie-line pt-4">
       <p className={ffieCardSectionLabel + " text-ffie-muted"}>
         Card provenance
       </p>
       <div className="mt-2 flex flex-wrap gap-2">
-        {cards.map((card) => (
+        {drawn.map((card) => (
           <CardReferenceTag key={card.id} card={card} compact />
         ))}
+      </div>
+      <div className="mt-4">
+        <NarrativeCardFace card={hand.transversal} />
       </div>
     </div>
   );
