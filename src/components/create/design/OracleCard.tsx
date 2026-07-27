@@ -16,7 +16,6 @@ import {
   ffieCardDescription,
   ffieCardDivider,
   ffieCardSectionLabel,
-  ffieCardShell,
   ffieCardTension,
   ffieCardTitle,
 } from "@/lib/card-layout";
@@ -83,8 +82,12 @@ export function OracleCard({
         initial={reduceMotion ? false : { rotateY: -88, opacity: 0.6 }}
         animate={{ rotateY: 0, opacity: 1 }}
         transition={{ duration: 0.42, ease: "easeOut" }}
-        className={`flex w-full flex-col ${ffieCardShell}`}
-        style={{ minHeight: FFIE_CARD.minHeight }}
+        className="flex w-full flex-col rounded-[12px] border-2 shadow-[0_2px_8px_rgba(35,19,82,0.06)]"
+        style={{
+          minHeight: FFIE_CARD.minHeight,
+          backgroundColor: style.bg,
+          borderColor: style.border,
+        }}
       >
         <div
           className="shrink-0"

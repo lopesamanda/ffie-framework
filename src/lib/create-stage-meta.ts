@@ -21,7 +21,7 @@ export function getPhaseIndex(stage: JourneyStage): number {
 export const STAGE_META: Record<JourneyStage, StageMeta> = {
   entry: {
     phaseLabel: "Entry",
-    eyebrow: "Somewhere between Brazil and Portugal",
+    eyebrow: "",
     title: "A future is taking shape.",
     accentColor: "#6e52c4",
   },

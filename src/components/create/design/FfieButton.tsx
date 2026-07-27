@@ -8,6 +8,7 @@ type FfieButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;
   children: ReactNode;
   icon?: ReactNode;
+  iconPosition?: "leading" | "trailing";
 };
 
 const VARIANT: Record<Variant, string> = {
@@ -22,6 +23,7 @@ export function FfieButton({
   variant = "primary",
   children,
   icon,
+  iconPosition = "leading",
   className = "",
   ...props
 }: FfieButtonProps) {
@@ -31,11 +33,12 @@ export function FfieButton({
   return (
     <button
       type="button"
-      className={`inline-flex items-center justify-center gap-2 px-6 py-3 font-display text-sm font-bold tracking-wide transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ffie-accent ${rounded} ${VARIANT[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2.5 px-7 py-3 font-display text-[15px] font-bold tracking-[0.01em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ffie-accent ${rounded} ${VARIANT[variant]} ${className}`}
       {...props}
     >
-      {icon}
+      {icon && iconPosition === "leading" ? icon : null}
       {children}
+      {icon && iconPosition === "trailing" ? icon : null}
     </button>
   );
 }

@@ -12,20 +12,23 @@ const DRAW_ORDER = ["risk", "benefit", "trust", "barrier"] as const;
 
 type OracleDrawRowProps = {
   hand: CardHand;
-  /** Current index in ORACLE_REVEAL_SEQUENCE (0–4). */
-  sequenceIndex: number;
+  /** Show all four category cards face-up (open hand layout). */
+  allRevealed?: boolean;
+  /** Current index in ORACLE_REVEAL_SEQUENCE (0–4). Used when allRevealed is false. */
+  sequenceIndex?: number;
   /** Whether the active card in the sequence has been flipped. */
-  cardFlipped: boolean;
-  onDraw: () => void;
+  cardFlipped?: boolean;
+  onDraw?: () => void;
 };
 
 export function OracleDrawRow({
   hand,
-  sequenceIndex,
-  cardFlipped,
-  onDraw,
+  allRevealed = false,
+  sequenceIndex = 0,
+  cardFlipped = false,
+  onDraw = () => undefined,
 }: OracleDrawRowProps) {
-  const allDrawn = sequenceIndex >= DRAW_ORDER.length;
+  const allDrawn = allRevealed || sequenceIndex >= DRAW_ORDER.length;
 
   return (
     <div className="overflow-x-auto pb-1">
@@ -35,25 +38,25 @@ export function OracleDrawRow({
         role="list"
         aria-label="Oracle Draw hand"
       >
-      {DRAW_ORDER.map((key, stepIndex) => {
-        const card = hand[key] as NarrativeCard;
-        const isPast = allDrawn || sequenceIndex > stepIndex;
-        const isCurrent = !allDrawn && sequenceIndex === stepIndex;
-        const revealed = isPast || (isCurrent && cardFlipped);
+        {DRAW_ORDER.map((key, stepIndex) => {
+          const card = hand[key] as NarrativeCard;
+          const isPast = allDrawn || sequenceIndex > stepIndex;
+          const isCurrent = !allDrawn && sequenceIndex === stepIndex;
+          const revealed = allRevealed || isPast || (isCurrent && cardFlipped);
 
-        return (
-          <OracleCard
-            key={key}
-            card={card}
-            revealed={revealed}
-            showRevealedLabel={revealed}
-            interactive={isCurrent && !cardFlipped}
-            onDraw={onDraw}
-          >
-            <OracleRevealedContent card={card} />
-          </OracleCard>
-        );
-      })}
+          return (
+            <OracleCard
+              key={key}
+              card={card}
+              revealed={revealed}
+              showRevealedLabel={revealed}
+              interactive={!allRevealed && isCurrent && !cardFlipped}
+              onDraw={onDraw}
+            >
+              <OracleRevealedContent card={card} />
+            </OracleCard>
+          );
+        })}
       </div>
     </div>
   );

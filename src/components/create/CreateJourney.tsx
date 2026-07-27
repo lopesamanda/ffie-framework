@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toPng } from "html-to-image";
 import { CreateStageShell } from "@/components/create/design/CreateStageShell";
+import { CreateEntryCover } from "@/components/create/design/CreateEntryCover";
 import { FfieButton } from "@/components/create/design/FfieButton";
 import {
   CategoryRegisterTiles,
@@ -12,7 +13,8 @@ import {
 } from "@/components/create/design/CategoryRegisterTiles";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleCard, OracleRevealedContent } from "@/components/create/design/OracleCard";
-import { OracleDrawRow } from "@/components/create/design/OracleDrawRow";
+import { OracleDrawPanel } from "@/components/create/design/OracleDrawPanel";
+import { OracleSynthesisCallout } from "@/components/create/design/OracleSynthesisCallout";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { MatrixReveal } from "@/components/create/MatrixReveal";
 import { LikertQuestion } from "@/components/create/LikertQuestion";
@@ -23,7 +25,6 @@ import { CardReferenceTag } from "@/components/create/CardReferenceTag";
 import { NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { AiCapabilityCardPicker } from "@/components/create/AiCapabilityCardPicker";
-import { CATEGORY_LABELS } from "@/data/narrative-cards";
 import {
   ShareableFutureCard,
   SHAREABLE_CARD_HEIGHT,
@@ -34,7 +35,6 @@ import {
   buildCombinedTension,
   drawWorkshopHand,
   ENVIRONMENTAL_IMPACT_CARD,
-  ORACLE_REVEAL_SEQUENCE,
 } from "@/data/narrative-cards";
 import {
   researchFindingsSeed,
@@ -100,15 +100,9 @@ export function CreateJourney() {
   const [draft, setDraft] = useState<JourneyDraft | null>(null);
   const [exploreEntryId, setExploreEntryId] = useState<string | null>(null);
   const [revealing, setRevealing] = useState(false);
-  const [oracleRevealIndex, setOracleRevealIndex] = useState(0);
-  const [cardFlipped, setCardFlipped] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    setCardFlipped(false);
-  }, [oracleRevealIndex]);
 
   useEffect(() => {
     const sessionId = getOrCreateSessionId();
@@ -147,16 +141,27 @@ export function CreateJourney() {
 
   const handleDrawCards = () => {
     setRevealing(true);
-    setOracleRevealIndex(0);
     setTimeout(() => {
       const hand = drawWorkshopHand();
-      const combinedTension = buildCombinedTension(hand);
       update({
         cardHand: hand,
-        combinedTension,
+        combinedTension: buildCombinedTension(hand),
       });
       setRevealing(false);
     }, 900);
+  };
+
+  const handleShuffleCards = () => {
+    setRevealing(true);
+    setTimeout(() => {
+      const hand = drawWorkshopHand();
+      update({
+        cardHand: hand,
+        combinedTension: buildCombinedTension(hand),
+        reflectionText: "",
+      });
+      setRevealing(false);
+    }, 400);
   };
 
   const captureShareImage = async () => {
@@ -323,7 +328,7 @@ export function CreateJourney() {
         <div className="min-w-0">
           <AnimatePresence mode="wait">
             <motion.div
-              key={draft.stage + draft.creationStep + oracleRevealIndex}
+              key={draft.stage + draft.creationStep}
               initial={
                 reduceMotion ? false : { opacity: 0, y: 16, scale: 0.985 }
               }
@@ -334,35 +339,8 @@ export function CreateJourney() {
               transition={{ duration: 0.32, ease: "easeOut" }}
             >
               {draft.stage === "entry" && (
-                <CreateStageShell stage="entry" headerMode="entry">
-                  <div className="relative mx-auto max-w-lg text-center">
-                    <h1 className="sr-only">A future is taking shape</h1>
-                    <p className="mb-8 text-sm leading-relaxed text-ffie-muted">
-                      Somewhere between Brazil and Portugal
-                    </p>
-                    <p
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none font-display text-[120px] font-bold leading-none tracking-tighter text-ffie-ink/[0.04] sm:text-[160px]"
-                    >
-                      2036
-                    </p>
-                    <div className="relative space-y-8 py-6">
-                      <div className="flex justify-center gap-2">
-                        {[0, 1, 2, 3].map((i) => (
-                          <motion.div
-                            key={i}
-                            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 + i * 0.08 }}
-                            className="h-24 w-16 rounded-lg border-2 border-ffie-line bg-ffie-accent-soft/60 shadow-sm"
-                          />
-                        ))}
-                      </div>
-                      <FfieButton onClick={() => goTo("orientation")}>
-                        Begin
-                      </FfieButton>
-                    </div>
-                  </div>
+                <CreateStageShell stage="entry" headerMode="entry" variant="cover">
+                  <CreateEntryCover onBegin={() => goTo("orientation")} />
                 </CreateStageShell>
               )}
 
@@ -434,169 +412,78 @@ export function CreateJourney() {
                       {revealing ? "Drawing…" : "Reveal cards"}
                     </FfieButton>
                   ) : (
-                    <>
-                      {(() => {
-                        const hand = draft.cardHand!;
-                        const revealKey = ORACLE_REVEAL_SEQUENCE[oracleRevealIndex];
-                        const currentCard = hand[revealKey];
-                        const isLastCard =
-                          oracleRevealIndex >= ORACLE_REVEAL_SEQUENCE.length - 1;
+                    <div className="space-y-6">
+                      <OracleDrawPanel
+                        hand={draft.cardHand}
+                        shuffling={revealing}
+                        onShuffle={handleShuffleCards}
+                      />
 
-                        if (oracleRevealIndex < ORACLE_REVEAL_SEQUENCE.length) {
-                          const isTransversalStep =
-                            revealKey === "transversal";
+                      <div className="max-w-[560px] space-y-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#2c8a52]">
+                            Environmental Impact
+                          </span>
+                          <span className="rounded-[3px] border border-[#2c8a52] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.08em] text-[#2c8a52]">
+                            Always applied
+                          </span>
+                        </div>
+                        <OracleCard
+                          card={draft.cardHand.transversal}
+                          revealed
+                          showRevealedLabel
+                          className="!min-w-0 !flex-none !basis-full"
+                        >
+                          <OracleRevealedContent
+                            card={draft.cardHand.transversal}
+                          />
+                        </OracleCard>
+                      </div>
 
-                          return (
-                            <div className="space-y-6">
-                              {!isTransversalStep && (
-                                <>
-                                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
-                                    Card {oracleRevealIndex + 1} of{" "}
-                                    {ORACLE_REVEAL_SEQUENCE.length} —{" "}
-                                    {CATEGORY_LABELS[currentCard.category]}
-                                  </p>
-                                  <OracleDrawRow
-                                    hand={hand}
-                                    sequenceIndex={oracleRevealIndex}
-                                    cardFlipped={cardFlipped}
-                                    onDraw={() => setCardFlipped(true)}
-                                  />
-                                </>
-                              )}
+                      {draft.cardHand.transversal.reflectionQuestion && (
+                        <blockquote className="max-w-prose border-l-2 border-[#2c8a52] pl-4 text-sm leading-relaxed text-ffie-ink">
+                          {draft.cardHand.transversal.reflectionQuestion}
+                        </blockquote>
+                      )}
 
-                              {isTransversalStep && (
-                                <>
-                                  <OracleDrawRow
-                                    hand={hand}
-                                    sequenceIndex={4}
-                                    cardFlipped
-                                    onDraw={() => undefined}
-                                  />
-                                  <div className="max-w-[560px] space-y-2">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                      <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#2c8a52]">
-                                        Environmental Impact
-                                      </span>
-                                      <span className="rounded-[3px] border border-[#2c8a52] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.08em] text-[#2c8a52]">
-                                        Always applied
-                                      </span>
-                                    </div>
-                                    <OracleCard
-                                      card={hand.transversal}
-                                      revealed
-                                      className="!min-w-0 !flex-none !basis-full"
-                                    >
-                                      <OracleRevealedContent card={hand.transversal} />
-                                    </OracleCard>
-                                  </div>
-                                </>
-                              )}
+                      <OracleSynthesisCallout hand={draft.cardHand} />
 
-                              {isTransversalStep &&
-                                currentCard.reflectionQuestion && (
-                                  <blockquote className="max-w-prose border-l-2 border-[#2c8a52] pl-4 text-sm leading-relaxed text-ffie-ink">
-                                    {currentCard.reflectionQuestion}
-                                  </blockquote>
-                                )}
+                      <div className="rounded-xl border border-ffie-accent/20 bg-ffie-accent-soft p-4">
+                        <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
+                          Combined tension
+                        </p>
+                        <p className="mt-2 text-sm font-medium text-ffie-ink">
+                          {draft.combinedTension}
+                        </p>
+                        <p className="mt-2 text-xs text-ffie-muted">
+                          Lens: {ENVIRONMENTAL_IMPACT_CARD.tension} —{" "}
+                          {ENVIRONMENTAL_IMPACT_CARD.description.slice(0, 120)}…
+                        </p>
+                      </div>
 
-                              {cardFlipped &&
-                                !isTransversalStep &&
-                                currentCard.reflectionQuestion && (
-                                <blockquote className="max-w-prose border-l-2 border-ffie-accent pl-4 text-sm leading-relaxed text-ffie-ink">
-                                  {currentCard.reflectionQuestion}
-                                </blockquote>
-                              )}
+                      <label className="block space-y-2">
+                        <span className="text-sm font-medium text-ffie-ink">
+                          Where do you feel this tension yourself — in your work,
+                          your community, your own use of AI?
+                        </span>
+                        <textarea
+                          value={draft.reflectionText}
+                          onChange={(event) =>
+                            update({ reflectionText: event.target.value })
+                          }
+                          rows={3}
+                          className={FIELD}
+                          placeholder="A sentence or two is enough."
+                        />
+                      </label>
 
-                              <div className="flex gap-3">
-                                {oracleRevealIndex > 0 && (
-                                  <FfieButton
-                                    variant="secondary"
-                                    onClick={() =>
-                                      setOracleRevealIndex((i) => i - 1)
-                                    }
-                                  >
-                                    Back
-                                  </FfieButton>
-                                )}
-                                {(cardFlipped || isTransversalStep) && (
-                                  <FfieButton
-                                    onClick={() => {
-                                      if (isLastCard) {
-                                        setOracleRevealIndex(
-                                          ORACLE_REVEAL_SEQUENCE.length,
-                                        );
-                                      } else {
-                                        setOracleRevealIndex((i) => i + 1);
-                                      }
-                                    }}
-                                  >
-                                    {isLastCard ? "Continue" : "Next card"}
-                                  </FfieButton>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        }
-
-                        return (
-                          <>
-                            <OracleDrawRow
-                              hand={hand}
-                              sequenceIndex={4}
-                              cardFlipped
-                              onDraw={() => undefined}
-                            />
-                            <div className="mt-6 max-w-[560px]">
-                              <OracleCard
-                                card={hand.transversal}
-                                revealed
-                                className="!min-w-0 !flex-none !basis-full"
-                              >
-                                <OracleRevealedContent card={hand.transversal} />
-                              </OracleCard>
-                              <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.15em] text-[#2c8a52]">
-                                Always applied
-                              </p>
-                            </div>
-                            <div className="mt-6 rounded-xl border border-ffie-accent/20 bg-ffie-accent-soft p-4">
-                              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
-                                Combined tension
-                              </p>
-                              <p className="mt-2 text-sm font-medium text-ffie-ink">
-                                {draft.combinedTension}
-                              </p>
-                              <p className="mt-2 text-xs text-ffie-muted">
-                                Lens: {ENVIRONMENTAL_IMPACT_CARD.tension} —{" "}
-                                {ENVIRONMENTAL_IMPACT_CARD.description.slice(0, 120)}…
-                              </p>
-                            </div>
-                            <label className="mt-6 block space-y-2">
-                              <span className="text-sm font-medium text-ffie-ink">
-                                Where do you feel this tension yourself — in your
-                                work, your community, your own use of AI?
-                              </span>
-                              <textarea
-                                value={draft.reflectionText}
-                                onChange={(event) =>
-                                  update({ reflectionText: event.target.value })
-                                }
-                                rows={3}
-                                className={FIELD}
-                                placeholder="A sentence or two is enough."
-                              />
-                            </label>
-                            <div className="mt-6">
-                              <FfieButton
-                                disabled={!draft.reflectionText.trim()}
-                                onClick={() => goTo("creation", { creationStep: 0 })}
-                              >
-                                Build your future
-                              </FfieButton>
-                            </div>
-                          </>
-                        );
-                      })()}
-                    </>
+                      <FfieButton
+                        disabled={!draft.reflectionText.trim()}
+                        onClick={() => goTo("creation", { creationStep: 0 })}
+                      >
+                        Build your future
+                      </FfieButton>
+                    </div>
                   )}
                 </CreateStageShell>
               )}

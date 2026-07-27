@@ -18,6 +18,8 @@ type Props = {
   showTimeline?: boolean;
   /** Entry uses timeline only — no duplicate title block (Figma Entry frame). */
   headerMode?: "default" | "entry";
+  /** Full-bleed hero cover — no card chrome (Figma Screen0). */
+  variant?: "default" | "cover";
   children: React.ReactNode;
 };
 
@@ -28,20 +30,28 @@ export function CreateStageShell({
   subtitle,
   showTimeline = true,
   headerMode = "default",
+  variant = "default",
   children,
 }: Props) {
   const meta = STAGE_META[stage];
   const reduceMotion = useReducedMotion();
   const isEntry = headerMode === "entry";
+  const isCover = variant === "cover";
   const resolvedTitle = title ?? meta.title;
   const resolvedSubtitle = subtitle ?? meta.subtitle;
 
   return (
     <div
-      className="overflow-hidden rounded-2xl border border-ffie-line bg-ffie-bg shadow-[0_8px_32px_rgba(35,19,82,0.08)]"
-      style={{ borderTopWidth: 3, borderTopColor: meta.accentColor }}
+      className={
+        isCover
+          ? "overflow-hidden"
+          : "overflow-hidden rounded-2xl border border-ffie-line bg-ffie-bg shadow-[0_8px_32px_rgba(35,19,82,0.08)]"
+      }
+      style={
+        isCover ? undefined : { borderTopWidth: 3, borderTopColor: meta.accentColor }
+      }
     >
-      {showTimeline && (
+      {showTimeline && !isCover && (
         <div className="border-b border-ffie-line/50 bg-ffie-surface px-6 py-3 sm:px-10">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <PhaseTimeline current={stage} />
@@ -57,7 +67,7 @@ export function CreateStageShell({
         initial={reduceMotion ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="px-6 py-8 sm:px-10 sm:py-10"
+        className={isCover ? undefined : "px-6 py-8 sm:px-10 sm:py-10"}
       >
         {!isEntry && (
           <>

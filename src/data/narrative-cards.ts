@@ -8,6 +8,8 @@ export type NarrativeCard = {
   tension: string;
   examples: string[];
   reflectionQuestion: string;
+  /** Clause used in the Oracle Draw synthesis sentence (see oracle-synthesis.ts). */
+  synthesisPhrase: string;
   category: CardCategory;
   register: CardRegister;
   drawable: boolean;
@@ -26,6 +28,8 @@ export const ENVIRONMENTAL_IMPACT_CARD: NarrativeCard = {
   ],
   reflectionQuestion:
     "Where does the environmental cost of this artificial intelligence physically land — and who pays that cost up close?",
+  synthesisPhrase:
+    "extracting water, energy, and minerals at an unsustainable cost",
   category: "transversal",
   register: "tension",
   drawable: false,
@@ -45,6 +49,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What is lost when the same solution is applied to everyone, everywhere?",
+    synthesisPhrase:
+      "erasing cultural and biological diversity in the name of scale",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -62,6 +68,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "Where did the data that taught this AI come from — and who did it leave out?",
+    synthesisPhrase:
+      "amplifying the racism, sexism, and transphobia embedded in historical data",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -79,6 +87,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What has this person stopped knowing how to do alone, since they started trusting this AI?",
+    synthesisPhrase:
+      "losing the critical thinking this convenience quietly replaces",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -96,6 +106,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "Who is most vulnerable to the violence this technology can cause, even when that is not the design intent?",
+    synthesisPhrase:
+      "exposing women and children to deepfake-driven violence",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -113,6 +125,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "Who owns the infrastructure behind this AI, and who only gets to use what's left over?",
+    synthesisPhrase:
+      "concentrating data and power in a handful of Global North corporations",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -130,6 +144,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "Who had access to this opportunity only because they knew the right person?",
+    synthesisPhrase:
+      "informal networks that quietly gatekeep opportunity",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -147,6 +163,7 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What did this person lose professionally for having cared for someone?",
+    synthesisPhrase: "a career cost still charged for caregiving",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -164,6 +181,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What kind of harm has this person learned not to name, because it became \"normal\" in the environment where they work?",
+    synthesisPhrase:
+      "everyday violence this workplace has learned not to name",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -181,6 +200,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What happened to this company's equity commitment when it stopped being convenient?",
+    synthesisPhrase:
+      "an equity commitment dropped the moment it's inconvenient",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -198,6 +219,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What does this person need to hide about themselves to stay safe in this space?",
+    synthesisPhrase:
+      "an impossible choice between being recognized and being safe",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -215,6 +238,7 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "Who was already ahead, and got even further ahead, with this tool?",
+    synthesisPhrase: "boosting performance and output",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -232,6 +256,7 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What mental load did this tool take off someone's shoulders — and does that change anything structural, or only relieve it on the surface?",
+    synthesisPhrase: "lightening her invisible mental load",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -249,6 +274,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What can this person do now that they couldn't before — and what is still missing for that access to be truly guaranteed?",
+    synthesisPhrase:
+      "closing the access gap for those historically left out",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -266,6 +293,7 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "Which barrier does this technology actually remove, and which does it only disguise?",
+    synthesisPhrase: "making this space finally accessible to her",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -282,6 +310,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "Does this person trust the tool, or only the outcome — and is that the same thing?",
+    synthesisPhrase:
+      "results that have consistently proven reliable, even when the mechanism isn't fully understood",
     category: "trust",
     register: "potential",
     drawable: true,
@@ -299,6 +329,7 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What limit did this person set to keep trusting — and what would happen if that limit were removed?",
+    synthesisPhrase: "human oversight kept firmly in the loop",
     category: "trust",
     register: "potential",
     drawable: true,
@@ -316,6 +347,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "If this person doesn't trust, is it the technology — or whoever is behind it?",
+    synthesisPhrase:
+      "a deep mistrust of who built this and who profits from it lingers",
     category: "trust",
     register: "potential",
     drawable: true,
@@ -332,6 +365,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What values does this AI carry, even when it is presented as neutral?",
+    synthesisPhrase:
+      "the reminder that no algorithm is truly neutral lingers",
     category: "trust",
     register: "potential",
     drawable: true,
