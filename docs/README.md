@@ -26,6 +26,7 @@ All product, UX, and content specs for the FFIE digital product. Read these befo
 | [ffie_mvp_scope.md](./ffie_mvp_scope.md) | MoSCoW priorities |
 | [ffie_mvp_journey.md](./ffie_mvp_journey.md) | Create flow — Entry → Discovery (7 stages) |
 | [ffie_reference_research.md](./ffie_reference_research.md) | Comparable products + 7 design principles |
+| [supabase_setup.md](./supabase_setup.md) | Database + storage for Future Commons submissions |
 
 ## Reading order for Cursor
 
