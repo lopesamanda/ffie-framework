@@ -130,7 +130,7 @@ function CoverCardFace({
   );
 }
 
-function FanRevealedCard({ card }: { card: NarrativeCard }) {
+export function OracleFanRevealedCard({ card }: { card: NarrativeCard }) {
   const style = CATEGORY_STYLES[card.category];
   const label = ORACLE_CATEGORY_LABELS[card.category].toUpperCase();
 
@@ -295,7 +295,7 @@ export function OracleDeckFan({
                     animate={{ opacity: 1, scale: 1 }}
                     style={{ zIndex }}
                   >
-                    <FanRevealedCard card={currentCard} />
+                    <OracleFanRevealedCard card={currentCard} />
                   </motion.div>
                 );
               }

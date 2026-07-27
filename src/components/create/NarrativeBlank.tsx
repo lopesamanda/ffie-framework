@@ -5,6 +5,7 @@ type NarrativeBlankProps = {
   after?: string;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   inputMode?: "text" | "numeric";
   className?: string;
@@ -18,6 +19,7 @@ export function NarrativeBlank({
   after,
   value,
   onChange,
+  onBlur,
   placeholder,
   inputMode = "text",
   className = "",
@@ -34,6 +36,7 @@ export function NarrativeBlank({
         max={inputMode === "numeric" ? 120 : undefined}
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        onBlur={onBlur}
         placeholder={placeholder}
         className={BLANK}
         aria-label={placeholder ?? "Complete the sentence"}

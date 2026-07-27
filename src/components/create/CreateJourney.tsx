@@ -15,6 +15,10 @@ import {
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleCard, OracleRevealedContent } from "@/components/create/design/OracleCard";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
+import {
+  OracleDrawRecap,
+  OracleDrawReflectionPrompt,
+} from "@/components/create/design/OracleDrawRecap";
 import { OracleSynthesisCallout } from "@/components/create/design/OracleSynthesisCallout";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { MatrixReveal } from "@/components/create/MatrixReveal";
@@ -35,7 +39,6 @@ import {
 import {
   buildCombinedTension,
   drawWorkshopHand,
-  ENVIRONMENTAL_IMPACT_CARD,
 } from "@/data/narrative-cards";
 import {
   researchFindingsSeed,
@@ -376,55 +379,16 @@ export function CreateJourney() {
                     <div className="space-y-6">
                       <OracleSynthesisCallout hand={draft.cardHand} />
 
-                      <div className="max-w-[560px] space-y-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#2c8a52]">
-                            Environmental Impact
-                          </span>
-                          <span className="rounded-[3px] border border-[#2c8a52] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.08em] text-[#2c8a52]">
-                            Always applied
-                          </span>
-                        </div>
-                        <OracleCard
-                          card={draft.cardHand.transversal}
-                          revealed
-                          showRevealedLabel
-                          className="!min-w-0 !flex-none !basis-full"
-                        >
-                          <OracleRevealedContent
-                            card={draft.cardHand.transversal}
-                          />
-                        </OracleCard>
-                      </div>
+                      <OracleDrawRecap hand={draft.cardHand} />
 
-                      <div className="rounded-xl border border-ffie-accent/20 bg-ffie-accent-soft p-4">
-                        <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
-                          Combined tension
-                        </p>
-                        <p className="mt-2 text-sm font-medium text-ffie-ink">
-                          {draft.combinedTension}
-                        </p>
-                        <p className="mt-2 text-xs text-ffie-muted">
-                          Lens: {ENVIRONMENTAL_IMPACT_CARD.tension} —{" "}
-                          {ENVIRONMENTAL_IMPACT_CARD.description.slice(0, 120)}…
-                        </p>
-                      </div>
-
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium text-ffie-ink">
-                          Where do you feel this tension yourself — in your work,
-                          your community, your own use of AI?
-                        </span>
-                        <textarea
-                          value={draft.reflectionText}
-                          onChange={(event) =>
-                            update({ reflectionText: event.target.value })
-                          }
-                          rows={3}
-                          className={FIELD}
-                          placeholder="A sentence or two is enough."
-                        />
-                      </label>
+                      <OracleDrawReflectionPrompt
+                        hand={draft.cardHand}
+                        reflectionText={draft.reflectionText}
+                        onReflectionChange={(reflectionText) =>
+                          update({ reflectionText })
+                        }
+                        fieldClassName={FIELD}
+                      />
 
                       <FfieButton
                         disabled={!draft.reflectionText.trim()}

@@ -19,9 +19,8 @@ import {
   pronounsForSelection,
   verbFor,
 } from "@/lib/journey/character-pronouns";
+import { EmbodyTensionScreen } from "@/components/create/EmbodyTensionScreen";
 import { FfieButton } from "@/components/create/design/FfieButton";
-import { CreateNarrativeScene } from "@/components/create/design/CreateNarrativeScene";
-import { CardReferenceTag } from "@/components/create/CardReferenceTag";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
@@ -283,56 +282,12 @@ export function CharacterEmbodyStep({
 
       case 2:
         return (
-          <div className="space-y-6">
-            <CreateNarrativeScene>
-              {cardHand && (
-                <div className="mb-3 flex flex-wrap gap-2">
-                  <CardReferenceTag card={cardHand.benefit} />
-                </div>
-              )}
-              <NarrativeBlock className="border-0 bg-transparent p-0">
-                <NarrativeBlank
-                  before={
-                    cardHand
-                      ? `Because of ${cardHand.benefit.name}, ${p.subject} can finally `
-                      : `Because of what AI offers, ${p.subject} can finally `
-                  }
-                  after={` — but what did ${p.subject} have to give up, or give away, to get it?`}
-                  value={draft.aiFunction}
-                  onChange={(aiFunction) => onChange({ aiFunction })}
-                  placeholder="complete the sentence"
-                />
-              </NarrativeBlock>
-            </CreateNarrativeScene>
-
-            <NarrativeBlock>
-              <NarrativeBlank
-                before={`${p.subjectCap} still holds on to the hope that `}
-                after="."
-                value={draft.desire}
-                onChange={(desire) => onChange({ desire })}
-                placeholder="complete the sentence"
-              />
-            </NarrativeBlock>
-
-            <div className="space-y-4">
-              {cardHand && (
-                <div className="flex flex-wrap gap-2">
-                  <CardReferenceTag card={cardHand.risk} />
-                  <CardReferenceTag card={cardHand.barrier} />
-                </div>
-              )}
-              <NarrativeBlock>
-                <NarrativeBlank
-                  before={`What ${p.subject} fears most is that AI will `}
-                  after="."
-                  value={draft.fear}
-                  onChange={(fear) => onChange({ fear })}
-                  placeholder="complete the sentence"
-                />
-              </NarrativeBlock>
-            </div>
-          </div>
+          <EmbodyTensionScreen
+            draft={draft}
+            cardHand={cardHand}
+            p={p}
+            onChange={onChange}
+          />
         );
 
       case 3:
