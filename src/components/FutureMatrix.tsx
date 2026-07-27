@@ -12,6 +12,12 @@ import {
   type FutureEntry,
 } from "@/types/future";
 import { signedToUnit } from "@/lib/journey/types";
+import {
+  FFIE_CARD_TEXT,
+  ffieCardDivider,
+  ffieCardShell,
+  ffieCardTitle,
+} from "@/lib/card-layout";
 
 const PLOT = {
   padding: 72,
@@ -294,18 +300,19 @@ export function FutureGrid({ entries }: { entries: FutureEntry[] }) {
         <Link
           key={entry.id}
           href={`/explore/${entry.id}`}
-          className="rounded-2xl border border-ffie-line bg-ffie-surface p-5 transition hover:border-ffie-accent/30 hover:shadow-sm"
+          className={`px-[18px] py-4 transition hover:border-ffie-accent/30 hover:shadow-sm ${ffieCardShell} bg-ffie-surface`}
         >
           <span className="rounded-full bg-ffie-accent-soft px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ffie-accent">
             {QUADRANT_LABELS[entry.quadrant]}
           </span>
-          <h3 className="mt-3 text-lg font-semibold tracking-tight">
+          <h3 className={`mt-3 ${ffieCardTitle} text-lg ${FFIE_CARD_TEXT}`}>
             {entry.title}
           </h3>
-          <p className="mt-1 text-sm text-ffie-muted">
+          <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
             {entry.character.name} · {entry.artifact.name}
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-ffie-muted line-clamp-3">
+          <div className={`my-3 ${ffieCardDivider}`} />
+          <p className={`text-sm leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
             {entry.tension}
           </p>
         </Link>

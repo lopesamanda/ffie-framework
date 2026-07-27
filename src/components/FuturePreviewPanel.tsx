@@ -4,6 +4,7 @@ import {
   QUADRANT_LABELS,
   type FutureEntry,
 } from "@/types/future";
+import { FFIE_CARD_TEXT } from "@/lib/card-layout";
 
 export function FuturePreviewPanel({ entry }: { entry: FutureEntry }) {
   return (
@@ -27,11 +28,11 @@ export function FuturePreviewPanel({ entry }: { entry: FutureEntry }) {
         </p>
       </div>
 
-      <p className="text-sm leading-relaxed text-ffie-ink line-clamp-5">
+      <p className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
         {entry.narrative}
       </p>
 
-      <blockquote className="border-l-2 border-ffie-accent pl-3 text-sm italic text-ffie-muted">
+      <blockquote className={`border-l-2 border-ffie-accent pl-3 text-sm italic text-ffie-muted ${FFIE_CARD_TEXT}`}>
         {entry.reflectionQuestion}
       </blockquote>
 

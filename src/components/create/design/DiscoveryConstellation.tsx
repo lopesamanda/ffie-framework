@@ -4,6 +4,12 @@ import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import type { FutureEntry } from "@/types/future";
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
+import {
+  FFIE_CARD_TEXT,
+  ffieCardDivider,
+  ffieCardShell,
+  ffieCardTitle,
+} from "@/lib/card-layout";
 
 type Props = {
   futures: FutureEntry[];
@@ -41,7 +47,7 @@ export function DiscoveryConstellation({ futures }: Props) {
             initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: pos.scale }}
             transition={{ delay: index * 0.06, duration: 0.4 }}
-            className="absolute w-[min(240px,42vw)]"
+            className="absolute w-[min(260px,44vw)]"
             style={{
               left: pos.x,
               top: pos.y,
@@ -50,16 +56,19 @@ export function DiscoveryConstellation({ futures }: Props) {
           >
             <Link
               href={`/explore/${future.id}`}
-              className="block rounded-xl border border-ffie-line bg-ffie-surface p-4 shadow-[0_4px_16px_rgba(35,19,82,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(35,19,82,0.12)]"
+              className={`block px-[18px] py-4 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(35,19,82,0.12)] ${ffieCardShell} bg-ffie-surface`}
             >
               <QuadrantPill quadrant={future.quadrant} />
-              <p className="mt-2 font-display text-base font-bold text-ffie-ink">
+              <p className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}>
                 {future.title}
               </p>
               {future.artifact.publicPromise && (
-                <p className="mt-1 line-clamp-2 text-xs text-ffie-muted">
-                  {future.artifact.publicPromise}
-                </p>
+                <>
+                  <div className={`my-2 ${ffieCardDivider}`} />
+                  <p className={`text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                    {future.artifact.publicPromise}
+                  </p>
+                </>
               )}
             </Link>
           </motion.div>

@@ -13,7 +13,6 @@ import {
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleCard, OracleRevealedContent } from "@/components/create/design/OracleCard";
 import { OracleDrawRow } from "@/components/create/design/OracleDrawRow";
-import { NarrativeCardFace } from "@/components/create/NarrativeCardFace";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { MatrixReveal } from "@/components/create/MatrixReveal";
 import { LikertQuestion } from "@/components/create/LikertQuestion";
@@ -50,6 +49,13 @@ import {
   resolveArtifactValues,
 } from "@/lib/journey/artifact-options";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
+import {
+  FFIE_CARD_TEXT,
+  ffieCardCategory,
+  ffieCardDivider,
+  ffieCardShell,
+  ffieCardTitle,
+} from "@/lib/card-layout";
 import {
   buildAiImagePrompt,
   buildNarrative,
@@ -388,15 +394,16 @@ export function CreateJourney() {
                                 },
                           }}
                           onClick={() => setExploreEntryId(entry.id)}
-                          className="rounded-xl border border-ffie-line bg-ffie-surface p-4 text-left shadow-[0_4px_16px_rgba(35,19,82,0.06)] transition hover:-translate-y-0.5 hover:border-ffie-accent/30"
+                          className={`px-[18px] py-4 text-left transition hover:-translate-y-0.5 hover:border-ffie-accent/30 ${ffieCardShell} bg-ffie-surface`}
                         >
-                          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
+                          <p className={`${ffieCardCategory} text-ffie-accent`}>
                             Research Finding
                           </p>
-                          <h3 className="mt-2 font-display text-base font-bold text-ffie-ink">
+                          <h3 className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}>
                             {entry.title}
                           </h3>
-                          <p className="mt-1 line-clamp-2 text-sm text-ffie-muted">
+                          <div className={`my-3 ${ffieCardDivider}`} />
+                          <p className={`text-sm leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
                             {entry.tension}
                           </p>
                         </motion.button>
@@ -468,7 +475,6 @@ export function CreateJourney() {
                                     <OracleCard
                                       card={hand.transversal}
                                       revealed
-                                      autoHeight
                                       className="!min-w-0 !flex-none !basis-full"
                                     >
                                       <OracleRevealedContent card={hand.transversal} />
@@ -535,7 +541,6 @@ export function CreateJourney() {
                               <OracleCard
                                 card={hand.transversal}
                                 revealed
-                                autoHeight
                                 className="!min-w-0 !flex-none !basis-full"
                               >
                                 <OracleRevealedContent card={hand.transversal} />
@@ -832,7 +837,7 @@ export function CreateJourney() {
                   )}
 
                   {draft.creationStep === 6 && (
-                    <div className="space-y-5">
+                    <div className="w-full min-w-0 space-y-5">
                       <p className="text-sm text-ffie-muted">
                         Two questions place this future on the Critical Feminist
                         Matrix — no dragging, no numbers.

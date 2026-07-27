@@ -4,6 +4,13 @@ import {
   AI_CAPABILITY_CARDS,
   type AiCapabilityCard,
 } from "@/data/ai-capability-cards";
+import {
+  FFIE_CARD_TEXT,
+  ffieCardCategory,
+  ffieCardDescription,
+  ffieCardShell,
+  ffieCardTitle,
+} from "@/lib/card-layout";
 
 export function AiCapabilityCardPicker({
   value,
@@ -42,21 +49,19 @@ function CapabilityCard({
     <button
       type="button"
       onClick={onSelect}
-      className="rounded-xl border border-ffie-line bg-ffie-bg/40 p-4 text-left transition hover:border-slate-400/50 hover:bg-ffie-surface"
-      style={{ borderTopWidth: 3, borderTopColor: card.color }}
+      className={`px-[18px] py-4 text-left transition hover:border-ffie-accent/40 hover:bg-ffie-surface ${ffieCardShell} border-t-[3px] bg-ffie-bg/40`}
+      style={{ borderTopColor: card.color }}
     >
-      <p className="text-[10px] font-medium uppercase tracking-wide text-slate-500">
-        Capacidade de IA
-      </p>
-      <h4 className="mt-1 text-sm font-semibold text-ffie-ink">{card.name}</h4>
-      <p className="mt-1.5 text-xs leading-relaxed text-ffie-muted">
+      <p className={`${ffieCardCategory} text-ffie-muted`}>AI capability</p>
+      <h4 className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}>{card.name}</h4>
+      <p className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}>
         {card.description}
       </p>
       <div className="mt-2 flex flex-wrap gap-1">
         {card.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600"
+            className="rounded-full bg-ffie-bg px-2 py-0.5 text-[10px] text-ffie-muted"
           >
             {tag}
           </span>

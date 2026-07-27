@@ -1,6 +1,7 @@
 "use client";
 
 import type { LikertScore } from "@/lib/journey/types";
+import { FFIE_CARD_TEXT } from "@/lib/card-layout";
 
 const SCORES: LikertScore[] = [1, 2, 3, 4, 5];
 
@@ -19,16 +20,22 @@ export function LikertQuestion({
   value,
   onChange,
 }: LikertQuestionProps) {
+  const questionId = `likert-${question.slice(0, 24).replace(/\W+/g, "-")}`;
+
   return (
-    <fieldset className="space-y-4 rounded-xl border border-ffie-line bg-ffie-surface p-5 shadow-[0_2px_8px_rgba(35,19,82,0.04)]">
-      <legend className="px-1 text-sm font-medium leading-relaxed text-ffie-ink">
+    <fieldset className="w-full min-w-0 space-y-4 rounded-[12px] border border-ffie-line bg-ffie-surface p-5 shadow-[0_2px_8px_rgba(35,19,82,0.04)]">
+      <legend className="sr-only">{question}</legend>
+      <p
+        id={questionId}
+        className={`text-sm font-medium leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
+      >
         {question}
-      </legend>
+      </p>
 
       <div
-        className="flex justify-between gap-2"
+        className="flex w-full min-w-0 flex-wrap justify-center gap-2 sm:justify-between sm:gap-1"
         role="radiogroup"
-        aria-label={question}
+        aria-labelledby={questionId}
       >
         {SCORES.map((score) => {
           const selected = value === score;
@@ -39,7 +46,7 @@ export function LikertQuestion({
               role="radio"
               aria-checked={selected}
               onClick={() => onChange(score)}
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border text-sm font-semibold transition ${
+              className={`flex h-11 min-w-[2.75rem] flex-1 items-center justify-center rounded-full border text-sm font-semibold transition sm:flex-none sm:basis-11 ${
                 selected
                   ? "border-ffie-ink bg-ffie-ink text-ffie-bg shadow-[0_2px_6px_rgba(35,19,82,0.2)]"
                   : "border-ffie-line bg-ffie-bg text-ffie-muted hover:border-ffie-accent/40 hover:text-ffie-ink"
@@ -51,9 +58,9 @@ export function LikertQuestion({
         })}
       </div>
 
-      <div className="flex justify-between gap-4 text-xs text-ffie-muted">
-        <span className="max-w-[45%]">1 — {lowLabel}</span>
-        <span className="max-w-[45%] text-right">5 — {highLabel}</span>
+      <div className="grid w-full min-w-0 grid-cols-2 gap-3 text-xs leading-snug text-ffie-muted">
+        <span className={`text-left ${FFIE_CARD_TEXT}`}>1 — {lowLabel}</span>
+        <span className={`text-right ${FFIE_CARD_TEXT}`}>5 — {highLabel}</span>
       </div>
     </fieldset>
   );

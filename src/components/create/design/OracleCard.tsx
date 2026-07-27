@@ -8,6 +8,18 @@ import {
   ORACLE_CATEGORY_ICONS,
   ORACLE_CATEGORY_LABELS,
 } from "@/lib/category-styles";
+import {
+  FFIE_CARD,
+  FFIE_CARD_TEXT,
+  ffieCardBody,
+  ffieCardCategory,
+  ffieCardDescription,
+  ffieCardDivider,
+  ffieCardSectionLabel,
+  ffieCardShell,
+  ffieCardTension,
+  ffieCardTitle,
+} from "@/lib/card-layout";
 
 type OracleCardProps = {
   card: NarrativeCard;
@@ -20,8 +32,6 @@ type OracleCardProps = {
   onDraw?: () => void;
   className?: string;
   children?: React.ReactNode;
-  /** Allow card to grow beyond the fixed Oracle row height (e.g. Environmental Impact). */
-  autoHeight?: boolean;
 };
 
 export function OracleCard({
@@ -32,7 +42,6 @@ export function OracleCard({
   onDraw,
   className = "",
   children,
-  autoHeight = false,
 }: OracleCardProps) {
   const style = CATEGORY_STYLES[card.category];
   const reduceMotion = useReducedMotion();
@@ -52,7 +61,7 @@ export function OracleCard({
           }}
         >
           <span
-            className="text-center text-[11px] font-bold uppercase leading-snug tracking-[0.15em]"
+            className={`text-center text-[11px] font-bold uppercase leading-snug tracking-[0.15em] ${FFIE_CARD_TEXT}`}
             style={{ color: style.coverText }}
           >
             {label}
@@ -74,23 +83,17 @@ export function OracleCard({
         initial={reduceMotion ? false : { rotateY: -88, opacity: 0.6 }}
         animate={{ rotateY: 0, opacity: 1 }}
         transition={{ duration: 0.42, ease: "easeOut" }}
-        className="flex w-full flex-col overflow-hidden rounded-[12px] border-2 border-[rgba(35,19,82,0.07)] bg-white shadow-[0_2px_8px_rgba(35,19,82,0.06)]"
-        style={
-          autoHeight
-            ? { minHeight: ORACLE_CARD.height }
-            : { height: ORACLE_CARD.height }
-        }
+        className={`flex w-full flex-col ${ffieCardShell}`}
+        style={{ minHeight: FFIE_CARD.minHeight }}
       >
         <div
           className="shrink-0"
           style={{
-            height: ORACLE_CARD.accentBar,
+            height: FFIE_CARD.accentBar,
             backgroundColor: style.text,
           }}
         />
-        <div className="flex min-h-0 flex-1 flex-col px-[18px] pb-[16px] pt-[12px]">
-          {children}
-        </div>
+        <div className={`flex flex-col ${ffieCardBody}`}>{children}</div>
       </motion.div>
       {showRevealedLabel && (
         <p
@@ -119,33 +122,24 @@ export function OracleRevealedContent({ card }: { card: NarrativeCard }) {
         >
           {icon}
         </span>
-        <span
-          className="text-[10px] font-medium uppercase tracking-[0.15em]"
-          style={{ color: style.text }}
-        >
+        <span className={ffieCardCategory} style={{ color: style.text }}>
           {label}
         </span>
       </div>
 
-      <h3 className="mt-2 font-display text-[15px] font-bold leading-[1.25] text-[#231352]">
-        {card.name}
-      </h3>
+      <h3 className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}>{card.name}</h3>
 
-      <div className="my-3 h-px w-full bg-[rgba(35,19,82,0.08)]" />
+      <div className={`my-3 ${ffieCardDivider}`} />
 
-      <p className="text-[12px] italic leading-[19.2px] text-[rgba(35,19,82,0.55)]">
+      <p className={`${ffieCardDescription} ${FFIE_CARD_TEXT}`}>
         &ldquo;{card.description}&rdquo;
       </p>
 
-      <div className="min-h-[24px] flex-1" aria-hidden />
+      <div className={`my-3 ${ffieCardDivider}`} />
 
-      <div className="h-px w-full bg-[rgba(35,19,82,0.08)]" />
-
-      <p className="mt-3 text-[10px] font-medium uppercase tracking-[0.15em] text-[#231352]">
-        Tension
-      </p>
+      <p className={ffieCardSectionLabel}>Tension</p>
       <p
-        className="mt-1 text-[11px] font-bold leading-snug"
+        className={`mt-1 ${ffieCardTension} ${FFIE_CARD_TEXT}`}
         style={{ color: style.text }}
       >
         {card.tension}

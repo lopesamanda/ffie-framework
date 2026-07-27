@@ -1,5 +1,12 @@
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
+import {
+  FFIE_CARD_TEXT,
+  ffieCardDivider,
+  ffieCardSectionLabel,
+  ffieCardShell,
+  ffieCardTitle,
+} from "@/lib/card-layout";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
@@ -29,9 +36,7 @@ export function FutureCardPreview({
   return (
     <div
       id={id}
-      className={`rounded-2xl border border-ffie-line bg-ffie-surface shadow-[0_4px_16px_rgba(35,19,82,0.08)] ${
-        compact ? "p-5" : "p-6"
-      }`}
+      className={`${ffieCardShell} bg-ffie-surface ${compact ? "p-5" : "p-6"}`}
     >
       <div className="flex flex-wrap items-center gap-2">
         <QuadrantPill quadrant={quadrant} />
@@ -40,12 +45,12 @@ export function FutureCardPreview({
         )}
       </div>
 
-      <h3 className="mt-4 font-display text-xl font-bold tracking-tight text-ffie-ink">
+      <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
         {title}
       </h3>
 
       {(draft.characterName || draft.role) && (
-        <p className="mt-1 text-sm text-ffie-muted">
+        <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
           {[
             draft.characterName,
             draft.characterAge ? `${draft.characterAge}` : null,
@@ -57,32 +62,35 @@ export function FutureCardPreview({
       )}
 
       {draft.narrative && (
-        <p className="mt-4 text-sm leading-relaxed text-ffie-ink">
-          {draft.narrative}
-        </p>
+        <>
+          <div className={`my-4 ${ffieCardDivider}`} />
+          <p className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
+            {draft.narrative}
+          </p>
+        </>
       )}
 
       {draft.combinedTension && (
-        <p className="mt-3 text-sm font-medium italic text-ffie-accent">
+        <p className={`mt-3 text-sm font-medium italic text-ffie-accent ${FFIE_CARD_TEXT}`}>
           {draft.combinedTension}
         </p>
       )}
 
       {(draft.publicPromise || draft.hiddenFunction) && (
         <div className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}>
-          <div className="rounded-lg bg-[#f6f4ff] p-4">
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
+          <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
+            <p className={ffieCardSectionLabel + " text-ffie-accent"}>
               Day to day
             </p>
-            <p className="mt-1 text-ffie-ink">
+            <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
               {draft.publicPromise || "—"}
             </p>
           </div>
-          <div className="rounded-lg bg-[#fdf1ee] p-4">
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#c8472a]">
+          <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
+            <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
               Hidden function
             </p>
-            <p className="mt-1 text-ffie-ink">
+            <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
               {draft.hiddenFunction || "—"}
             </p>
           </div>
@@ -107,7 +115,7 @@ export function FutureCardPreview({
         <img
           src={draft.imageDataUrl}
           alt="Uploaded artifact"
-          className="mt-4 max-h-48 w-full rounded-lg object-cover"
+          className="mt-4 max-h-48 w-full rounded-[12px] object-cover"
         />
       )}
 
@@ -120,12 +128,12 @@ function CardProvenance({ hand }: { hand: CardHand }) {
   const cards = [hand.risk, hand.benefit, hand.trust, hand.barrier, hand.transversal];
   return (
     <div className="mt-4 border-t border-ffie-line pt-4">
-      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+      <p className={ffieCardSectionLabel + " text-ffie-muted"}>
         Card provenance
       </p>
       <ul className="mt-2 space-y-1 text-xs text-ffie-muted">
         {cards.map((card) => (
-          <li key={card.id}>
+          <li key={card.id} className={FFIE_CARD_TEXT}>
             {card.name} — <span className="italic">{card.tension}</span>
           </li>
         ))}

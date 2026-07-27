@@ -1,5 +1,11 @@
 import { CATEGORY_STYLES } from "@/lib/category-styles";
 import type { CardCategory } from "@/data/narrative-cards";
+import {
+  FFIE_CARD_TEXT,
+  ffieCardCategory,
+  ffieCardDescription,
+  ffieCardTintedShell,
+} from "@/lib/card-layout";
 
 const REGISTER: {
   category: CardCategory;
@@ -36,19 +42,16 @@ export function CategoryRegisterTiles() {
         return (
           <div
             key={category}
-            className="rounded-xl border-2 p-4"
-            style={{
-              backgroundColor: style.bg,
-              borderColor: style.border,
-            }}
+            className="px-[18px] py-4"
+            style={ffieCardTintedShell(style.border, style.bg)}
           >
             <p
-              className="font-display text-sm font-bold"
+              className={`${ffieCardCategory} font-display font-bold`}
               style={{ color: style.text }}
             >
               {title}
             </p>
-            <p className="mt-1 text-xs leading-relaxed text-ffie-muted">
+            <p className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}>
               {description}
             </p>
           </div>
@@ -62,24 +65,21 @@ export function EnvironmentalBanner() {
   const style = CATEGORY_STYLES.transversal;
   return (
     <div
-      className="mt-4 flex items-start gap-3 rounded-xl border px-4 py-3"
-      style={{
-        backgroundColor: style.bg,
-        borderColor: style.border,
-      }}
+      className="mt-4 flex items-start gap-3 px-[18px] py-4"
+      style={ffieCardTintedShell(style.border, style.bg)}
     >
       <span
         className="mt-0.5 size-2 shrink-0 rounded-full"
         style={{ backgroundColor: style.text }}
       />
-      <div>
+      <div className="min-w-0">
         <p
-          className="font-display text-sm font-bold"
+          className={`${ffieCardCategory} font-display font-bold`}
           style={{ color: style.text }}
         >
           Environmental Impact — always applied
         </p>
-        <p className="mt-0.5 text-xs text-ffie-muted">
+        <p className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}>
           This lens is never drawn from the deck. It is woven into every future
           you build.
         </p>
