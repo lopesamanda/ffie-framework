@@ -33,17 +33,12 @@ function benefitPhrase(benefit: NarrativeCard, openerIndex: number): string {
   return benefit.synthesisPhrase;
 }
 
-function trustClause(trust: NarrativeCard): { connector: string; phrase: string } {
+/** Trust closes the sentence as a collective anchor — not a passive trailing reflection. */
+function trustAnchor(trust: NarrativeCard): string {
   if (POSITIVE_TRUST_IDS.has(trust.id)) {
-    return {
-      connector: "because",
-      phrase: `${trust.synthesisPhrase} holds this transformation together`,
-    };
+    return `communities sustain ${trust.synthesisPhrase} as the collective condition holding this transformation together`;
   }
-  return {
-    connector: "even as",
-    phrase: trust.synthesisPhrase,
-  };
+  return `communities keep ${trust.synthesisPhrase} as a consciousness anchor that must stay in the room`;
 }
 
 export function buildOracleSynthesis(
@@ -53,7 +48,7 @@ export function buildOracleSynthesis(
   const benefit = benefitPhrase(hand.benefit, benefitOpenerIndex(hand.benefit));
   const barrier = hand.barrier.synthesisPhrase;
   const risk = hand.risk.synthesisPhrase;
-  const { connector, phrase: trustPhrase } = trustClause(hand.trust);
+  const anchor = trustAnchor(hand.trust);
 
   if (mode === "direct") {
     const connectorDirect = POSITIVE_TRUST_IDS.has(hand.trust.id)
@@ -67,11 +62,11 @@ export function buildOracleSynthesis(
 
   switch (openerIndex) {
     case 1:
-      return `In the near future, people in this innovation ecosystem will be able to ${benefitA}, even while navigating ${barrier} — ${connector} ${trustPhrase}, they won't have to accept ${risk}.`;
+      return `In the near future, people in this innovation ecosystem will be able to ${benefitA}, amid ${barrier}, refusing to accept ${risk} — a future where ${anchor}.`;
     case 2:
-      return `We follow the transition where this innovation ecosystem moves toward ${benefit}, even while navigating ${barrier} — ${connector} ${trustPhrase}, without having to accept ${risk}.`;
+      return `We follow the transition where this innovation ecosystem moves toward ${benefit}, amid ${barrier}, refusing to accept ${risk} — a transition where ${anchor}.`;
     default:
-      return `We project a scenario where people in this future innovation ecosystem can ${benefitA}, even while navigating ${barrier} — a scenario where they don't have to accept ${risk}, ${connector} ${trustPhrase}.`;
+      return `We project a scenario where people in this future innovation ecosystem can ${benefitA}, amid ${barrier}, refusing to accept ${risk} — a scenario where ${anchor}.`;
   }
 }
 

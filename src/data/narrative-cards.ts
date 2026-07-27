@@ -320,7 +320,7 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     reflectionQuestion:
       "Does this person trust the tool, or only the outcome — and is that the same thing?",
     synthesisPhrase:
-      "results that have consistently proven reliable, even when the mechanism isn't fully understood",
+      "trust in results that have consistently proven reliable, even when the mechanism isn't fully understood",
     category: "trust",
     register: "potential",
     drawable: true,
@@ -357,7 +357,7 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     reflectionQuestion:
       "If this person doesn't trust, is it the technology — or whoever is behind it?",
     synthesisPhrase:
-      "a deep mistrust of who built this and who profits from it lingers",
+      "a deep mistrust of who built this and who profits from it",
     category: "trust",
     register: "potential",
     drawable: true,
@@ -374,8 +374,7 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What values does this AI carry, even when it is presented as neutral?",
-    synthesisPhrase:
-      "the reminder that no algorithm is truly neutral lingers",
+    synthesisPhrase: "the reminder that no algorithm is truly neutral",
     category: "trust",
     register: "potential",
     drawable: true,
