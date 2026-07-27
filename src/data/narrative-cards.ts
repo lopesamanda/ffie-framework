@@ -10,6 +10,8 @@ export type NarrativeCard = {
   reflectionQuestion: string;
   /** Clause used in the Oracle Draw synthesis sentence (see oracle-synthesis.ts). */
   synthesisPhrase: string;
+  /** Opener C (transition) form — used on benefit cards when grammar needs a gerund phrase. */
+  synthesisPhraseTransition?: string;
   category: CardCategory;
   register: CardRegister;
   drawable: boolean;
@@ -182,7 +184,7 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     reflectionQuestion:
       "What kind of harm has this person learned not to name, because it became \"normal\" in the environment where they work?",
     synthesisPhrase:
-      "everyday violence this workplace has learned not to name",
+      "everyday violence workplaces have learned not to name",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -238,7 +240,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "Who was already ahead, and got even further ahead, with this tool?",
-    synthesisPhrase: "boosting performance and output",
+    synthesisPhrase: "boost performance and output",
+    synthesisPhraseTransition: "boosting performance and output",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -256,7 +259,9 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "What mental load did this tool take off someone's shoulders — and does that change anything structural, or only relieve it on the surface?",
-    synthesisPhrase: "lightening her invisible mental load",
+    synthesisPhrase: "lighten the invisible mental load teams carry",
+    synthesisPhraseTransition:
+      "lightening the invisible mental load teams carry",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -275,6 +280,8 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     reflectionQuestion:
       "What can this person do now that they couldn't before — and what is still missing for that access to be truly guaranteed?",
     synthesisPhrase:
+      "close the access gap for those historically left out",
+    synthesisPhraseTransition:
       "closing the access gap for those historically left out",
     category: "benefit",
     register: "potential",
@@ -293,7 +300,9 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     ],
     reflectionQuestion:
       "Which barrier does this technology actually remove, and which does it only disguise?",
-    synthesisPhrase: "making this space finally accessible to her",
+    synthesisPhrase: "finally access spaces that once excluded them",
+    synthesisPhraseTransition:
+      "finally accessing spaces that once excluded people",
     category: "benefit",
     register: "potential",
     drawable: true,

@@ -83,13 +83,10 @@ function CapabilityCard({
         <h4 className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}>
           {card.name}
         </h4>
-        <p className={`mt-1.5 text-[10px] leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
-          {card.tags.join(" · ")}
-        </p>
         <p
-          className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}
+          className={`mt-1.5 text-[10px] leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
         >
-          {card.description}
+          {card.tags.join(" · ")}
         </p>
         <span className="mt-2 inline-block text-xs font-medium text-ffie-accent">
           {expanded ? "Hide prompts ↑" : "Show example & prompts ↓"}
@@ -99,6 +96,9 @@ function CapabilityCard({
       {expanded && (
         <div className="mt-3 space-y-3">
           <div className={ffieCardDivider} />
+          <p className={`${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}>
+            {card.description}
+          </p>
           <div>
             <p className={`${ffieCardCategory} text-ffie-muted`}>
               Example (for inspiration only)

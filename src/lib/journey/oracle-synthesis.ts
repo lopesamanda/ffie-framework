@@ -1,4 +1,7 @@
-import type { NarrativeCard } from "@/data/narrative-cards";
+import {
+  NARRATIVE_CARDS,
+  type NarrativeCard,
+} from "@/data/narrative-cards";
 import type { CardHand } from "@/lib/journey/types";
 
 export type SynthesisMode = "narrative" | "direct";
@@ -14,30 +17,62 @@ const POSITIVE_TRUST_IDS = new Set([
   "conditional-trust",
 ]);
 
-function trustConnectorNarrative(trust: NarrativeCard): string {
-  return POSITIVE_TRUST_IDS.has(trust.id) ? "supported by" : "even as";
+const BENEFIT_CARDS = NARRATIVE_CARDS.filter(
+  (card) => card.category === "benefit" && card.drawable,
+);
+
+function benefitOpenerIndex(benefit: NarrativeCard): number {
+  const index = BENEFIT_CARDS.findIndex((card) => card.id === benefit.id);
+  return (index >= 0 ? index : 0) % 3;
 }
 
-function trustConnectorDirect(trust: NarrativeCard): string {
-  return POSITIVE_TRUST_IDS.has(trust.id) ? "mitigated by" : "despite";
+function benefitPhrase(benefit: NarrativeCard, openerIndex: number): string {
+  if (openerIndex === 2 && benefit.synthesisPhraseTransition) {
+    return benefit.synthesisPhraseTransition;
+  }
+  return benefit.synthesisPhrase;
+}
+
+function trustClause(trust: NarrativeCard): { connector: string; phrase: string } {
+  if (POSITIVE_TRUST_IDS.has(trust.id)) {
+    return {
+      connector: "because",
+      phrase: `${trust.synthesisPhrase} holds this transformation together`,
+    };
+  }
+  return {
+    connector: "even as",
+    phrase: trust.synthesisPhrase,
+  };
 }
 
 export function buildOracleSynthesis(
   hand: Pick<CardHand, "benefit" | "barrier" | "risk" | "trust">,
   mode: SynthesisMode = SYNTHESIS_MODE,
 ): string {
-  const benefit = hand.benefit.synthesisPhrase;
+  const benefit = benefitPhrase(hand.benefit, benefitOpenerIndex(hand.benefit));
   const barrier = hand.barrier.synthesisPhrase;
   const risk = hand.risk.synthesisPhrase;
-  const trust = hand.trust.synthesisPhrase;
+  const { connector, phrase: trustPhrase } = trustClause(hand.trust);
 
   if (mode === "direct") {
-    const connector = trustConnectorDirect(hand.trust);
-    return `This future pursues ${benefit}, while confronting ${barrier}. The risk to watch for is ${risk}, ${connector} ${trust}.`;
+    const connectorDirect = POSITIVE_TRUST_IDS.has(hand.trust.id)
+      ? "mitigated by"
+      : "despite";
+    return `This future pursues ${hand.benefit.synthesisPhrase}, while confronting ${barrier}. The risk to watch for is ${risk}, ${connectorDirect} ${hand.trust.synthesisPhrase}.`;
   }
 
-  const connector = trustConnectorNarrative(hand.trust);
-  return `We can work toward ${benefit}, even while facing ${barrier}, as long as we avoid ${risk} — ${connector} ${trust}.`;
+  const openerIndex = benefitOpenerIndex(hand.benefit);
+  const benefitA = hand.benefit.synthesisPhrase;
+
+  switch (openerIndex) {
+    case 1:
+      return `In the near future, people in this innovation ecosystem will be able to ${benefitA}, even while navigating ${barrier} — ${connector} ${trustPhrase}, they won't have to accept ${risk}.`;
+    case 2:
+      return `We follow the transition where this innovation ecosystem moves toward ${benefit}, even while navigating ${barrier} — ${connector} ${trustPhrase}, without having to accept ${risk}.`;
+    default:
+      return `We project a scenario where people in this future innovation ecosystem can ${benefitA}, even while navigating ${barrier} — a scenario where they don't have to accept ${risk}, ${connector} ${trustPhrase}.`;
+  }
 }
 
 /** True once Benefit, Risk, Trust, and Barrier are all face-up in the Oracle row. */
