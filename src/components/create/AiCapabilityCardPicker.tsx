@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   AI_CAPABILITY_CARDS,
   type AiCapabilityCard,
 } from "@/data/ai-capability-cards";
+import type { ArtifactTypeId } from "@/lib/journey/character-options";
+import { orderCapabilityCardsForArtifact } from "@/lib/journey/artifact-capability-priorities";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
@@ -25,26 +27,101 @@ const INTRO: Record<AiCapabilityContext, string> = {
 
 export function AiCapabilityCardPicker({
   context = "embody",
+  artifactType = "",
 }: {
   context?: AiCapabilityContext;
+  artifactType?: ArtifactTypeId | "";
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const { prioritized, other } = useMemo(
+    () =>
+      context === "artifact"
+        ? orderCapabilityCardsForArtifact(artifactType)
+        : { prioritized: [] as AiCapabilityCard[], other: [...AI_CAPABILITY_CARDS] },
+    [context, artifactType],
+  );
+
+  const showGroups = context === "artifact" && artifactType && prioritized.length > 0;
 
   return (
     <div className="space-y-3">
       <p className="text-xs leading-relaxed text-ffie-muted">{INTRO[context]}</p>
+
+      {showGroups ? (
+        <div className="space-y-5">
+          <CapabilityGroup
+            label="Suggested for this artifact type"
+            cards={prioritized}
+            context={context}
+            expandedId={expandedId}
+            onToggle={(id) =>
+              setExpandedId((current) => (current === id ? null : id))
+            }
+            highlighted
+          />
+          {other.length > 0 && (
+            <CapabilityGroup
+              label="Other capabilities"
+              cards={other}
+              context={context}
+              expandedId={expandedId}
+              onToggle={(id) =>
+                setExpandedId((current) => (current === id ? null : id))
+              }
+            />
+          )}
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {AI_CAPABILITY_CARDS.map((card) => (
+            <CapabilityCard
+              key={card.id}
+              card={card}
+              context={context}
+              expanded={expandedId === card.id}
+              onToggle={() =>
+                setExpandedId((current) =>
+                  current === card.id ? null : card.id,
+                )
+              }
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CapabilityGroup({
+  label,
+  cards,
+  context,
+  expandedId,
+  onToggle,
+  highlighted = false,
+}: {
+  label: string;
+  cards: AiCapabilityCard[];
+  context: AiCapabilityContext;
+  expandedId: string | null;
+  onToggle: (id: string) => void;
+  highlighted?: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+        {label}
+      </p>
       <div className="grid gap-3 sm:grid-cols-2">
-        {AI_CAPABILITY_CARDS.map((card) => (
+        {cards.map((card) => (
           <CapabilityCard
             key={card.id}
             card={card}
             context={context}
             expanded={expandedId === card.id}
-            onToggle={() =>
-              setExpandedId((current) =>
-                current === card.id ? null : card.id,
-              )
-            }
+            onToggle={() => onToggle(card.id)}
+            highlighted={highlighted}
           />
         ))}
       </div>
@@ -57,11 +134,13 @@ function CapabilityCard({
   context,
   expanded,
   onToggle,
+  highlighted = false,
 }: {
   card: AiCapabilityCard;
   context: AiCapabilityContext;
   expanded: boolean;
   onToggle: () => void;
+  highlighted?: boolean;
 }) {
   const questions =
     context === "artifact"
@@ -70,7 +149,9 @@ function CapabilityCard({
 
   return (
     <div
-      className={`${ffieCardShell} border-t-[3px] bg-ffie-bg/40 px-[18px] py-4`}
+      className={`${ffieCardShell} border-t-[3px] bg-ffie-bg/40 px-[18px] py-4 ${
+        highlighted ? "ring-1 ring-ffie-accent/35" : ""
+      }`}
       style={{ borderTopColor: card.color }}
     >
       <button
@@ -83,11 +164,6 @@ function CapabilityCard({
         <h4 className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}>
           {card.name}
         </h4>
-        <p
-          className={`mt-1.5 text-[10px] font-medium leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
-        >
-          {card.description}
-        </p>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           {card.tags.map((tag) => (
             <span

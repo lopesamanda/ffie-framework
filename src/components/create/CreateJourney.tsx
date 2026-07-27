@@ -439,11 +439,7 @@ export function CreateJourney() {
                         }
                       }}
                       onShuffle={handleShuffleCards}
-                      environmentalCard={
-                        <EnvironmentalImpactBadge
-                          card={draft.cardHand.transversal}
-                        />
-                      }
+                      environmentalCard={<EnvironmentalImpactBadge />}
                     />
                   )}
                 </CreateStageShell>
@@ -538,41 +534,28 @@ export function CreateJourney() {
                         const guideName =
                           draft.characterName.trim() || p.subject;
 
-                        if (draft.dayToDaySubStep === 0) {
-                          return (
-                            <>
-                              <div className="flex flex-wrap gap-3">
-                                <OracleFanRevealedCard card={draft.cardHand.benefit} />
-                                <OracleFanRevealedCard card={draft.cardHand.trust} />
-                              </div>
-                              <NarrativeBlock className="border-0 bg-transparent p-0">
-                                <NarrativeTextarea
-                                  before={`Every day, in ${p.possessive} role as ${role}, ${who} lets ${artifact} do this:`}
-                                  value={draft.publicPromise}
-                                  onChange={(publicPromise) =>
-                                    update({ publicPromise })
-                                  }
-                                  placeholder={`Describe what it does, day to day — what ${guideName} sees, touches, or relies on because of it.`}
-                                  rows={6}
-                                />
-                              </NarrativeBlock>
-                              <AiCapabilityCardPicker context="artifact" />
-                            </>
-                          );
-                        }
-
                         return (
-                          <NarrativeBlock className="border-0 bg-transparent p-0">
-                            <NarrativeTextarea
-                              before={`What does ${p.subject} gain from it — and what does ${p.subject} quietly stop questioning because of it?`}
-                              value={draft.dayToDayReflection}
-                              onChange={(dayToDayReflection) =>
-                                update({ dayToDayReflection })
-                              }
-                              placeholder="A sentence or two is enough."
-                              rows={4}
+                          <>
+                            <div className="flex flex-wrap gap-3">
+                              <OracleFanRevealedCard card={draft.cardHand.benefit} />
+                              <OracleFanRevealedCard card={draft.cardHand.trust} />
+                            </div>
+                            <NarrativeBlock className="border-0 bg-transparent p-0">
+                              <NarrativeTextarea
+                                before={`Every day, in ${p.possessive} role as ${role}, ${who} lets ${artifact} do this:`}
+                                value={draft.publicPromise}
+                                onChange={(publicPromise) =>
+                                  update({ publicPromise })
+                                }
+                                placeholder={`Describe what it does, day to day — what ${guideName} sees, touches, or relies on because of it.`}
+                                rows={6}
+                              />
+                            </NarrativeBlock>
+                            <AiCapabilityCardPicker
+                              context="artifact"
+                              artifactType={draft.artifactType}
                             />
-                          </NarrativeBlock>
+                          </>
                         );
                       })()}
                     </CreateNarrativeScene>
@@ -625,11 +608,6 @@ export function CreateJourney() {
                           <p className="mt-1 text-ffie-ink">
                             {draft.publicPromise || "—"}
                           </p>
-                          {draft.dayToDayReflection && (
-                            <p className="mt-2 text-sm italic text-ffie-muted">
-                              {draft.dayToDayReflection}
-                            </p>
-                          )}
                         </div>
                         <div>
                           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
@@ -729,20 +707,12 @@ export function CreateJourney() {
                       <FfieButton
                         variant="secondary"
                         onClick={() => {
-                          if (
-                            draft.creationStep === 2 &&
-                            draft.dayToDaySubStep === 1
-                          ) {
-                            update({ dayToDaySubStep: 0 });
-                            return;
-                          }
                           const nextStep = draft.creationStep - 1;
                           update({
                             creationStep: nextStep,
                             ...(nextStep === 0
                               ? { embodySubStep: EMBODY_SCREEN_COUNT - 1 }
                               : {}),
-                            ...(nextStep === 2 ? { dayToDaySubStep: 1 } : {}),
                           });
                         }}
                       >
@@ -755,31 +725,15 @@ export function CreateJourney() {
                           (!draft.artifactName.trim() ||
                             !draft.artifactType)) ||
                         (draft.creationStep === 2 &&
-                          draft.dayToDaySubStep === 0 &&
                           !draft.publicPromise.trim()) ||
-                        (draft.creationStep === 2 &&
-                          draft.dayToDaySubStep === 1 &&
-                          !draft.dayToDayReflection.trim()) ||
                         (draft.creationStep === 3 &&
                           !isArtifactValuesComplete(draft)) ||
                         (draft.creationStep === 4 &&
                           !draft.hiddenFunction.trim())
                       }
                       onClick={() => {
-                        if (
-                          draft.creationStep === 2 &&
-                          draft.dayToDaySubStep === 0
-                        ) {
-                          update({ dayToDaySubStep: 1 });
-                          return;
-                        }
                         if (draft.creationStep < CREATION_STEPS.length - 1) {
-                          update({
-                            creationStep: draft.creationStep + 1,
-                            ...(draft.creationStep === 2
-                              ? { dayToDaySubStep: 0 }
-                              : {}),
-                          });
+                          update({ creationStep: draft.creationStep + 1 });
                           return;
                         }
 

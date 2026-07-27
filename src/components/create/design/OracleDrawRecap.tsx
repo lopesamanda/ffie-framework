@@ -34,7 +34,7 @@ export function OracleDrawRecap({ hand }: { hand: CardHand }) {
         </div>
       </div>
 
-      <EnvironmentalImpactBadge card={hand.transversal} />
+      <EnvironmentalImpactBadge />
     </div>
   );
 }
