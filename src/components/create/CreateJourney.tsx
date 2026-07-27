@@ -11,7 +11,8 @@ import {
   EnvironmentalBanner,
 } from "@/components/create/design/CategoryRegisterTiles";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
-import { OracleCard } from "@/components/create/design/OracleCard";
+import { OracleCard, OracleRevealedContent } from "@/components/create/design/OracleCard";
+import { OracleDrawRow } from "@/components/create/design/OracleDrawRow";
 import { NarrativeCardFace } from "@/components/create/NarrativeCardFace";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { MatrixReveal } from "@/components/create/MatrixReveal";
@@ -415,34 +416,71 @@ export function CreateJourney() {
                           oracleRevealIndex >= ORACLE_REVEAL_SEQUENCE.length - 1;
 
                         if (oracleRevealIndex < ORACLE_REVEAL_SEQUENCE.length) {
+                          const isTransversalStep =
+                            revealKey === "transversal";
+
                           return (
-                            <div className="mx-auto max-w-md space-y-4">
-                              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-                                Card {oracleRevealIndex + 1} of{" "}
-                                {ORACLE_REVEAL_SEQUENCE.length} —{" "}
-                                {CATEGORY_LABELS[currentCard.category]}
-                              </p>
-                              {!cardFlipped ? (
-                                <OracleCard
-                                  category={currentCard.category}
-                                  revealed={false}
-                                  coverLabel={CATEGORY_LABELS[currentCard.category]}
-                                  onReveal={() => setCardFlipped(true)}
-                                  className="mx-auto"
-                                />
-                              ) : (
-                                <OracleCard
-                                  category={currentCard.category}
-                                  revealed
-                                  className="mx-auto"
-                                >
-                                  <NarrativeCardFace
-                                    card={currentCard}
-                                    showReflection
-                                    embedded
+                            <div className="space-y-6">
+                              {!isTransversalStep && (
+                                <>
+                                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
+                                    Card {oracleRevealIndex + 1} of{" "}
+                                    {ORACLE_REVEAL_SEQUENCE.length} —{" "}
+                                    {CATEGORY_LABELS[currentCard.category]}
+                                  </p>
+                                  <OracleDrawRow
+                                    hand={hand}
+                                    sequenceIndex={oracleRevealIndex}
+                                    cardFlipped={cardFlipped}
+                                    onDraw={() => setCardFlipped(true)}
                                   />
-                                </OracleCard>
+                                </>
                               )}
+
+                              {isTransversalStep && (
+                                <>
+                                  <OracleDrawRow
+                                    hand={hand}
+                                    sequenceIndex={4}
+                                    cardFlipped
+                                    onDraw={() => undefined}
+                                  />
+                                  <div className="max-w-[560px] space-y-2">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#2c8a52]">
+                                        Environmental Impact
+                                      </span>
+                                      <span className="rounded-[3px] border border-[#2c8a52] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.08em] text-[#2c8a52]">
+                                        Always applied
+                                      </span>
+                                    </div>
+                                    <OracleCard
+                                      card={hand.transversal}
+                                      revealed
+                                      autoHeight
+                                      className="!min-w-0 !flex-none !basis-full"
+                                    >
+                                      <OracleRevealedContent card={hand.transversal} />
+                                    </OracleCard>
+                                  </div>
+                                </>
+                              )}
+
+                              {isTransversalStep &&
+                                currentCard.reflectionQuestion && (
+                                  <blockquote className="max-w-2xl border-l-2 border-[#2c8a52] pl-4 text-sm leading-relaxed text-ffie-ink">
+                                    {currentCard.reflectionQuestion}
+                                  </blockquote>
+                                )}
+
+                              {cardFlipped &&
+                                !isTransversalStep &&
+                                currentCard.reflectionQuestion && (
+                                <blockquote className="max-w-2xl border-l-2 border-ffie-accent pl-4 text-sm leading-relaxed text-ffie-ink">
+                                  {currentCard.reflectionQuestion}
+                                </blockquote>
+                              )}
+
                               <div className="flex gap-3">
                                 {oracleRevealIndex > 0 && (
                                   <FfieButton
@@ -454,7 +492,7 @@ export function CreateJourney() {
                                     Back
                                   </FfieButton>
                                 )}
-                                {cardFlipped && (
+                                {(cardFlipped || isTransversalStep) && (
                                   <FfieButton
                                     onClick={() => {
                                       if (isLastCard) {
@@ -476,22 +514,24 @@ export function CreateJourney() {
 
                         return (
                           <>
-                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                              <NarrativeCardFace card={hand.risk} />
-                              <NarrativeCardFace card={hand.benefit} />
-                              <NarrativeCardFace card={hand.trust} />
-                              <NarrativeCardFace card={hand.barrier} />
-                              <motion.div
-                                initial={reduceMotion ? false : { opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.5 }}
-                                className="sm:col-span-2 lg:col-span-1"
+                            <OracleDrawRow
+                              hand={hand}
+                              sequenceIndex={4}
+                              cardFlipped
+                              onDraw={() => undefined}
+                            />
+                            <div className="mt-6 max-w-[560px]">
+                              <OracleCard
+                                card={hand.transversal}
+                                revealed
+                                autoHeight
+                                className="!min-w-0 !flex-none !basis-full"
                               >
-                                <NarrativeCardFace
-                                  card={hand.transversal}
-                                  fixedLens
-                                />
-                              </motion.div>
+                                <OracleRevealedContent card={hand.transversal} />
+                              </OracleCard>
+                              <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.15em] text-[#2c8a52]">
+                                Always applied
+                              </p>
                             </div>
                             <div className="mt-6 rounded-xl border border-ffie-accent/20 bg-ffie-accent-soft p-4">
                               <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
