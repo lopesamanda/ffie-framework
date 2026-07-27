@@ -2,9 +2,6 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 
-export const MATRIX_EXPLANATION =
-  "The organizing framework for all FFIE futures. Horizontal axis: System Logic — from Extractive to Emancipatory. Vertical axis: Power Organization — from Hierarchical to Collective Care. The Feminist Preferable quadrant is where technology redistributes power, time, and care instead of concentrating them — the direction this framework points toward, not a place any of us have fully arrived.";
-
 /** Pronounced “arriving in the future” transition for the matrix reveal screen. */
 export function MatrixArrivalScene({
   children,

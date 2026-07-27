@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { isRecentlyPublished } from "@/lib/future-commons";
 import {
+  MATRIX_FRAMEWORK_INTRO,
+  QUADRANT_DESCRIPTIONS,
+} from "@/lib/journey/matrix-copy";
+import {
   COUNTRY_COLORS,
   QUADRANT_LABELS,
   type FutureEntry,
@@ -43,6 +47,15 @@ export function FutureDetailContent({ entry }: { entry: FutureEntry }) {
           </h1>
         </div>
       </header>
+
+      <section className="max-w-prose space-y-3">
+        <p className="text-sm leading-relaxed text-ffie-muted">
+          {MATRIX_FRAMEWORK_INTRO}
+        </p>
+        <p className="text-sm leading-relaxed text-ffie-ink">
+          {QUADRANT_DESCRIPTIONS[entry.quadrant]}
+        </p>
+      </section>
 
       <section className="max-w-prose space-y-4">
         <p className="text-lg leading-relaxed text-ffie-ink">{entry.narrative}</p>

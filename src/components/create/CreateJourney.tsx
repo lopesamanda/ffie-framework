@@ -15,9 +15,9 @@ import {
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan, OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
 import {
-  MATRIX_EXPLANATION,
   MatrixArrivalScene,
 } from "@/components/create/design/MatrixArrivalScene";
+import { MATRIX_FRAMEWORK_INTRO } from "@/lib/journey/matrix-copy";
 import {
   OracleDrawRecap,
   OracleDrawReflectionPrompt,
@@ -819,10 +819,10 @@ export function CreateJourney() {
                       compact
                     />
                     <div>
-                      <MatrixReveal position={draft.position} />
-                      <p className="mt-4 text-sm leading-relaxed text-ffie-muted">
-                        {MATRIX_EXPLANATION}
+                      <p className="mb-4 text-sm leading-relaxed text-ffie-muted">
+                        {MATRIX_FRAMEWORK_INTRO}
                       </p>
+                      <MatrixReveal position={draft.position} />
                     </div>
                   </div>
                   <label className="mt-8 flex items-start gap-3 rounded-xl border border-ffie-line bg-ffie-surface p-4">

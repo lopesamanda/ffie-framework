@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { QUADRANT_DESCRIPTIONS } from "@/lib/journey/matrix-copy";
 import {
   formatQuadrantLabel,
   quadrantFromPosition,
@@ -201,6 +202,9 @@ export function MatrixReveal({
       </svg>
       <p className="text-center font-display text-sm font-bold text-ffie-ink">
         {formatQuadrantLabel(quadrant)}
+      </p>
+      <p className="text-sm leading-relaxed text-ffie-muted">
+        {QUADRANT_DESCRIPTIONS[quadrant]}
       </p>
     </div>
   );
