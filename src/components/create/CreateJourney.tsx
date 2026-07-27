@@ -19,7 +19,6 @@ import { MatrixReveal } from "@/components/create/MatrixReveal";
 import { LikertQuestion } from "@/components/create/LikertQuestion";
 import {
   CharacterEmbodyStep,
-  isCharacterEmbodyComplete,
 } from "@/components/create/CharacterEmbodyStep";
 import { CATEGORY_LABELS } from "@/data/narrative-cards";
 import {
@@ -39,7 +38,10 @@ import {
 import {
   researchFindingsSeed,
 } from "@/data/research-findings-seed";
-import { ARTIFACT_TYPE_OPTIONS } from "@/lib/journey/character-options";
+import {
+  ARTIFACT_TYPE_OPTIONS,
+} from "@/lib/journey/character-options";
+import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
 import {
   buildAiImagePrompt,
   buildNarrative,
@@ -54,7 +56,6 @@ import {
   quadrantFromPosition,
   raceEthnicityForDraft,
   saveDraft,
-  syncLocationFromParts,
   type JourneyDraft,
   type JourneyStage,
   type LikertScore,
@@ -215,7 +216,7 @@ export function CreateJourney() {
           title,
           narrative,
           reflectionQuestion,
-          location: syncLocationFromParts(draft) || draft.location,
+          location: draft.location,
           characterName: draft.characterName,
           characterAge: Number.parseInt(draft.characterAge, 10) || null,
           characterGender: genderLabelForDraft(draft),
@@ -585,16 +586,14 @@ export function CreateJourney() {
                     <CharacterEmbodyStep
                       draft={draft}
                       cardHand={draft.cardHand}
-                      onChange={(patch) => {
-                        const next = { ...draft, ...patch };
-                        if (
-                          "characterCity" in patch ||
-                          "characterCountry" in patch
-                        ) {
-                          next.location = syncLocationFromParts(next);
-                        }
-                        update(next);
-                      }}
+                      embodySubStep={draft.embodySubStep}
+                      onChange={(patch) => update(patch)}
+                      onSubStepChange={(embodySubStep) =>
+                        update({ embodySubStep })
+                      }
+                      onComplete={() =>
+                        update({ creationStep: 1, embodySubStep: 0 })
+                      }
                     />
                   )}
 
@@ -655,9 +654,9 @@ export function CreateJourney() {
                   {draft.creationStep === 2 && draft.cardHand && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
-                        O ecossistema de inovação publicamente diz que quer
-                        tecnologia que entregue isto — com base nas cartas de
-                        Benefício e Confiança que você tirou:
+                        The innovation ecosystem publicly says it wants
+                        technology that delivers this — based on the Benefit
+                        and Trust cards you drew:
                       </p>
                       <div className="grid gap-3 sm:grid-cols-2">
                         <NarrativeCardFace card={draft.cardHand.benefit} />
@@ -665,7 +664,8 @@ export function CreateJourney() {
                       </div>
                       <label className="block space-y-2">
                         <span className="text-sm font-medium text-ffie-ink">
-                          Venderam esse objeto pra ela dizendo que ele
+                          They sold this object to {draft.characterName || "her"}{" "}
+                          by saying it would
                         </span>
                         <textarea
                           value={draft.publicPromise}
@@ -689,7 +689,7 @@ export function CreateJourney() {
                           }
                           className="text-xs font-medium text-ffie-accent hover:underline"
                         >
-                          Usar sugestão do ecossistema
+                          Use ecosystem suggestion
                         </button>
                       )}
                     </div>
@@ -698,13 +698,13 @@ export function CreateJourney() {
                   {draft.creationStep === 3 && draft.cardHand && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
-                        Essa ambição encontra o risco e a barreira que você
-                        também tirou. Dado isso junto — o que o artefato
-                        realmente faz, escondido, que não anuncia?
+                        That ambition meets the risk and barrier you also drew.
+                        Given both — what does the artifact actually do,
+                        hidden, that it never advertises?
                       </p>
                       <div className="rounded-xl border border-ffie-line bg-ffie-bg/60 p-4 text-sm">
                         <p className="text-xs uppercase tracking-wide text-ffie-muted">
-                          Ambição pública
+                          Public ambition
                         </p>
                         <p className="mt-1 text-ffie-ink">
                           {draft.publicPromise || "—"}
@@ -719,14 +719,14 @@ export function CreateJourney() {
                       </p>
                       <label className="block space-y-2">
                         <span className="text-sm font-medium text-ffie-ink">
-                          Mas o que ele realmente faz, escondido, é
+                          But what it actually does, hidden, is
                         </span>
                         <textarea
                           value={draft.hiddenFunction}
                           onChange={(e) =>
                             update({ hiddenFunction: e.target.value })
                           }
-                          placeholder="complete a frase"
+                          placeholder="complete the sentence"
                           rows={4}
                           className={FIELD}
                         />
@@ -778,22 +778,22 @@ export function CreateJourney() {
                   {draft.creationStep === 5 && (
                     <div className="space-y-5">
                       <p className="text-sm text-ffie-muted">
-                        Duas perguntas colocam esse futuro na Critical Feminist
-                        Matrix — sem arrastar, sem números.
+                        Two questions place this future on the Critical Feminist
+                        Matrix — no dragging, no numbers.
                       </p>
                       <LikertQuestion
-                        question="No mundo que você imaginou, essa tecnologia principalmente extrai algo de quem a usa — tempo, dados, autonomia — ou devolve algo a essa pessoa?"
-                        lowLabel="Extrai"
-                        highLabel="Devolve"
+                        question="In the world you imagined, does this technology mostly extract something from the people who use it — time, data, autonomy — or give something back?"
+                        lowLabel="Extracts"
+                        highLabel="Gives back"
                         value={draft.systemLogicScore}
                         onChange={(systemLogicScore: LikertScore) =>
                           update({ systemLogicScore })
                         }
                       />
                       <LikertQuestion
-                        question="Quem decide como essa tecnologia é usada nesse futuro — uma pessoa ou empresa no topo, ou a comunidade que convive com ela, junto?"
-                        lowLabel="Decisão centralizada"
-                        highLabel="Decisão coletiva"
+                        question="Who decides how this technology is used in that future — a person or company at the top, or the community that lives with it, together?"
+                        lowLabel="Centralized decision"
+                        highLabel="Collective decision"
                         value={draft.powerOrgScore}
                         onChange={(powerOrgScore: LikertScore) =>
                           update({ powerOrgScore })
@@ -802,21 +802,26 @@ export function CreateJourney() {
                     </div>
                   )}
 
+                  {draft.creationStep !== 0 && (
                   <div className="mt-8 flex gap-3">
                     {draft.creationStep > 0 && (
                       <FfieButton
                         variant="secondary"
-                        onClick={() =>
-                          update({ creationStep: draft.creationStep - 1 })
-                        }
+                        onClick={() => {
+                          const nextStep = draft.creationStep - 1;
+                          update({
+                            creationStep: nextStep,
+                            ...(nextStep === 0
+                              ? { embodySubStep: EMBODY_SCREEN_COUNT - 1 }
+                              : {}),
+                          });
+                        }}
                       >
                         Back
                       </FfieButton>
                     )}
                     <FfieButton
                       disabled={
-                        (draft.creationStep === 0 &&
-                          !isCharacterEmbodyComplete(draft)) ||
                         (draft.creationStep === 1 &&
                           (!draft.artifactName.trim() ||
                             !draft.artifactType)) ||
@@ -868,6 +873,7 @@ export function CreateJourney() {
                         : "See your future"}
                     </FfieButton>
                   </div>
+                  )}
                 </CreateStageShell>
               )}
 

@@ -15,8 +15,8 @@ export function AiCapabilityCardPicker({
   return (
     <div className="space-y-3">
       <p className="text-xs text-ffie-muted">
-        Precisa de inspiração? Escolha uma capacidade de IA — um exemplo
-        preenche o campo acima como ponto de partida editável.
+        Need inspiration? Pick an AI capability — an example fills the field
+        above as an editable starting point.
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
         {AI_CAPABILITY_CARDS.map((card) => (

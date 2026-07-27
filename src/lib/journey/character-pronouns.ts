@@ -1,4 +1,4 @@
-import type { CharacterGenderId } from "@/lib/journey/character-options";
+import type { CharacterPronounId } from "@/lib/journey/embody-flow";
 
 export type CharacterPronouns = {
   subject: "she" | "he" | "they";
@@ -8,10 +8,11 @@ export type CharacterPronouns = {
   object: "her" | "him" | "them";
 };
 
-export function pronounsForGender(
-  gender: CharacterGenderId | "",
+/** Explicit pronoun selection drives all narrative copy (not gender). */
+export function pronounsForSelection(
+  pronoun: CharacterPronounId | "",
 ): CharacterPronouns {
-  if (gender === "cisgender_man" || gender === "transgender_man") {
+  if (pronoun === "he_his") {
     return {
       subject: "he",
       subjectCap: "He",
@@ -21,7 +22,7 @@ export function pronounsForGender(
     };
   }
 
-  if (gender === "non_binary") {
+  if (pronoun === "they_them") {
     return {
       subject: "they",
       subjectCap: "They",
@@ -38,4 +39,12 @@ export function pronounsForGender(
     possessiveCap: "Her",
     object: "her",
   };
+}
+
+/** @deprecated Use pronounsForSelection — gender no longer drives copy. */
+export function pronounsForGender(
+  gender: string,
+): CharacterPronouns {
+  void gender;
+  return pronounsForSelection("");
 }

@@ -71,7 +71,7 @@ export function ShareableFutureCard({
         <div className="mt-12 grid flex-1 grid-cols-2 gap-10">
           <div className="rounded-2xl border border-ffie-line bg-ffie-surface p-8">
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-ffie-muted">
-              Personagem
+              Character
             </p>
             <p className="mt-3 text-3xl font-semibold text-ffie-ink">
               {characterName || "—"}
@@ -79,7 +79,7 @@ export function ShareableFutureCard({
           </div>
           <div className="rounded-2xl border border-ffie-line bg-ffie-surface p-8">
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-ffie-muted">
-              Artefato
+              Artifact
             </p>
             <p className="mt-3 text-3xl font-semibold text-ffie-ink">
               {artifactName || "—"}
@@ -90,7 +90,7 @@ export function ShareableFutureCard({
         {drawnCards.length > 0 && (
           <div className="mt-10">
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-ffie-muted">
-              Cartas do Oracle Draw
+              Oracle Draw cards
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               {drawnCards.map((card) => (

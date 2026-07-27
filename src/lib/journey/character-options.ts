@@ -16,13 +16,13 @@ export const GENDER_OPTIONS: { id: CharacterGenderId; label: string }[] = [
 ];
 
 export const RACE_ETHNICITY_OPTIONS = [
-  "Branca/White",
-  "Preta/Black",
-  "Parda/Mixed-race",
-  "Indígena/Indigenous",
-  "Amarela/East Asian-descent",
-  "Cigana/Roma",
-  "Africana (Portuguese context)/African descent",
+  "White",
+  "Black",
+  "Mixed-race",
+  "Indigenous",
+  "East Asian-descent",
+  "Roma",
+  "African descent",
 ] as const;
 
 export const RACE_SELF_DESCRIBE = "Self-describe";
@@ -71,28 +71,28 @@ export const ARTIFACT_TYPE_OPTIONS: {
   {
     id: "object",
     label: "Object",
-    description: "Something she touches or wears",
+    description: "Something they touch or wear",
   },
   {
     id: "app",
     label: "App",
-    description: "Something she uses online, an interface she accesses",
+    description: "Something they use online, an interface they access",
   },
   {
     id: "service",
     label: "Service",
-    description: "Something she experiences as a service",
+    description: "Something they experience as a service",
   },
   {
     id: "policy",
     label: "Policy",
-    description: "Something that defines the rules affecting her life",
+    description: "Something that defines the rules affecting their life",
   },
   {
     id: "narrative",
     label: "Narrative",
     description:
-      "Something that shapes the narrative about the ecosystem she's in",
+      "Something that shapes the narrative about the ecosystem they're in",
   },
 ];
 

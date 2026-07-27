@@ -11,7 +11,8 @@ import {
   composeLocation,
   GENDER_OPTIONS,
 } from "@/lib/journey/character-options";
-import { pronounsForGender } from "@/lib/journey/character-pronouns";
+import type { CharacterPronounId } from "@/lib/journey/embody-flow";
+import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
 /** 5-point Likert used for automated matrix placement. */
 export type LikertScore = 1 | 2 | 3 | 4 | 5;
@@ -48,12 +49,15 @@ export type JourneyDraft = {
   stage: JourneyStage;
   orientationStep: number;
   creationStep: number;
+  /** Sub-step within Embody the future (0–6). */
+  embodySubStep: number;
   cardHand: CardHand | null;
   combinedTension: string;
   reflectionText: string;
   characterName: string;
   characterAge: string;
   characterGender: CharacterGenderId | "";
+  characterPronoun: CharacterPronounId | "";
   characterRaceEthnicity: string;
   raceSelfDescribe: string;
   characterCity: string;
@@ -214,7 +218,7 @@ export function buildAiImagePrompt(draft: JourneyDraft): string {
   const artifactHiddenFunction =
     draft.hiddenFunction.trim() || "[artifact hidden function]";
   const artifactType = artifactTypePhrase(draft.artifactType);
-  const p = pronounsForGender(draft.characterGender);
+  const p = pronounsForSelection(draft.characterPronoun);
 
   const benefitCardName =
     draft.cardHand?.benefit.name.trim() || "[benefit card name]";
@@ -247,12 +251,14 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     stage: "entry",
     orientationStep: 0,
     creationStep: 0,
+    embodySubStep: 0,
     cardHand: null,
     combinedTension: "",
     reflectionText: "",
     characterName: "",
     characterAge: "",
     characterGender: "",
+    characterPronoun: "",
     characterRaceEthnicity: "",
     raceSelfDescribe: "",
     characterCity: "",
@@ -298,6 +304,8 @@ export function loadDraft(): JourneyDraft | null {
       powerPosition: parsed.powerPosition ?? "marginalized",
       position: parsed.position ?? { x: 0, y: 0 },
       characterGender: parsed.characterGender ?? "",
+      characterPronoun: parsed.characterPronoun ?? "",
+      embodySubStep: parsed.embodySubStep ?? 0,
       characterAge: parsed.characterAge ?? "",
       characterRaceEthnicity: parsed.characterRaceEthnicity ?? "",
       raceSelfDescribe: parsed.raceSelfDescribe ?? "",
