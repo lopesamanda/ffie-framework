@@ -11,6 +11,8 @@ export type AiCapabilityCard = {
   artifactGuidingQuestions: [string, string];
   /** Neutral slate — distinct from narrative category colors */
   color: string;
+  /** Shown only when artifact_type is agent (Create day-to-day). */
+  agentOnly?: boolean;
 };
 
 export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
@@ -181,5 +183,124 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
       "Where does that unified identity get checked or gate access?",
     ],
     color: "#64748b",
+  },
+  {
+    id: "code-generation-automation",
+    name: "Code Generation & Automation",
+    description:
+      "Turns descriptions of what's needed into functional code, scripts, or automated tests.",
+    tags: ["Code Generation", "Script Automation", "Automated Testing"],
+    examples: [
+      "A no-code founder shipping a full product without ever hiring the engineers her competitors need",
+      "An AI pair-programmer that quietly rewrites junior developers' code without explaining why, so they never learn the reasoning behind the fix",
+    ],
+    guidingQuestions: [
+      "What gets built or tested without a human writing every line?",
+      "Who loses visibility into how the system actually works?",
+    ],
+    artifactGuidingQuestions: [
+      "What code, script, or test does the artifact generate in a typical day?",
+      "Who trusts the output without understanding how it was produced?",
+    ],
+    color: "#64748b",
+  },
+  {
+    id: "data-classification-clustering",
+    name: "Data Classification & Clustering",
+    description:
+      "Identifies patterns in information and sorts it into categories or groups.",
+    tags: [
+      "Pattern Detection",
+      "Content Categorization",
+      "Anomaly Detection",
+    ],
+    examples: [
+      "A hiring platform that clusters candidates into 'culture fit' types that quietly correlate with race and gender",
+      "A fraud-detection system that flags transactions from certain neighborhoods as higher-risk by default",
+    ],
+    guidingQuestions: [
+      "What gets sorted into a category your character didn't choose?",
+      "Who designed the groups — and who gets misfiled?",
+    ],
+    artifactGuidingQuestions: [
+      "What does the artifact classify or cluster each day?",
+      "Which group label sticks to your character whether it fits or not?",
+    ],
+    color: "#64748b",
+  },
+  {
+    id: "autonomous-planning-execution",
+    name: "Autonomous Planning & Execution",
+    description:
+      "Breaks a goal into steps and carries them out on its own, without asking for approval at each stage.",
+    tags: [
+      "Multi-Step Planning",
+      "Goal Decomposition",
+      "Unsupervised Execution",
+    ],
+    examples: [
+      "A travel agent that books flights, hotels, and cancels conflicting meetings, only notifying her after it's done",
+      "A financial agent that moves money between accounts to 'optimize' savings, based on goals she set once, months ago",
+    ],
+    guidingQuestions: [
+      "What multi-step plan runs without stopping for consent?",
+      "When does your character learn what already happened?",
+    ],
+    artifactGuidingQuestions: [
+      "What goal does the agent decompose and execute before anyone reviews the steps?",
+      "What would your character undo if they saw the plan in advance?",
+    ],
+    color: "#64748b",
+    agentOnly: true,
+  },
+  {
+    id: "negotiation-transacting",
+    name: "Negotiation & Transacting on Someone's Behalf",
+    description:
+      "Makes deals, agrees to terms, or exchanges money and data with other systems, without her present at the moment of decision.",
+    tags: [
+      "Automated Negotiation",
+      "Agent-to-Agent Transactions",
+      "Delegated Consent",
+    ],
+    examples: [
+      "A rent-negotiation agent that accepts a lease renewal she would have pushed back on, because it optimized for speed over her actual preferences",
+      "A shopping agent that trades her purchase history to a retailer's agent in exchange for a better price, without asking first",
+    ],
+    guidingQuestions: [
+      "What deal gets made while your character is elsewhere?",
+      "What did they trade away to win the negotiation?",
+    ],
+    artifactGuidingQuestions: [
+      "What terms does the agent accept or exchange in daily use?",
+      "Who else was at the table — and who never knew a deal happened?",
+    ],
+    color: "#64748b",
+    agentOnly: true,
+  },
+  {
+    id: "persistent-memory-modeling",
+    name: "Persistent Memory & Behavioral Modeling",
+    description:
+      "Builds and keeps a long-term model of who someone is and what they want, refining it every time it acts for them.",
+    tags: [
+      "Long-Term Memory",
+      "Preference Modeling",
+      "Cross-Session Learning",
+    ],
+    examples: [
+      "A personal agent that knows her sleep schedule, spending habits, and relationship patterns better than her closest friend, because it never stops watching",
+      "An agent that quietly changes its recommendations after 'learning' she's pregnant, before she's told anyone",
+    ],
+    guidingQuestions: [
+      "What does the system remember that your character forgot they shared?",
+      "Who learns something about them before they meant to reveal it?",
+    ],
+    artifactGuidingQuestions: [
+      "What long-term model does the agent refine each time it acts?",
+      "What inference does it make that your character never explicitly confirmed?",
+    ],
+    color: "#64748b",
+    agentOnly: true,
   },
 ];
