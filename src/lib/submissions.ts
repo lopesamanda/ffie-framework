@@ -25,6 +25,7 @@ export type SubmissionRow = {
   artifact_name: string;
   artifact_public_promise: string;
   artifact_hidden_function: string;
+  artifact_values: string[];
   tension: string;
   quadrant: FutureQuadrant;
   power_position: PowerPosition;
@@ -51,7 +52,7 @@ const ADMIN_LIST_SELECT =
   "id, status, title, narrative, character_name, artifact_name, quadrant, power_position, location, created_at";
 
 const PUBLIC_SELECT =
-  "id, status, title, narrative, reflection_question, location, year, character_name, character_age, character_role, character_ai_function, character_desire, character_fear, character_values, artifact_name, artifact_public_promise, artifact_hidden_function, tension, quadrant, power_position, position_x, position_y, image_url, created_at";
+  "id, status, title, narrative, reflection_question, location, year, character_name, character_age, character_role, character_ai_function, character_desire, character_fear, character_values, artifact_name, artifact_public_promise, artifact_hidden_function, artifact_values, tension, quadrant, power_position, position_x, position_y, image_url, created_at";
 
 /** Infer Brazil/Portugal from free-text location for matrix colouring. */
 export function inferCountry(location: string): FutureCountry {
@@ -95,6 +96,7 @@ export function mapSubmissionToFutureEntry(row: SubmissionRow): FutureEntry {
       name: row.artifact_name,
       publicPromise: row.artifact_public_promise,
       hiddenFunction: row.artifact_hidden_function,
+      values: row.artifact_values ?? [],
     },
     tension: row.tension,
     quadrant: row.quadrant,

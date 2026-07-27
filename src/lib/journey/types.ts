@@ -73,6 +73,8 @@ export type JourneyDraft = {
   artifactType: ArtifactTypeId | "";
   publicPromise: string;
   hiddenFunction: string;
+  artifactValues: string[];
+  artifactValueOther: string;
   imageDataUrl: string | null;
   /** System Logic Likert (Q1) — Extrai ↔ Devolve */
   systemLogicScore: LikertScore | null;
@@ -274,6 +276,8 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     artifactType: "",
     publicPromise: "",
     hiddenFunction: "",
+    artifactValues: [],
+    artifactValueOther: "",
     imageDataUrl: null,
     systemLogicScore: null,
     powerOrgScore: null,
@@ -313,6 +317,8 @@ export function loadDraft(): JourneyDraft | null {
       characterCountry: parsed.characterCountry ?? "",
       roleCustom: parsed.roleCustom ?? "",
       artifactType: parsed.artifactType ?? "",
+      artifactValues: parsed.artifactValues ?? [],
+      artifactValueOther: parsed.artifactValueOther ?? "",
       location:
         parsed.location ??
         composeLocation(

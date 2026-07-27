@@ -33,6 +33,7 @@ export type FutureEntry = {
     name: string;
     publicPromise: string;
     hiddenFunction: string;
+    values?: string[];
   };
   tension: string;
   quadrant: FutureQuadrant;

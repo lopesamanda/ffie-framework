@@ -1,4 +1,5 @@
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
+import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
@@ -71,7 +72,7 @@ export function FutureCardPreview({
         <div className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}>
           <div className="rounded-lg bg-[#f6f4ff] p-4">
             <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
-              Public promise
+              Day to day
             </p>
             <p className="mt-1 text-ffie-ink">
               {draft.publicPromise || "—"}
@@ -85,6 +86,19 @@ export function FutureCardPreview({
               {draft.hiddenFunction || "—"}
             </p>
           </div>
+        </div>
+      )}
+
+      {resolveArtifactValues(draft).length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {resolveArtifactValues(draft).map((value) => (
+            <span
+              key={value}
+              className="rounded-full border border-ffie-line bg-ffie-bg px-2.5 py-0.5 text-xs text-ffie-ink"
+            >
+              {value}
+            </span>
+          ))}
         </div>
       )}
 

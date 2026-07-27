@@ -44,7 +44,7 @@ Reduced-motion variant: instant cross-fade, no shuffle, no color wash.
 ### Future / Character / Artifact systems
 Future card: title → narrative excerpt → reflection question → secondary data block (character, artifact, tension, quadrant, power position, country/year) — story first, data second.
 Character block: name, age, role, AI function, desire, fear, values — reused across Future Output, Future Commons, and Research Findings.
-Artifact block: public promise vs. hidden function duality always visible and visually contrasted — this now maps to the Goal × Weakness collision sequence implemented in the app (ecosystem ambition seeds the promise; collision with the drawn risk/barrier produces the hidden function).
+Artifact block: day-to-day use (public promise) vs. hidden function duality always visible and visually contrasted. Creation sequence: (1) "How does it work, day to day?" — persona-tied narrative tied to Benefit + Trust card tags; (2) embedded values multi-select (2–4 chips, including uncomfortable values); (3) hidden function reveal scaffolded with day-to-day answer, selected values, and Risk + Barrier card tags.
 
 ### Motion principles
 Scene-change "portal" transitions between Create stages, tied to the active category/phase color, replacing plain page slides. Timing: fast for micro-interactions, slower/ceremonial for the card reveal and Future Output moments specifically (these carry the most motion budget in the whole flow). Reduced-motion fallback rule applied consistently everywhere motion appears.

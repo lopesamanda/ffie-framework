@@ -22,6 +22,7 @@ create table if not exists submissions (
   artifact_name text not null,
   artifact_public_promise text not null,
   artifact_hidden_function text not null,
+  artifact_values text[] not null default '{}',
   tension text not null,
   quadrant text not null,
   power_position text not null default 'marginalized',

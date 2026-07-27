@@ -20,6 +20,9 @@ import { LikertQuestion } from "@/components/create/LikertQuestion";
 import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
+import { CardReferenceTag } from "@/components/create/CardReferenceTag";
+import { NarrativeBlock } from "@/components/create/NarrativeBlank";
+import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { CATEGORY_LABELS } from "@/data/narrative-cards";
 import {
   ShareableFutureCard,
@@ -29,8 +32,6 @@ import {
 import { FuturePreviewPanel } from "@/components/FuturePreviewPanel";
 import {
   buildCombinedTension,
-  buildEcosystemAmbitionSeed,
-  buildWeaknessCollisionContext,
   drawWorkshopHand,
   ENVIRONMENTAL_IMPACT_CARD,
   ORACLE_REVEAL_SEQUENCE,
@@ -42,6 +43,13 @@ import {
   ARTIFACT_TYPE_OPTIONS,
 } from "@/lib/journey/character-options";
 import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
+import {
+  ARTIFACT_VALUE_OPTIONS,
+  ARTIFACT_VALUE_OTHER,
+  isArtifactValuesComplete,
+  resolveArtifactValues,
+} from "@/lib/journey/artifact-options";
+import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 import {
   buildAiImagePrompt,
   buildNarrative,
@@ -73,8 +81,9 @@ const FIELD =
 const CREATION_STEPS = [
   "Embody the future",
   "Name the artifact",
-  "Ecosystem ambition",
-  "Goal × weakness",
+  "Day to day",
+  "Embedded values",
+  "Hidden function",
   "Image (optional)",
   "Where it lands",
 ];
@@ -229,6 +238,7 @@ export function CreateJourney() {
           artifactName: draft.artifactName,
           publicPromise: draft.publicPromise,
           hiddenFunction: draft.hiddenFunction,
+          artifactValues: resolveArtifactValues(draft),
           tension: draft.combinedTension,
           quadrant,
           powerPosition: draft.powerPosition,
@@ -653,88 +663,134 @@ export function CreateJourney() {
 
                   {draft.creationStep === 2 && draft.cardHand && (
                     <div className="space-y-4">
-                      <p className="text-sm leading-relaxed text-ffie-ink">
-                        The innovation ecosystem publicly says it wants
-                        technology that delivers this — based on the Benefit
-                        and Trust cards you drew:
-                      </p>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <NarrativeCardFace card={draft.cardHand.benefit} />
-                        <NarrativeCardFace card={draft.cardHand.trust} />
-                      </div>
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium text-ffie-ink">
-                          They sold this object to {draft.characterName || "her"}{" "}
-                          by saying it would
-                        </span>
-                        <textarea
-                          value={draft.publicPromise}
-                          onChange={(e) =>
-                            update({ publicPromise: e.target.value })
-                          }
-                          placeholder={buildEcosystemAmbitionSeed(draft.cardHand)}
-                          rows={3}
-                          className={FIELD}
-                        />
-                      </label>
-                      {!draft.publicPromise.trim() && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            update({
-                              publicPromise: buildEcosystemAmbitionSeed(
-                                draft.cardHand!,
-                              ),
-                            })
-                          }
-                          className="text-xs font-medium text-ffie-accent hover:underline"
-                        >
-                          Use ecosystem suggestion
-                        </button>
-                      )}
+                      {(() => {
+                        const p = pronounsForSelection(draft.characterPronoun);
+                        const who =
+                          draft.characterName.trim() || p.subjectCap;
+                        const artifact =
+                          draft.artifactName.trim() || "this artifact";
+                        return (
+                          <>
+                            <div className="flex flex-wrap gap-2">
+                              <CardReferenceTag card={draft.cardHand.benefit} />
+                              <CardReferenceTag card={draft.cardHand.trust} />
+                            </div>
+                            <NarrativeBlock>
+                              <p className="mb-3 text-sm leading-relaxed text-ffie-ink">
+                                What does {who} actually do with {artifact}? At
+                                what moment in {p.possessive} day does{" "}
+                                {p.subject} use it?
+                              </p>
+                              <textarea
+                                value={draft.publicPromise}
+                                onChange={(e) =>
+                                  update({ publicPromise: e.target.value })
+                                }
+                                rows={4}
+                                placeholder="Describe the day-to-day use…"
+                                className={`${FIELD} resize-none`}
+                              />
+                            </NarrativeBlock>
+                          </>
+                        );
+                      })()}
                     </div>
                   )}
 
-                  {draft.creationStep === 3 && draft.cardHand && (
+                  {draft.creationStep === 3 && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
-                        That ambition meets the risk and barrier you also drew.
-                        Given both — what does the artifact actually do,
-                        hidden, that it never advertises?
+                        What values are embedded in it? Select 2–4 — comforting
+                        and controlling values often coexist in the same
+                        artifact.
                       </p>
-                      <div className="rounded-xl border border-ffie-line bg-ffie-bg/60 p-4 text-sm">
-                        <p className="text-xs uppercase tracking-wide text-ffie-muted">
-                          Public ambition
+                      <ChipField label="">
+                        <ChipSelect
+                          label=""
+                          options={[...ARTIFACT_VALUE_OPTIONS, ARTIFACT_VALUE_OTHER]}
+                          value={draft.artifactValues}
+                          onChange={(artifactValues) =>
+                            update({ artifactValues })
+                          }
+                          multi
+                          max={4}
+                        />
+                        {draft.artifactValues.includes(ARTIFACT_VALUE_OTHER) && (
+                          <input
+                            type="text"
+                            value={draft.artifactValueOther}
+                            onChange={(e) =>
+                              update({ artifactValueOther: e.target.value })
+                            }
+                            placeholder="Describe another value"
+                            className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
+                          />
+                        )}
+                        <p className="text-xs text-ffie-muted">
+                          {resolveArtifactValues(draft).length}/4 selected
+                          (minimum 2)
                         </p>
-                        <p className="mt-1 text-ffie-ink">
-                          {draft.publicPromise || "—"}
+                      </ChipField>
+                    </div>
+                  )}
+
+                  {draft.creationStep === 4 && draft.cardHand && (
+                    <div className="space-y-4">
+                      <div className="space-y-3 rounded-xl border border-ffie-line bg-ffie-bg/60 p-4 text-sm">
+                        <div>
+                          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+                            Day to day
+                          </p>
+                          <p className="mt-1 text-ffie-ink">
+                            {draft.publicPromise || "—"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+                            Embedded values
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {resolveArtifactValues(draft).map((value) => (
+                              <span
+                                key={value}
+                                className="rounded-full border border-ffie-line bg-ffie-surface px-2.5 py-0.5 text-xs text-ffie-ink"
+                              >
+                                {value}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          <CardReferenceTag card={draft.cardHand.risk} />
+                          <CardReferenceTag card={draft.cardHand.barrier} />
+                        </div>
+                      </div>
+                      <NarrativeBlock>
+                        <p className="mb-3 text-sm leading-relaxed text-ffie-ink">
+                          Looking at the values you just named, and the risk of{" "}
+                          <strong>{draft.cardHand.risk.name}</strong> and the
+                          barrier of{" "}
+                          <strong>{draft.cardHand.barrier.name}</strong> —
+                          which of these values, pushed to its logical extreme,
+                          reveals what{" "}
+                          {draft.artifactName.trim() || "this artifact"}{" "}
+                          actually does, quietly, that it doesn&apos;t
+                          advertise?
                         </p>
-                      </div>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <NarrativeCardFace card={draft.cardHand.risk} />
-                        <NarrativeCardFace card={draft.cardHand.barrier} />
-                      </div>
-                      <p className="text-xs text-ffie-muted">
-                        {buildWeaknessCollisionContext(draft.cardHand)}
-                      </p>
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium text-ffie-ink">
-                          But what it actually does, hidden, is
-                        </span>
                         <textarea
                           value={draft.hiddenFunction}
                           onChange={(e) =>
                             update({ hiddenFunction: e.target.value })
                           }
-                          placeholder="complete the sentence"
                           rows={4}
-                          className={FIELD}
+                          placeholder="Complete the sentence…"
+                          className={`${FIELD} resize-none`}
                         />
-                      </label>
+                      </NarrativeBlock>
                     </div>
                   )}
 
-                  {draft.creationStep === 4 && (
+                  {draft.creationStep === 5 && (
                     <div className="space-y-4">
                       <div className="rounded-xl border border-ffie-line bg-ffie-bg/60 p-4">
                         <p className="text-xs uppercase tracking-wide text-ffie-muted">
@@ -775,7 +831,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 5 && (
+                  {draft.creationStep === 6 && (
                     <div className="space-y-5">
                       <p className="text-sm text-ffie-muted">
                         Two questions place this future on the Critical Feminist
@@ -828,8 +884,10 @@ export function CreateJourney() {
                         (draft.creationStep === 2 &&
                           !draft.publicPromise.trim()) ||
                         (draft.creationStep === 3 &&
+                          !isArtifactValuesComplete(draft)) ||
+                        (draft.creationStep === 4 &&
                           !draft.hiddenFunction.trim()) ||
-                        (draft.creationStep === 5 &&
+                        (draft.creationStep === 6 &&
                           (draft.systemLogicScore == null ||
                             draft.powerOrgScore == null))
                       }

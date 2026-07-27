@@ -20,6 +20,7 @@ export type SubmissionPayload = {
   artifactName: string;
   publicPromise: string;
   hiddenFunction: string;
+  artifactValues?: string[];
   tension: string;
   quadrant: FutureQuadrant;
   powerPosition?: PowerPosition;
@@ -87,6 +88,14 @@ export async function POST(request: Request) {
     );
   }
 
+  const artifactValues = body.artifactValues ?? [];
+  if (artifactValues.length < 2 || artifactValues.length > 4) {
+    return NextResponse.json(
+      { error: "Select 2–4 embedded artifact values" },
+      { status: 400 },
+    );
+  }
+
   let imageUrl: string | null = null;
 
   if (body.imageDataUrl?.startsWith("data:")) {
@@ -131,6 +140,7 @@ export async function POST(request: Request) {
       artifact_name: body.artifactName,
       artifact_public_promise: body.publicPromise,
       artifact_hidden_function: body.hiddenFunction,
+      artifact_values: artifactValues,
       tension: body.tension,
       quadrant: body.quadrant,
       power_position:
