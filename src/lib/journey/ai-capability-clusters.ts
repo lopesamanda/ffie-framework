@@ -1,16 +1,22 @@
 import type { AiCapabilityCard } from "@/data/ai-capability-cards";
 
-export type AiCapabilityCluster = {
-  id: string;
+export type AiCapabilityPowerId =
+  | "power-to-know"
+  | "power-to-speak-make"
+  | "power-to-act"
+  | "power-to-watch";
+
+export type AiCapabilityPower = {
+  id: AiCapabilityPowerId;
   label: string;
   cardIds: string[];
 };
 
-/** Thematic groupings for the full capability picker (15 cards). */
-export const AI_CAPABILITY_CLUSTERS: AiCapabilityCluster[] = [
+/** Power Organization groupings for the capability picker (15 cards). */
+export const AI_CAPABILITY_POWERS: AiCapabilityPower[] = [
   {
-    id: "understanding-people",
-    label: "Understanding People",
+    id: "power-to-know",
+    label: "Power to Know",
     cardIds: [
       "personalization-recommendation",
       "biometric-body-data",
@@ -20,18 +26,17 @@ export const AI_CAPABILITY_CLUSTERS: AiCapabilityCluster[] = [
     ],
   },
   {
-    id: "communicating-creating",
-    label: "Communicating & Creating",
+    id: "power-to-speak-make",
+    label: "Power to Speak & Make",
     cardIds: [
       "language-conversation",
       "image-video-generation",
       "generative-design",
-      "content-moderation-filtering",
     ],
   },
   {
-    id: "acting-automating",
-    label: "Acting & Automating",
+    id: "power-to-act",
+    label: "Power to Act",
     cardIds: [
       "task-automation",
       "code-generation-automation",
@@ -40,30 +45,50 @@ export const AI_CAPABILITY_CLUSTERS: AiCapabilityCluster[] = [
     ],
   },
   {
-    id: "tracking-verifying",
-    label: "Tracking & Verifying",
-    cardIds: ["realtime-monitoring", "identity-data-fusion"],
+    id: "power-to-watch",
+    label: "Power to Watch",
+    cardIds: [
+      "realtime-monitoring",
+      "identity-data-fusion",
+      "content-moderation-filtering",
+    ],
   },
 ];
 
-export function groupCardsByCluster(
+export type AiCapabilityPowerGroup = {
+  id: AiCapabilityPowerId;
+  label: string;
+  cards: AiCapabilityCard[];
+};
+
+export function groupCardsByPower(
   cards: AiCapabilityCard[],
-): { label: string; cards: AiCapabilityCard[] }[] {
+): AiCapabilityPowerGroup[] {
   const byId = new Map(cards.map((card) => [card.id, card]));
   const assigned = new Set<string>();
 
-  const groups = AI_CAPABILITY_CLUSTERS.map((cluster) => {
-    const clusterCards = cluster.cardIds
+  const groups = AI_CAPABILITY_POWERS.map((power) => {
+    const powerCards = power.cardIds
       .map((id) => byId.get(id))
       .filter((card): card is AiCapabilityCard => card != null);
-    clusterCards.forEach((card) => assigned.add(card.id));
-    return { label: cluster.label, cards: clusterCards };
+    powerCards.forEach((card) => assigned.add(card.id));
+    return { id: power.id, label: power.label, cards: powerCards };
   }).filter((group) => group.cards.length > 0);
 
-  const unclustered = cards.filter((card) => !assigned.has(card.id));
-  if (unclustered.length > 0) {
-    groups.push({ label: "Other capabilities", cards: unclustered });
+  const ungrouped = cards.filter((card) => !assigned.has(card.id));
+  if (ungrouped.length > 0) {
+    groups.push({
+      id: "power-to-watch",
+      label: "Other capabilities",
+      cards: ungrouped,
+    });
   }
 
   return groups;
 }
+
+/** @deprecated Use groupCardsByPower */
+export const groupCardsByCluster = groupCardsByPower;
+
+/** @deprecated Use AI_CAPABILITY_POWERS */
+export const AI_CAPABILITY_CLUSTERS = AI_CAPABILITY_POWERS;
