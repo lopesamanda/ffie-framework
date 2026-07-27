@@ -18,10 +18,13 @@ export function FutureCardPreview({
   draft,
   id,
   compact = false,
+  showDrawSynthesis = true,
 }: {
   draft: JourneyDraft;
   id?: string;
   compact?: boolean;
+  /** Hide synthesis until all four Oracle cards are revealed. */
+  showDrawSynthesis?: boolean;
 }) {
   const quadrant: FutureQuadrant = quadrantFromPosition(
     draft.position.x,
@@ -35,9 +38,10 @@ export function FutureCardPreview({
         ? `A future for ${draft.characterName}`
         : "Your future");
 
-  const synthesisLine =
-    draft.drawSynthesis ||
-    (draft.cardHand ? buildOracleSynthesis(draft.cardHand) : "");
+  const synthesisLine = showDrawSynthesis
+    ? draft.drawSynthesis ||
+      (draft.cardHand ? buildOracleSynthesis(draft.cardHand) : "")
+    : "";
 
   return (
     <div
@@ -90,7 +94,7 @@ export function FutureCardPreview({
         <div className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}>
           <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
             <p className={ffieCardSectionLabel + " text-ffie-accent"}>
-              Day to day
+              Goal
             </p>
             <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
               {draft.publicPromise || "—"}
@@ -98,7 +102,7 @@ export function FutureCardPreview({
           </div>
           <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
             <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
-              Hidden function
+              Weakness
             </p>
             <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
               {draft.hiddenFunction || "—"}

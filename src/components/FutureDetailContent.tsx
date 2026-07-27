@@ -56,12 +56,16 @@ export function FutureDetailContent({ entry }: { entry: FutureEntry }) {
             <dd className="text-ffie-muted">{entry.artifact.name}</dd>
           </div>
           <div>
-            <dt className="font-medium text-ffie-ink">Day to day</dt>
-            <dd className="text-ffie-muted">{entry.artifact.publicPromise}</dd>
+            <dt className="text-xs font-medium uppercase tracking-[0.12em] text-ffie-muted">
+              Goal
+            </dt>
+            <dd className="mt-1 text-ffie-muted">{entry.artifact.publicPromise}</dd>
           </div>
           <div>
-            <dt className="font-medium text-ffie-ink">Hidden function</dt>
-            <dd className="text-ffie-muted">{entry.artifact.hiddenFunction}</dd>
+            <dt className="text-xs font-medium uppercase tracking-[0.12em] text-ffie-muted">
+              Weakness
+            </dt>
+            <dd className="mt-1 text-ffie-muted">{entry.artifact.hiddenFunction}</dd>
           </div>
           {entry.artifact.values && entry.artifact.values.length > 0 && (
             <div className="md:col-span-2">

@@ -19,7 +19,6 @@ import {
   OracleDrawRecap,
   OracleDrawReflectionPrompt,
 } from "@/components/create/design/OracleDrawRecap";
-import { OracleSynthesisCallout } from "@/components/create/design/OracleSynthesisCallout";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { MatrixReveal } from "@/components/create/MatrixReveal";
 import { LikertQuestion } from "@/components/create/LikertQuestion";
@@ -329,6 +328,9 @@ export function CreateJourney() {
     draft.stage !== "output" &&
     draft.stage !== "discovery";
 
+  const oracleDrawComplete =
+    draft.stage !== "reflection" || oracleDrawIndex >= 4;
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
       <div
@@ -392,8 +394,6 @@ export function CreateJourney() {
                     </FfieButton>
                   ) : oracleDrawIndex >= 4 ? (
                     <div className="space-y-6">
-                      <OracleSynthesisCallout hand={draft.cardHand} />
-
                       <OracleDrawRecap hand={draft.cardHand} />
 
                       <OracleDrawReflectionPrompt
@@ -886,7 +886,11 @@ export function CreateJourney() {
 
         {showLivePreview && (
           <aside className="lg:sticky lg:top-6">
-            <FutureCardPreview draft={draft} id="future-output-card" />
+            <FutureCardPreview
+              draft={draft}
+              id="future-output-card"
+              showDrawSynthesis={oracleDrawComplete}
+            />
           </aside>
         )}
       </div>
