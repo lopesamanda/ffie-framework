@@ -71,7 +71,7 @@ function AmbientMatrixField({ reduceMotion }: { reduceMotion: boolean }) {
             opacity: 0.28,
             width: blob.size,
             height: blob.size,
-            top: blob.top,
+            top: "top" in blob ? blob.top : undefined,
             left: "left" in blob ? blob.left : undefined,
             right: "right" in blob ? blob.right : undefined,
             bottom: "bottom" in blob ? blob.bottom : undefined,
