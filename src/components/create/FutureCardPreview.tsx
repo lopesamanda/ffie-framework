@@ -1,17 +1,17 @@
-import {
-  QUADRANT_LABELS,
-  type FutureQuadrant,
-} from "@/types/future";
+import { QuadrantPill } from "@/components/create/design/QuadrantPill";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
+import type { FutureQuadrant } from "@/types/future";
 
 export function FutureCardPreview({
   draft,
   id,
+  compact = false,
 }: {
   draft: JourneyDraft;
   id?: string;
+  compact?: boolean;
 }) {
   const quadrant: FutureQuadrant = quadrantFromPosition(
     draft.position.x,
@@ -28,22 +28,24 @@ export function FutureCardPreview({
   return (
     <div
       id={id}
-      className="rounded-2xl border border-ffie-line bg-ffie-surface p-6 shadow-sm"
+      className={`rounded-2xl border border-ffie-line bg-ffie-surface shadow-[0_4px_16px_rgba(35,19,82,0.08)] ${
+        compact ? "p-5" : "p-6"
+      }`}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-ffie-accent-soft px-2.5 py-1 text-xs font-medium text-ffie-accent">
-          {QUADRANT_LABELS[quadrant]}
-        </span>
+        <QuadrantPill quadrant={quadrant} />
         {draft.location && (
-          <span className="text-xs text-ffie-muted">{draft.location}</span>
+          <span className="text-xs text-ffie-muted">{draft.location} · 2036</span>
         )}
       </div>
 
-      <h3 className="mt-4 text-xl font-semibold tracking-tight">{title}</h3>
+      <h3 className="mt-4 font-display text-xl font-bold tracking-tight text-ffie-ink">
+        {title}
+      </h3>
 
       {(draft.characterName || draft.role) && (
         <p className="mt-1 text-sm text-ffie-muted">
-          {[draft.characterName, draft.role].filter(Boolean).join(" · ")} · 2036
+          {[draft.characterName, draft.role].filter(Boolean).join(" · ")}
         </p>
       )}
 
@@ -54,23 +56,23 @@ export function FutureCardPreview({
       )}
 
       {draft.combinedTension && (
-        <p className="mt-3 text-sm font-medium text-ffie-accent">
+        <p className="mt-3 text-sm font-medium italic text-ffie-accent">
           {draft.combinedTension}
         </p>
       )}
 
       {(draft.publicPromise || draft.hiddenFunction) && (
-        <div className="mt-4 grid gap-3 rounded-lg bg-ffie-bg/80 p-4 text-sm md:grid-cols-2">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-ffie-muted">
+        <div className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}>
+          <div className="rounded-lg bg-[#f6f4ff] p-4">
+            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
               Public promise
             </p>
             <p className="mt-1 text-ffie-ink">
               {draft.publicPromise || "—"}
             </p>
           </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-ffie-muted">
+          <div className="rounded-lg bg-[#fdf1ee] p-4">
+            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#c8472a]">
               Hidden function
             </p>
             <p className="mt-1 text-ffie-ink">
@@ -89,9 +91,7 @@ export function FutureCardPreview({
         />
       )}
 
-      {draft.cardHand && (
-        <CardProvenance hand={draft.cardHand} />
-      )}
+      {draft.cardHand && !compact && <CardProvenance hand={draft.cardHand} />}
     </div>
   );
 }
@@ -100,7 +100,7 @@ function CardProvenance({ hand }: { hand: CardHand }) {
   const cards = [hand.risk, hand.benefit, hand.trust, hand.barrier, hand.transversal];
   return (
     <div className="mt-4 border-t border-ffie-line pt-4">
-      <p className="text-xs uppercase tracking-wide text-ffie-muted">
+      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
         Card provenance
       </p>
       <ul className="mt-2 space-y-1 text-xs text-ffie-muted">

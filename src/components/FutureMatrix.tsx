@@ -7,15 +7,25 @@ import {
   COUNTRY_COLORS,
   QUADRANT_LABELS,
   QUADRANT_MATRIX_LABELS,
+  QUADRANT_COLORS,
   type FutureCountry,
   type FutureEntry,
 } from "@/types/future";
+import { signedToUnit } from "@/lib/journey/types";
 
 const PLOT = {
   padding: 72,
   width: 640,
   height: 640,
 };
+
+/** Commons Likert coords are signed [−1,1]; research findings seed uses unit [0,1]. */
+function toUnitPlotPosition(entry: FutureEntry) {
+  if (entry.collection === "future_commons") {
+    return signedToUnit(entry.position.x, entry.position.y);
+  }
+  return entry.position;
+}
 
 function plotToSvg(x: number, y: number) {
   const innerWidth = PLOT.width - PLOT.padding * 2;
@@ -61,29 +71,37 @@ export function FutureMatrix({
           y={PLOT.padding}
           width={(PLOT.width - PLOT.padding * 2) / 2}
           height={(PLOT.height - PLOT.padding * 2) / 2}
-          fill="#dbeafe"
+          fill={QUADRANT_COLORS.techno_optimist}
         />
         <rect
           x={midX}
           y={PLOT.padding}
           width={(PLOT.width - PLOT.padding * 2) / 2}
           height={(PLOT.height - PLOT.padding * 2) / 2}
-          fill="#dcfce7"
+          fill={QUADRANT_COLORS.feminist_preferred}
         />
         <rect
           x={PLOT.padding}
           y={midY}
           width={(PLOT.width - PLOT.padding * 2) / 2}
           height={(PLOT.height - PLOT.padding * 2) / 2}
-          fill="#fecdd3"
+          fill={QUADRANT_COLORS.dominant_dystopian}
         />
         <rect
           x={midX}
           y={midY}
           width={(PLOT.width - PLOT.padding * 2) / 2}
           height={(PLOT.height - PLOT.padding * 2) / 2}
-          fill="#fef08a"
+          fill={QUADRANT_COLORS.fragmented}
         />
+
+        <g transform={`translate(${midX + (PLOT.width - PLOT.padding * 2) / 4 - 8}, ${PLOT.padding + (PLOT.height - PLOT.padding * 2) / 4 - 10})`} aria-hidden>
+          <path
+            d="M8 16 C8 10 4 6 4 4 C4 2 6 0 8 0 C10 0 12 2 12 4 C12 6 8 10 8 16 Z"
+            fill="#2c8a52"
+            opacity={0.85}
+          />
+        </g>
 
         <rect
           x={PLOT.padding}
@@ -100,7 +118,7 @@ export function FutureMatrix({
           y1={PLOT.padding}
           x2={midX}
           y2={PLOT.height - PLOT.padding}
-          stroke="#1a1a1a"
+          stroke="#231352"
           strokeWidth={1}
           strokeDasharray="4 4"
           opacity={0.35}
@@ -110,7 +128,7 @@ export function FutureMatrix({
           y1={midY}
           x2={PLOT.width - PLOT.padding}
           y2={midY}
-          stroke="#1a1a1a"
+          stroke="#231352"
           strokeWidth={1}
           strokeDasharray="4 4"
           opacity={0.35}
@@ -120,7 +138,7 @@ export function FutureMatrix({
           x={PLOT.padding + 8}
           y={PLOT.padding + 14}
           className="fill-ffie-muted text-[8px] uppercase tracking-[0.08em]"
-          style={{ fontFamily: "var(--font-space-grotesk)" }}
+          style={{ fontFamily: "var(--font-sans)" }}
         >
           {QUADRANT_MATRIX_LABELS.techno_optimist}
         </text>
@@ -129,7 +147,7 @@ export function FutureMatrix({
           y={PLOT.padding + 14}
           textAnchor="end"
           className="fill-ffie-muted text-[8px] uppercase tracking-[0.08em]"
-          style={{ fontFamily: "var(--font-space-grotesk)" }}
+          style={{ fontFamily: "var(--font-sans)" }}
         >
           {QUADRANT_MATRIX_LABELS.feminist_preferred}
         </text>
@@ -137,7 +155,7 @@ export function FutureMatrix({
           x={PLOT.padding + 8}
           y={PLOT.height - PLOT.padding - 6}
           className="fill-ffie-muted text-[8px] uppercase tracking-[0.08em]"
-          style={{ fontFamily: "var(--font-space-grotesk)" }}
+          style={{ fontFamily: "var(--font-sans)" }}
         >
           {QUADRANT_MATRIX_LABELS.dominant_dystopian}
         </text>
@@ -146,7 +164,7 @@ export function FutureMatrix({
           y={PLOT.height - PLOT.padding - 6}
           textAnchor="end"
           className="fill-ffie-muted text-[8px] uppercase tracking-[0.08em]"
-          style={{ fontFamily: "var(--font-space-grotesk)" }}
+          style={{ fontFamily: "var(--font-sans)" }}
         >
           {QUADRANT_MATRIX_LABELS.fragmented}
         </text>
@@ -155,7 +173,7 @@ export function FutureMatrix({
           x={PLOT.padding}
           y={PLOT.height - 20}
           className="fill-ffie-ink text-[11px] font-medium"
-          style={{ fontFamily: "var(--font-space-grotesk)" }}
+          style={{ fontFamily: "var(--font-sans)" }}
         >
           Extractive
         </text>
@@ -164,7 +182,7 @@ export function FutureMatrix({
           y={PLOT.height - 20}
           textAnchor="end"
           className="fill-ffie-ink text-[11px] font-medium"
-          style={{ fontFamily: "var(--font-space-grotesk)" }}
+          style={{ fontFamily: "var(--font-sans)" }}
         >
           Emancipatory
         </text>
@@ -174,7 +192,7 @@ export function FutureMatrix({
           textAnchor="middle"
           transform={`rotate(-90 24 ${PLOT.height - PLOT.padding})`}
           className="fill-ffie-ink text-[11px] font-medium"
-          style={{ fontFamily: "var(--font-space-grotesk)" }}
+          style={{ fontFamily: "var(--font-sans)" }}
         >
           Hierarchical
         </text>
@@ -184,13 +202,14 @@ export function FutureMatrix({
           textAnchor="middle"
           transform={`rotate(-90 24 ${PLOT.padding})`}
           className="fill-ffie-ink text-[11px] font-medium"
-          style={{ fontFamily: "var(--font-space-grotesk)" }}
+          style={{ fontFamily: "var(--font-sans)" }}
         >
           Collective Care
         </text>
 
         {entries.map((entry) => {
-          const { cx, cy } = plotToSvg(entry.position.x, entry.position.y);
+          const unit = toUnitPlotPosition(entry);
+          const { cx, cy } = plotToSvg(unit.x, unit.y);
           const isSelected = selectedId === entry.id;
           const isDimmed =
             highlightCountry !== "all" && entry.country !== highlightCountry;
@@ -203,7 +222,7 @@ export function FutureMatrix({
                 cy={cy}
                 r={isSelected ? 14 : 10}
                 fill={color}
-                stroke={isSelected ? "#5b3a7a" : "#ffffff"}
+                stroke={isSelected ? "#6e52c4" : "#ffffff"}
                 strokeWidth={isSelected ? 3 : 2}
                 className={onSelect || linkToDetail ? "cursor-pointer" : ""}
                 initial={false}
@@ -226,7 +245,7 @@ export function FutureMatrix({
                 textAnchor="middle"
                 className="pointer-events-none fill-ffie-ink text-[10px] font-medium"
                 style={{
-                  fontFamily: "var(--font-space-grotesk)",
+                  fontFamily: "var(--font-sans)",
                   opacity: isDimmed ? 0.35 : 1,
                 }}
               >

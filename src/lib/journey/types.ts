@@ -1,6 +1,12 @@
-import type { FutureQuadrant } from "@/types/future";
+import type {
+  FutureQuadrant,
+  PowerPosition,
+} from "@/types/future";
 import { QUADRANT_LABELS } from "@/types/future";
 import type { NarrativeCard } from "@/data/narrative-cards";
+
+/** 5-point Likert used for automated matrix placement. */
+export type LikertScore = 1 | 2 | 3 | 4 | 5;
 
 export type JourneyStage =
   | "entry"
@@ -48,7 +54,18 @@ export type JourneyDraft = {
   publicPromise: string;
   hiddenFunction: string;
   imageDataUrl: string | null;
+  /** System Logic Likert (Q1) — Extrai ↔ Devolve */
+  systemLogicScore: LikertScore | null;
+  /** Power Organization Likert (Q2) — centralizada ↔ coletiva */
+  powerOrgScore: LikertScore | null;
+  /**
+   * Matrix coords in signed space [-1, 1]:
+   * x: Extractive (−) ↔ Emancipatory (+)
+   * y: Hierarchical (−) ↔ Collective Care (+)
+   * Matches Critical Feminist Matrix axes (Figma + FutureMatrix).
+   */
   position: { x: number; y: number };
+  powerPosition: PowerPosition;
   placementJustification: string;
   submitToCommons: boolean;
   submittedId: string | null;
@@ -80,11 +97,66 @@ export const ROLE_SUGGESTIONS = [
   "Healthcare administrator",
 ];
 
+/**
+ * Quadrant from signed coords (−1…1), matching Figma CriticalFeministMatrix:
+ * TL techno_optimist · TR feminist_preferable · BL dominant_dystopian · BR fragmented
+ *
+ * Journey / Future Commons Likert placement always uses signed space.
+ * Research Findings keep explicit `quadrant` on each seed entry (unit 0…1 positions).
+ */
 export function quadrantFromPosition(x: number, y: number): FutureQuadrant {
-  if (x < 0.5 && y >= 0.5) return "techno_optimist";
-  if (x >= 0.5 && y >= 0.5) return "feminist_preferred";
-  if (x < 0.5 && y < 0.5) return "dominant_dystopian";
+  if (x < 0 && y >= 0) return "techno_optimist";
+  if (x >= 0 && y >= 0) return "feminist_preferred";
+  if (x < 0 && y < 0) return "dominant_dystopian";
   return "fragmented";
+}
+
+/** Map signed [−1,1] → unit [0,1] for SVG plotting alongside research-findings seed. */
+export function signedToUnit(x: number, y: number): { x: number; y: number } {
+  return { x: (x + 1) / 2, y: (y + 1) / 2 };
+}
+
+/** Likert 1–5 → signed −1.0 … 1.0 (1→−1, 3→0, 5→1). */
+export function likertToSigned(score: LikertScore): number {
+  return (score - 3) / 2;
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function jitter(amount = 0.05) {
+  return (Math.random() * 2 - 1) * amount;
+}
+
+/**
+ * Derive matrix position, quadrant, and power_position from the two Likert answers.
+ * power_position: Q2 1–2 (centralized) → hegemonic; 3–5 (collective) → marginalized
+ * — matches seed polarity (sole hegemonic entry sits on the hierarchical side).
+ */
+export function computePlacementFromLikert(
+  systemLogic: LikertScore,
+  powerOrg: LikertScore,
+): {
+  position: { x: number; y: number };
+  quadrant: FutureQuadrant;
+  powerPosition: PowerPosition;
+  placementJustification: string;
+} {
+  const x = clamp(likertToSigned(systemLogic) + jitter(), -1, 1);
+  const y = clamp(likertToSigned(powerOrg) + jitter(), -1, 1);
+  const powerPosition: PowerPosition =
+    powerOrg <= 2 ? "hegemonic" : "marginalized";
+
+  return {
+    position: { x, y },
+    quadrant: quadrantFromPosition(x, y),
+    powerPosition,
+    placementJustification: [
+      `System logic (Extrai→Devolve): ${systemLogic}/5.`,
+      `Power organization (centralizada→coletiva): ${powerOrg}/5.`,
+    ].join(" "),
+  };
 }
 
 export function buildTitle(artifactName: string, characterName: string): string {
@@ -143,7 +215,10 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     publicPromise: "",
     hiddenFunction: "",
     imageDataUrl: null,
-    position: { x: 0.5, y: 0.5 },
+    systemLogicScore: null,
+    powerOrgScore: null,
+    position: { x: 0, y: 0 },
+    powerPosition: "marginalized",
     placementJustification: "",
     submitToCommons: false,
     submittedId: null,
@@ -158,7 +233,18 @@ export function loadDraft(): JourneyDraft | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as JourneyDraft) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<JourneyDraft>;
+    if (!parsed.sessionId) return null;
+    return {
+      ...createInitialDraft(parsed.sessionId),
+      ...parsed,
+      systemLogicScore: parsed.systemLogicScore ?? null,
+      powerOrgScore: parsed.powerOrgScore ?? null,
+      powerPosition: parsed.powerPosition ?? "marginalized",
+      position: parsed.position ?? { x: 0, y: 0 },
+      values: parsed.values ?? [],
+    };
   } catch {
     return null;
   }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/server";
-import type { FutureQuadrant } from "@/types/future";
+import type { FutureQuadrant, PowerPosition } from "@/types/future";
 
 export type SubmissionPayload = {
   sessionId: string;
@@ -19,6 +19,7 @@ export type SubmissionPayload = {
   hiddenFunction: string;
   tension: string;
   quadrant: FutureQuadrant;
+  powerPosition?: PowerPosition;
   position: { x: number; y: number };
   placementJustification: string;
   cardProvenance: string[];
@@ -126,7 +127,8 @@ export async function POST(request: Request) {
       artifact_hidden_function: body.hiddenFunction,
       tension: body.tension,
       quadrant: body.quadrant,
-      power_position: "marginalized",
+      power_position:
+        body.powerPosition === "hegemonic" ? "hegemonic" : "marginalized",
       position_x: body.position.x,
       position_y: body.position.y,
       placement_justification: body.placementJustification,

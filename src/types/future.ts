@@ -57,6 +57,22 @@ export const QUADRANT_MATRIX_LABELS: Record<FutureQuadrant, string> = {
   feminist_preferred: "Feminist Preferable",
 };
 
+/** Matrix quadrant fill colors (Critical Feminist Matrix) */
+export const QUADRANT_COLORS: Record<FutureQuadrant, string> = {
+  techno_optimist: "#dbeafe",
+  feminist_preferred: "#eee9fd",
+  dominant_dystopian: "#fee2e2",
+  fragmented: "#fef9c3",
+};
+
+/** Accent text on quadrant backgrounds */
+export const QUADRANT_TEXT_COLORS: Record<FutureQuadrant, string> = {
+  techno_optimist: "#1e40af",
+  feminist_preferred: "#6e52c4",
+  dominant_dystopian: "#991b1b",
+  fragmented: "#92400e",
+};
+
 export const COUNTRY_COLORS: Record<FutureCountry, string> = {
   Brazil: "#2d6a4f",
   Portugal: "#1d3557",

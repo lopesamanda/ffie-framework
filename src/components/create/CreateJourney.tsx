@@ -1,28 +1,48 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toPng } from "html-to-image";
-import { PhaseTimeline } from "@/components/create/PhaseTimeline";
+import { CreateStageShell } from "@/components/create/design/CreateStageShell";
+import { FfieButton } from "@/components/create/design/FfieButton";
+import {
+  CategoryRegisterTiles,
+  EnvironmentalBanner,
+} from "@/components/create/design/CategoryRegisterTiles";
+import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
+import { OracleCard } from "@/components/create/design/OracleCard";
 import { NarrativeCardFace } from "@/components/create/NarrativeCardFace";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
-import { MatrixPlacementPicker } from "@/components/create/MatrixPlacementPicker";
+import { MatrixReveal } from "@/components/create/MatrixReveal";
+import { LikertQuestion } from "@/components/create/LikertQuestion";
+import { AiCapabilityCardPicker } from "@/components/create/AiCapabilityCardPicker";
+import { CATEGORY_LABELS } from "@/data/narrative-cards";
+import {
+  ShareableFutureCard,
+  SHAREABLE_CARD_HEIGHT,
+  SHAREABLE_CARD_WIDTH,
+} from "@/components/create/ShareableFutureCard";
 import { FuturePreviewPanel } from "@/components/FuturePreviewPanel";
 import {
   buildCombinedTension,
+  buildEcosystemAmbitionSeed,
+  buildWeaknessCollisionContext,
   drawWorkshopHand,
   ENVIRONMENTAL_IMPACT_CARD,
+  ORACLE_REVEAL_SEQUENCE,
 } from "@/data/narrative-cards";
-import { researchFindingsSeed } from "@/data/research-findings-seed";
+import {
+  researchFindingsSeed,
+} from "@/data/research-findings-seed";
 import {
   buildAiImagePrompt,
   buildNarrative,
   buildReflectionQuestion,
   buildTitle,
   clearDraft,
+  computePlacementFromLikert,
   createInitialDraft,
-  formatQuadrantLabel,
   getOrCreateSessionId,
   loadDraft,
   quadrantFromPosition,
@@ -31,6 +51,7 @@ import {
   WORKSHOP_VALUES,
   type JourneyDraft,
   type JourneyStage,
+  type LikertScore,
 } from "@/lib/journey/types";
 
 const EXPLORATION_IDS = [
@@ -39,27 +60,35 @@ const EXPLORATION_IDS = [
   "pt-john-bell-open-human",
 ];
 
-const ORIENTATION_COPY = [
-  "This isn't a quiz. There are no right answers — feminist foresight means the future looks different depending on where you stand.",
-  "You'll draw cards, reflect, and build a small future of your own — about 15 minutes.",
-  "Then you'll see the futures other people, and the original research, have already imagined.",
-];
+const FIELD =
+  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
 
 const CREATION_STEPS = [
-  "Character & location",
-  "Role in 2036",
-  "Desire & fear",
-  "Three values",
-  "Artifact",
+  "Who carries it",
+  "The machine",
+  "Hope & fear",
+  "What guides her",
+  "Artifact name",
+  "Ecosystem ambition",
+  "Goal × weakness",
   "Image (optional)",
+  "Where it lands",
 ];
 
 export function CreateJourney() {
+  const router = useRouter();
   const [draft, setDraft] = useState<JourneyDraft | null>(null);
   const [exploreEntryId, setExploreEntryId] = useState<string | null>(null);
   const [revealing, setRevealing] = useState(false);
+  const [oracleRevealIndex, setOracleRevealIndex] = useState(0);
+  const [cardFlipped, setCardFlipped] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    setCardFlipped(false);
+  }, [oracleRevealIndex]);
 
   useEffect(() => {
     const sessionId = getOrCreateSessionId();
@@ -98,6 +127,7 @@ export function CreateJourney() {
 
   const handleDrawCards = () => {
     setRevealing(true);
+    setOracleRevealIndex(0);
     setTimeout(() => {
       const hand = drawWorkshopHand();
       const combinedTension = buildCombinedTension(hand);
@@ -107,6 +137,52 @@ export function CreateJourney() {
       });
       setRevealing(false);
     }, 900);
+  };
+
+  const captureShareImage = async () => {
+    const node = document.getElementById("shareable-future-card");
+    if (!node) return null;
+    return toPng(node, {
+      pixelRatio: 1,
+      width: SHAREABLE_CARD_WIDTH,
+      height: SHAREABLE_CARD_HEIGHT,
+    });
+  };
+
+  const handleDownloadShareImage = async () => {
+    if (!draft) return;
+    const dataUrl = await captureShareImage();
+    if (!dataUrl) return;
+    const link = document.createElement("a");
+    link.download = `${draft.title || "ffie-future"}.png`;
+    link.href = dataUrl;
+    link.click();
+  };
+
+  const handleShareImage = async () => {
+    if (!draft) return;
+    const dataUrl = await captureShareImage();
+    if (!dataUrl) return;
+
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], `${draft.title || "ffie-future"}.png`, {
+      type: "image/png",
+    });
+
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: draft.title,
+          text: "A future imagined with FFIE",
+        });
+        return;
+      } catch {
+        /* fall through to download */
+      }
+    }
+
+    handleDownloadShareImage();
   };
 
   const handleFinishOutput = async () => {
@@ -148,6 +224,7 @@ export function CreateJourney() {
           hiddenFunction: draft.hiddenFunction,
           tension: draft.combinedTension,
           quadrant,
+          powerPosition: draft.powerPosition,
           position: draft.position,
           placementJustification: draft.placementJustification,
           cardProvenance: draft.cardHand
@@ -204,241 +281,289 @@ export function CreateJourney() {
     );
   }
 
+  const showLivePreview =
+    draft.stage !== "entry" &&
+    draft.stage !== "orientation" &&
+    draft.stage !== "output" &&
+    draft.stage !== "discovery";
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
-      <PhaseTimeline current={draft.stage} />
-
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+      <div
+        className={`grid gap-10 lg:items-start ${
+          showLivePreview
+            ? "lg:grid-cols-[minmax(0,1fr)_320px]"
+            : "lg:grid-cols-1"
+        }`}
+      >
         <div className="min-w-0">
           <AnimatePresence mode="wait">
             <motion.div
-              key={draft.stage + draft.orientationStep + draft.creationStep}
-              initial={{ opacity: 0, y: 12 }}
+              key={draft.stage + draft.creationStep + oracleRevealIndex}
+              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
+              exit={reduceMotion ? undefined : { opacity: 0, y: -12 }}
               transition={{ duration: 0.25 }}
             >
               {draft.stage === "entry" && (
-                <section className="mx-auto max-w-xl space-y-8 text-center">
-                  <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-                    What future are you carrying?
-                  </h1>
-                  <p className="text-lg text-ffie-muted">
-                    Draw a hand of cards and find out.
-                  </p>
-                  <div className="flex justify-center gap-2">
-                    {[0, 1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="h-24 w-16 rounded-lg border border-ffie-line bg-ffie-accent-soft/40"
-                      />
-                    ))}
+                <CreateStageShell stage="entry">
+                  <div className="relative mx-auto max-w-lg text-center">
+                    <p
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none font-display text-[120px] font-bold leading-none tracking-tighter text-ffie-ink/[0.04] sm:text-[160px]"
+                    >
+                      2036
+                    </p>
+                    <div className="relative space-y-8 py-6">
+                      <div className="flex justify-center gap-2">
+                        {[0, 1, 2, 3].map((i) => (
+                          <motion.div
+                            key={i}
+                            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 + i * 0.08 }}
+                            className="h-24 w-16 rounded-lg border-2 border-ffie-line bg-ffie-accent-soft/60 shadow-sm"
+                          />
+                        ))}
+                      </div>
+                      <FfieButton onClick={() => goTo("orientation")}>
+                        Begin
+                      </FfieButton>
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => goTo("orientation")}
-                    className="rounded-full bg-ffie-accent px-8 py-3 text-sm font-medium text-white transition hover:opacity-90"
-                  >
-                    Begin
-                  </button>
-                </section>
+                </CreateStageShell>
               )}
 
               {draft.stage === "orientation" && (
-                <section className="mx-auto max-w-xl space-y-8 text-center">
-                  <p className="text-lg leading-relaxed text-ffie-ink">
-                    {ORIENTATION_COPY[draft.orientationStep]}
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-2 text-xs uppercase tracking-wide text-ffie-muted">
-                    <span>Risks</span>
-                    <span>·</span>
-                    <span>Benefits</span>
-                    <span>·</span>
-                    <span>Trust</span>
-                    <span>·</span>
-                    <span>Barriers</span>
-                    <span>·</span>
-                    <span className="text-ffie-accent">Environmental lens</span>
+                <CreateStageShell stage="orientation">
+                  <CategoryRegisterTiles />
+                  <EnvironmentalBanner />
+                  <div className="mt-8">
+                    <FfieButton onClick={() => goTo("exploration")}>
+                      See examples
+                    </FfieButton>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (draft.orientationStep < ORIENTATION_COPY.length - 1) {
-                        update({ orientationStep: draft.orientationStep + 1 });
-                      } else {
-                        goTo("exploration", { orientationStep: 0 });
-                      }
-                    }}
-                    className="rounded-full bg-ffie-accent px-8 py-3 text-sm font-medium text-white"
-                  >
-                    {draft.orientationStep < ORIENTATION_COPY.length - 1
-                      ? "Continue"
-                      : "See examples"}
-                  </button>
-                </section>
+                </CreateStageShell>
               )}
 
               {draft.stage === "exploration" && (
-                <section className="space-y-6">
-                  <div>
-                    <h2 className="text-2xl font-semibold tracking-tight">
-                      Futures already imagined
-                    </h2>
-                    <p className="mt-2 text-sm text-ffie-muted">
-                      Three diegetic prototypes from the thesis — from the same
-                      19-card deck you are about to use.
-                    </p>
-                  </div>
+                <CreateStageShell stage="exploration">
                   <div className="grid gap-4 md:grid-cols-3">
-                    {explorationEntries.map((entry) =>
+                    {explorationEntries.map((entry, index) =>
                       entry ? (
-                        <button
+                        <motion.button
                           key={entry.id}
                           type="button"
+                          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+                          animate={{
+                            opacity: 1,
+                            y: reduceMotion ? 0 : [0, -4, 0],
+                          }}
+                          transition={{
+                            opacity: { delay: index * 0.08 },
+                            y: reduceMotion
+                              ? { duration: 0 }
+                              : {
+                                  delay: index * 0.08,
+                                  duration: 4,
+                                  repeat: Infinity,
+                                  ease: "easeInOut",
+                                },
+                          }}
                           onClick={() => setExploreEntryId(entry.id)}
-                          className="rounded-xl border border-ffie-line bg-ffie-surface p-4 text-left transition hover:border-ffie-accent/40"
+                          className="rounded-xl border border-ffie-line bg-ffie-surface p-4 text-left shadow-[0_4px_16px_rgba(35,19,82,0.06)] transition hover:-translate-y-0.5 hover:border-ffie-accent/30"
                         >
-                          <p className="text-xs uppercase tracking-wide text-ffie-accent">
+                          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
                             Research Finding
                           </p>
-                          <h3 className="mt-2 font-semibold">{entry.title}</h3>
-                          <p className="mt-1 text-sm text-ffie-muted line-clamp-2">
+                          <h3 className="mt-2 font-display text-base font-bold text-ffie-ink">
+                            {entry.title}
+                          </h3>
+                          <p className="mt-1 line-clamp-2 text-sm text-ffie-muted">
                             {entry.tension}
                           </p>
-                        </button>
+                        </motion.button>
                       ) : null,
                     )}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => goTo("reflection")}
-                    className="rounded-full bg-ffie-accent px-6 py-2.5 text-sm font-medium text-white"
-                  >
-                    Draw your cards
-                  </button>
-                </section>
+                  <div className="mt-8">
+                    <FfieButton onClick={() => goTo("reflection")}>
+                      Draw your cards
+                    </FfieButton>
+                  </div>
+                </CreateStageShell>
               )}
 
               {draft.stage === "reflection" && (
-                <section className="space-y-6">
-                  <div>
-                    <h2 className="text-2xl font-semibold tracking-tight">
-                      Your hand
-                    </h2>
-                    <p className="mt-2 text-sm text-ffie-muted">
-                      One card from each category, plus the Environmental Impact
-                      lens applied to every session — as in the thesis workshops.
-                    </p>
-                  </div>
-
+                <CreateStageShell stage="reflection">
                   {!draft.cardHand ? (
-                    <button
-                      type="button"
-                      disabled={revealing}
-                      onClick={handleDrawCards}
-                      className="rounded-full bg-ffie-accent px-6 py-2.5 text-sm font-medium text-white disabled:opacity-60"
-                    >
+                    <FfieButton disabled={revealing} onClick={handleDrawCards}>
                       {revealing ? "Drawing…" : "Reveal cards"}
-                    </button>
+                    </FfieButton>
                   ) : (
                     <>
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <NarrativeCardFace card={draft.cardHand.risk} />
-                        <NarrativeCardFace card={draft.cardHand.benefit} />
-                        <NarrativeCardFace card={draft.cardHand.trust} />
-                        <NarrativeCardFace card={draft.cardHand.barrier} />
-                        <NarrativeCardFace
-                          card={draft.cardHand.transversal}
-                          fixedLens
-                        />
-                      </div>
-                      <div className="rounded-xl border border-ffie-accent/20 bg-ffie-accent-soft p-4">
-                        <p className="text-xs uppercase tracking-wide text-ffie-accent">
-                          Combined tension
-                        </p>
-                        <p className="mt-2 text-sm font-medium text-ffie-ink">
-                          {draft.combinedTension}
-                        </p>
-                        <p className="mt-2 text-xs text-ffie-muted">
-                          Lens: {ENVIRONMENTAL_IMPACT_CARD.tension} —{" "}
-                          {ENVIRONMENTAL_IMPACT_CARD.description.slice(0, 120)}…
-                        </p>
-                      </div>
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium text-ffie-ink">
-                          Where do you feel this tension yourself — in your work,
-                          your community, your own use of AI?
-                        </span>
-                        <textarea
-                          value={draft.reflectionText}
-                          onChange={(event) =>
-                            update({ reflectionText: event.target.value })
-                          }
-                          rows={3}
-                          className="w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm"
-                          placeholder="A sentence or two is enough."
-                        />
-                      </label>
-                      <button
-                        type="button"
-                        disabled={!draft.reflectionText.trim()}
-                        onClick={() => goTo("creation", { creationStep: 0 })}
-                        className="rounded-full bg-ffie-accent px-6 py-2.5 text-sm font-medium text-white disabled:opacity-40"
-                      >
-                        Build your future
-                      </button>
+                      {(() => {
+                        const hand = draft.cardHand!;
+                        const revealKey = ORACLE_REVEAL_SEQUENCE[oracleRevealIndex];
+                        const currentCard = hand[revealKey];
+                        const isLastCard =
+                          oracleRevealIndex >= ORACLE_REVEAL_SEQUENCE.length - 1;
+
+                        if (oracleRevealIndex < ORACLE_REVEAL_SEQUENCE.length) {
+                          return (
+                            <div className="mx-auto max-w-md space-y-4">
+                              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+                                Card {oracleRevealIndex + 1} of{" "}
+                                {ORACLE_REVEAL_SEQUENCE.length} —{" "}
+                                {CATEGORY_LABELS[currentCard.category]}
+                              </p>
+                              {!cardFlipped ? (
+                                <OracleCard
+                                  category={currentCard.category}
+                                  revealed={false}
+                                  coverLabel={CATEGORY_LABELS[currentCard.category]}
+                                  onReveal={() => setCardFlipped(true)}
+                                  className="mx-auto"
+                                />
+                              ) : (
+                                <OracleCard
+                                  category={currentCard.category}
+                                  revealed
+                                  className="mx-auto"
+                                >
+                                  <NarrativeCardFace
+                                    card={currentCard}
+                                    showReflection
+                                    embedded
+                                  />
+                                </OracleCard>
+                              )}
+                              <div className="flex gap-3">
+                                {oracleRevealIndex > 0 && (
+                                  <FfieButton
+                                    variant="secondary"
+                                    onClick={() =>
+                                      setOracleRevealIndex((i) => i - 1)
+                                    }
+                                  >
+                                    Back
+                                  </FfieButton>
+                                )}
+                                {cardFlipped && (
+                                  <FfieButton
+                                    onClick={() => {
+                                      if (isLastCard) {
+                                        setOracleRevealIndex(
+                                          ORACLE_REVEAL_SEQUENCE.length,
+                                        );
+                                      } else {
+                                        setOracleRevealIndex((i) => i + 1);
+                                      }
+                                    }}
+                                  >
+                                    {isLastCard ? "Continue" : "Next card"}
+                                  </FfieButton>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <>
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                              <NarrativeCardFace card={hand.risk} />
+                              <NarrativeCardFace card={hand.benefit} />
+                              <NarrativeCardFace card={hand.trust} />
+                              <NarrativeCardFace card={hand.barrier} />
+                              <motion.div
+                                initial={reduceMotion ? false : { opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.5 }}
+                                className="sm:col-span-2 lg:col-span-1"
+                              >
+                                <NarrativeCardFace
+                                  card={hand.transversal}
+                                  fixedLens
+                                />
+                              </motion.div>
+                            </div>
+                            <div className="mt-6 rounded-xl border border-ffie-accent/20 bg-ffie-accent-soft p-4">
+                              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
+                                Combined tension
+                              </p>
+                              <p className="mt-2 text-sm font-medium text-ffie-ink">
+                                {draft.combinedTension}
+                              </p>
+                              <p className="mt-2 text-xs text-ffie-muted">
+                                Lens: {ENVIRONMENTAL_IMPACT_CARD.tension} —{" "}
+                                {ENVIRONMENTAL_IMPACT_CARD.description.slice(0, 120)}…
+                              </p>
+                            </div>
+                            <label className="mt-6 block space-y-2">
+                              <span className="text-sm font-medium text-ffie-ink">
+                                Where do you feel this tension yourself — in your
+                                work, your community, your own use of AI?
+                              </span>
+                              <textarea
+                                value={draft.reflectionText}
+                                onChange={(event) =>
+                                  update({ reflectionText: event.target.value })
+                                }
+                                rows={3}
+                                className={FIELD}
+                                placeholder="A sentence or two is enough."
+                              />
+                            </label>
+                            <div className="mt-6">
+                              <FfieButton
+                                disabled={!draft.reflectionText.trim()}
+                                onClick={() => goTo("creation", { creationStep: 0 })}
+                              >
+                                Build your future
+                              </FfieButton>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </>
                   )}
-                </section>
+                </CreateStageShell>
               )}
 
               {draft.stage === "creation" && (
-                <section className="space-y-6">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h2 className="text-2xl font-semibold tracking-tight">
-                      Creation
-                    </h2>
-                    <span className="text-xs uppercase tracking-wide text-ffie-muted">
-                      Step {draft.creationStep + 1} of {CREATION_STEPS.length} —{" "}
-                      {CREATION_STEPS[draft.creationStep]}
-                    </span>
-                  </div>
-
+                <CreateStageShell
+                  stage="creation"
+                  subtitle={`Step ${draft.creationStep + 1} of ${CREATION_STEPS.length} — ${CREATION_STEPS[draft.creationStep]}`}
+                >
                   {draft.creationStep === 0 && (
                     <div className="space-y-4">
+                      <p className="text-sm leading-relaxed text-ffie-ink">
+                        Quem carrega essa tensão todos os dias? Dá um nome a
+                        ela, e diz o que ela faz.
+                      </p>
                       <label className="block space-y-2">
-                        <span className="text-sm font-medium">Character name</span>
-                        <input
-                          value={draft.characterName}
-                          onChange={(e) => update({ characterName: e.target.value })}
-                          placeholder="e.g. Marina"
-                          className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
-                        />
-                      </label>
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium">
-                          Where are they speaking from?
+                        <span className="text-xs font-medium uppercase tracking-wide text-ffie-muted">
+                          Nome
                         </span>
                         <input
-                          value={draft.location}
-                          onChange={(e) => update({ location: e.target.value })}
-                          placeholder="City, country, or context — open text"
-                          className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
+                          value={draft.characterName}
+                          onChange={(e) =>
+                            update({ characterName: e.target.value })
+                          }
+                          placeholder="ex. Marina"
+                          className={FIELD}
                         />
                       </label>
-                    </div>
-                  )}
-
-                  {draft.creationStep === 1 && (
-                    <div className="space-y-4">
                       <label className="block space-y-2">
-                        <span className="text-sm font-medium">
-                          Role in an innovation ecosystem (2036)
+                        <span className="text-xs font-medium uppercase tracking-wide text-ffie-muted">
+                          O que ela faz
                         </span>
                         <input
                           value={draft.role}
                           onChange={(e) => update({ role: e.target.value })}
-                          className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
+                          placeholder="Papel no ecossistema de inovação, 2036"
+                          className={FIELD}
                         />
                       </label>
                       <div className="flex flex-wrap gap-2">
@@ -454,45 +579,87 @@ export function CreateJourney() {
                         ))}
                       </div>
                       <label className="block space-y-2">
-                        <span className="text-sm font-medium">
-                          AI function in daily life
+                        <span className="text-xs font-medium uppercase tracking-wide text-ffie-muted">
+                          De onde ela fala
                         </span>
                         <input
-                          value={draft.aiFunction}
-                          onChange={(e) => update({ aiFunction: e.target.value })}
-                          placeholder="Optional"
-                          className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
+                          value={draft.location}
+                          onChange={(e) => update({ location: e.target.value })}
+                          placeholder="Cidade, país, ou contexto"
+                          className={FIELD}
                         />
                       </label>
                     </div>
                   )}
 
-                  {draft.creationStep === 2 && (
+                  {draft.creationStep === 1 && (
                     <div className="space-y-4">
                       <label className="block space-y-2">
-                        <span className="text-sm font-medium">One desire</span>
-                        <input
-                          value={draft.desire}
-                          onChange={(e) => update({ desire: e.target.value })}
-                          placeholder={`Prompted by: ${draft.combinedTension}`}
-                          className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
+                        <span className="text-sm font-medium leading-relaxed text-ffie-ink">
+                          Existe uma máquina na vida dela que ela não escolheu.
+                          O que essa máquina faz, exatamente?
+                        </span>
+                        <textarea
+                          value={draft.aiFunction}
+                          onChange={(e) =>
+                            update({ aiFunction: e.target.value })
+                          }
+                          rows={3}
+                          className={FIELD}
                         />
                       </label>
+                      <AiCapabilityCardPicker
+                        value={draft.aiFunction}
+                        onSelect={(text) => update({ aiFunction: text })}
+                      />
+                    </div>
+                  )}
+
+                  {draft.creationStep === 2 && (
+                    <div className="space-y-6">
                       <label className="block space-y-2">
-                        <span className="text-sm font-medium">One fear</span>
-                        <input
-                          value={draft.fear}
-                          onChange={(e) => update({ fear: e.target.value })}
-                          className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
-                        />
+                        <span className="text-sm font-medium text-ffie-ink">
+                          Ela ainda tem esperança de que
+                        </span>
+                        <div className="flex items-stretch overflow-hidden rounded-xl border border-ffie-line">
+                          <span className="hidden shrink-0 bg-ffie-bg px-3 py-3 text-sm text-ffie-muted sm:inline">
+                            …
+                          </span>
+                          <input
+                            value={draft.desire}
+                            onChange={(e) => update({ desire: e.target.value })}
+                            placeholder="complete a frase"
+                            className={`min-w-0 flex-1 px-4 py-3 text-sm outline-none`}
+                          />
+                        </div>
+                      </label>
+                      <label className="block space-y-2">
+                        <span className="text-sm font-medium text-ffie-ink">
+                          O que ela mais teme é
+                        </span>
+                        <div className="flex items-stretch overflow-hidden rounded-xl border border-ffie-line">
+                          <span className="hidden shrink-0 bg-ffie-bg px-3 py-3 text-sm text-ffie-muted sm:inline">
+                            …
+                          </span>
+                          <input
+                            value={draft.fear}
+                            onChange={(e) => update({ fear: e.target.value })}
+                            placeholder="complete a frase"
+                            className={`min-w-0 flex-1 px-4 py-3 text-sm outline-none`}
+                          />
+                        </div>
                       </label>
                     </div>
                   )}
 
                   {draft.creationStep === 3 && (
                     <div className="space-y-3">
+                      <p className="text-sm font-medium text-ffie-ink">
+                        O que guia as escolhas dela?
+                      </p>
                       <p className="text-sm text-ffie-muted">
-                        Choose three non-negotiable values ({draft.values.length}/3)
+                        Escolha três valores inegociáveis ({draft.values.length}
+                        /3)
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {WORKSHOP_VALUES.map((value) => {
@@ -504,10 +671,14 @@ export function CreateJourney() {
                               onClick={() => {
                                 if (selected) {
                                   update({
-                                    values: draft.values.filter((v) => v !== value),
+                                    values: draft.values.filter(
+                                      (v) => v !== value,
+                                    ),
                                   });
                                 } else if (draft.values.length < 3) {
-                                  update({ values: [...draft.values, value] });
+                                  update({
+                                    values: [...draft.values, value],
+                                  });
                                 }
                               }}
                               className={`rounded-full border px-3 py-1.5 text-xs capitalize ${
@@ -527,36 +698,103 @@ export function CreateJourney() {
                   {draft.creationStep === 4 && (
                     <div className="space-y-4">
                       <label className="block space-y-2">
-                        <span className="text-sm font-medium">Artifact name</span>
+                        <span className="text-sm font-medium leading-relaxed text-ffie-ink">
+                          Esse objeto/sistema tem um nome. Qual é?
+                        </span>
                         <input
                           value={draft.artifactName}
-                          onChange={(e) => update({ artifactName: e.target.value })}
-                          className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
-                        />
-                      </label>
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium">Public promise</span>
-                        <input
-                          value={draft.publicPromise}
-                          onChange={(e) => update({ publicPromise: e.target.value })}
-                          placeholder="What it claims to offer"
-                          className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
-                        />
-                      </label>
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium">Hidden function / tension</span>
-                        <textarea
-                          value={draft.hiddenFunction}
-                          onChange={(e) => update({ hiddenFunction: e.target.value })}
-                          placeholder="An artifact that promises ___ but actually ___"
-                          rows={3}
-                          className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
+                          onChange={(e) =>
+                            update({ artifactName: e.target.value })
+                          }
+                          className={FIELD}
                         />
                       </label>
                     </div>
                   )}
 
-                  {draft.creationStep === 5 && (
+                  {draft.creationStep === 5 && draft.cardHand && (
+                    <div className="space-y-4">
+                      <p className="text-sm leading-relaxed text-ffie-ink">
+                        O ecossistema de inovação publicamente diz que quer
+                        tecnologia que entregue isto — com base nas cartas de
+                        Benefício e Confiança que você tirou:
+                      </p>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <NarrativeCardFace card={draft.cardHand.benefit} />
+                        <NarrativeCardFace card={draft.cardHand.trust} />
+                      </div>
+                      <label className="block space-y-2">
+                        <span className="text-sm font-medium text-ffie-ink">
+                          Venderam esse objeto pra ela dizendo que ele
+                        </span>
+                        <textarea
+                          value={draft.publicPromise}
+                          onChange={(e) =>
+                            update({ publicPromise: e.target.value })
+                          }
+                          placeholder={buildEcosystemAmbitionSeed(draft.cardHand)}
+                          rows={3}
+                          className={FIELD}
+                        />
+                      </label>
+                      {!draft.publicPromise.trim() && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            update({
+                              publicPromise: buildEcosystemAmbitionSeed(
+                                draft.cardHand!,
+                              ),
+                            })
+                          }
+                          className="text-xs font-medium text-ffie-accent hover:underline"
+                        >
+                          Usar sugestão do ecossistema
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {draft.creationStep === 6 && draft.cardHand && (
+                    <div className="space-y-4">
+                      <p className="text-sm leading-relaxed text-ffie-ink">
+                        Essa ambição encontra o risco e a barreira que você
+                        também tirou. Dado isso junto — o que o artefato
+                        realmente faz, escondido, que não anuncia?
+                      </p>
+                      <div className="rounded-xl border border-ffie-line bg-ffie-bg/60 p-4 text-sm">
+                        <p className="text-xs uppercase tracking-wide text-ffie-muted">
+                          Ambição pública
+                        </p>
+                        <p className="mt-1 text-ffie-ink">
+                          {draft.publicPromise || "—"}
+                        </p>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <NarrativeCardFace card={draft.cardHand.risk} />
+                        <NarrativeCardFace card={draft.cardHand.barrier} />
+                      </div>
+                      <p className="text-xs text-ffie-muted">
+                        {buildWeaknessCollisionContext(draft.cardHand)}
+                      </p>
+                      <label className="block space-y-2">
+                        <span className="text-sm font-medium text-ffie-ink">
+                          Mas o que ele realmente faz, escondido, é
+                        </span>
+                        <textarea
+                          value={draft.hiddenFunction}
+                          onChange={(e) =>
+                            update({ hiddenFunction: e.target.value })
+                          }
+                          placeholder="complete a frase"
+                          rows={4}
+                          className={FIELD}
+                        />
+                      </label>
+                    </div>
+                  )}
+
+                  {draft.creationStep === 7 && (
                     <div className="space-y-4">
                       <div className="rounded-xl border border-ffie-line bg-ffie-bg/60 p-4">
                         <p className="text-xs uppercase tracking-wide text-ffie-muted">
@@ -597,99 +835,127 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  <div className="flex gap-3">
+                  {draft.creationStep === 8 && (
+                    <div className="space-y-5">
+                      <p className="text-sm text-ffie-muted">
+                        Duas perguntas colocam esse futuro na Critical Feminist
+                        Matrix — sem arrastar, sem números.
+                      </p>
+                      <LikertQuestion
+                        question="No mundo que você imaginou, essa tecnologia principalmente extrai algo de quem a usa — tempo, dados, autonomia — ou devolve algo a essa pessoa?"
+                        lowLabel="Extrai"
+                        highLabel="Devolve"
+                        value={draft.systemLogicScore}
+                        onChange={(systemLogicScore: LikertScore) =>
+                          update({ systemLogicScore })
+                        }
+                      />
+                      <LikertQuestion
+                        question="Quem decide como essa tecnologia é usada nesse futuro — uma pessoa ou empresa no topo, ou a comunidade que convive com ela, junto?"
+                        lowLabel="Decisão centralizada"
+                        highLabel="Decisão coletiva"
+                        value={draft.powerOrgScore}
+                        onChange={(powerOrgScore: LikertScore) =>
+                          update({ powerOrgScore })
+                        }
+                      />
+                    </div>
+                  )}
+
+                  <div className="mt-8 flex gap-3">
                     {draft.creationStep > 0 && (
-                      <button
-                        type="button"
+                      <FfieButton
+                        variant="secondary"
                         onClick={() =>
                           update({ creationStep: draft.creationStep - 1 })
                         }
-                        className="rounded-full border border-ffie-line px-5 py-2 text-sm"
                       >
                         Back
-                      </button>
+                      </FfieButton>
                     )}
-                    <button
-                      type="button"
+                    <FfieButton
                       disabled={
                         (draft.creationStep === 0 &&
                           (!draft.characterName.trim() ||
+                            !draft.role.trim() ||
                             !draft.location.trim())) ||
-                        (draft.creationStep === 1 && !draft.role.trim()) ||
+                        (draft.creationStep === 1 &&
+                          !draft.aiFunction.trim()) ||
                         (draft.creationStep === 2 &&
                           (!draft.desire.trim() || !draft.fear.trim())) ||
-                        (draft.creationStep === 3 && draft.values.length !== 3) ||
+                        (draft.creationStep === 3 &&
+                          draft.values.length !== 3) ||
                         (draft.creationStep === 4 &&
-                          (!draft.artifactName.trim() ||
-                            !draft.publicPromise.trim() ||
-                            !draft.hiddenFunction.trim()))
+                          !draft.artifactName.trim()) ||
+                        (draft.creationStep === 5 &&
+                          !draft.publicPromise.trim()) ||
+                        (draft.creationStep === 6 &&
+                          !draft.hiddenFunction.trim()) ||
+                        (draft.creationStep === 8 &&
+                          (draft.systemLogicScore == null ||
+                            draft.powerOrgScore == null))
                       }
                       onClick={() => {
                         if (draft.creationStep < CREATION_STEPS.length - 1) {
                           update({ creationStep: draft.creationStep + 1 });
-                        } else {
-                          const title = buildTitle(
-                            draft.artifactName,
-                            draft.characterName,
-                          );
-                          const narrative = buildNarrative({
-                            ...draft,
-                            title,
-                          });
-                          goTo("output", { title, narrative, creationStep: 0 });
+                          return;
                         }
+
+                        if (
+                          draft.systemLogicScore == null ||
+                          draft.powerOrgScore == null
+                        ) {
+                          return;
+                        }
+
+                        const placement = computePlacementFromLikert(
+                          draft.systemLogicScore,
+                          draft.powerOrgScore,
+                        );
+                        const title = buildTitle(
+                          draft.artifactName,
+                          draft.characterName,
+                        );
+                        const nextDraft = {
+                          ...draft,
+                          ...placement,
+                          title,
+                        };
+                        const narrative = buildNarrative(nextDraft);
+                        goTo("output", {
+                          ...placement,
+                          title,
+                          narrative,
+                          creationStep: 0,
+                        });
                       }}
-                      className="rounded-full bg-ffie-accent px-5 py-2 text-sm font-medium text-white disabled:opacity-40"
                     >
                       {draft.creationStep < CREATION_STEPS.length - 1
                         ? "Next"
-                        : "Place on matrix"}
-                    </button>
+                        : "See your future"}
+                    </FfieButton>
                   </div>
-                </section>
+                </CreateStageShell>
               )}
 
               {draft.stage === "output" && (
-                <section className="space-y-6">
-                  <h2 className="text-2xl font-semibold tracking-tight">
-                    Future Output
-                  </h2>
-                  <MatrixPlacementPicker
-                    position={draft.position}
-                    onChange={(position) => update({ position })}
-                  />
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">
-                      Why does your artifact belong here?
-                    </span>
-                    <textarea
-                      value={draft.placementJustification}
-                      onChange={(e) =>
-                        update({ placementJustification: e.target.value })
-                      }
-                      rows={2}
-                      className="w-full rounded-xl border border-ffie-line px-4 py-3 text-sm"
+                <CreateStageShell stage="output" subtitle="">
+                  <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+                    <FutureCardPreview
+                      draft={draft}
+                      id="future-output-card"
+                      compact
                     />
-                  </label>
-                  <p className="text-sm text-ffie-muted">
-                    Quadrant:{" "}
-                    <strong className="text-ffie-ink">
-                      {formatQuadrantLabel(
-                        quadrantFromPosition(
-                          draft.position.x,
-                          draft.position.y,
-                        ),
-                      )}
-                    </strong>
-                  </p>
-                  <label className="flex items-start gap-3 rounded-xl border border-ffie-line p-4">
+                    <MatrixReveal position={draft.position} />
+                  </div>
+                  <label className="mt-8 flex items-start gap-3 rounded-xl border border-ffie-line bg-ffie-surface p-4">
                     <input
                       type="checkbox"
                       checked={draft.submitToCommons}
                       onChange={(e) =>
                         update({ submitToCommons: e.target.checked })
                       }
-                      className="mt-1"
+                      className="mt-1 accent-ffie-accent"
                     />
                     <span className="text-sm text-ffie-muted">
                       Submit this diegetic prototype to the Future Commons for
@@ -698,86 +964,96 @@ export function CreateJourney() {
                     </span>
                   </label>
                   {submitError && (
-                    <p className="text-sm text-red-700">{submitError}</p>
+                    <p className="mt-4 text-sm text-red-700">{submitError}</p>
                   )}
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      type="button"
-                      onClick={handleDownload}
-                      className="rounded-full border border-ffie-line px-5 py-2 text-sm"
-                    >
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <FfieButton onClick={handleShareImage}>Share image</FfieButton>
+                    <FfieButton variant="secondary" onClick={handleDownloadShareImage}>
+                      Download image
+                    </FfieButton>
+                    <FfieButton variant="secondary" onClick={handleDownload}>
                       Download card
-                    </button>
-                    <button
-                      type="button"
-                      disabled={
-                        submitting || !draft.placementJustification.trim()
-                      }
+                    </FfieButton>
+                    <FfieButton
+                      disabled={submitting || !draft.placementJustification.trim()}
                       onClick={handleFinishOutput}
-                      className="rounded-full bg-ffie-accent px-5 py-2 text-sm font-medium text-white disabled:opacity-40"
                     >
                       {submitting
                         ? "Submitting…"
                         : draft.submitToCommons
                           ? "Submit & continue"
                           : "Continue to Discovery"}
-                    </button>
+                    </FfieButton>
                   </div>
-                </section>
+                </CreateStageShell>
               )}
 
               {draft.stage === "discovery" && (
-                <section className="space-y-6">
-                  <h2 className="text-2xl font-semibold tracking-tight">
-                    Discovery of Other Futures
-                  </h2>
+                <CreateStageShell stage="discovery">
                   {draft.submittedId ? (
-                    <p className="text-sm text-ffie-muted">
+                    <p className="mb-6 text-sm text-ffie-muted">
                       Your prototype was submitted with status{" "}
                       <strong className="text-ffie-ink">pending</strong>. Amanda
                       will review it before it appears in Future Commons.
                     </p>
                   ) : (
-                    <p className="text-sm text-ffie-muted">
+                    <p className="mb-6 text-sm text-ffie-muted">
                       Your future stays personal — downloaded locally, not sent
                       for moderation.
                     </p>
                   )}
-                  <div className="flex flex-wrap gap-3">
-                    <Link
-                      href={
-                        draft.submittedId
-                          ? `/explore?highlight=${draft.submittedId}`
-                          : "/explore"
+                  <DiscoveryConstellation futures={researchFindingsSeed} />
+                  <div className="mt-10 flex flex-wrap gap-3">
+                    <FfieButton
+                      onClick={() =>
+                        router.push(
+                          draft.submittedId
+                            ? `/explore?highlight=${draft.submittedId}`
+                            : "/explore",
+                        )
                       }
-                      className="rounded-full bg-ffie-accent px-5 py-2 text-sm font-medium text-white"
                     >
                       Explore the matrix
-                    </Link>
-                    <button
-                      type="button"
+                    </FfieButton>
+                    <FfieButton
+                      variant="secondary"
                       onClick={() => {
                         clearDraft();
                         const sessionId = crypto.randomUUID();
                         setDraft(createInitialDraft(sessionId));
                       }}
-                      className="rounded-full border border-ffie-line px-5 py-2 text-sm"
                     >
                       Start again
-                    </button>
+                    </FfieButton>
                   </div>
-                </section>
+                </CreateStageShell>
               )}
             </motion.div>
           </AnimatePresence>
         </div>
 
-        <aside className="lg:sticky lg:top-6">
-          {draft.stage !== "entry" && draft.stage !== "orientation" && (
+        {showLivePreview && (
+          <aside className="lg:sticky lg:top-6">
             <FutureCardPreview draft={draft} id="future-output-card" />
-          )}
-        </aside>
+          </aside>
+        )}
       </div>
+
+      {(draft.stage === "output" || draft.stage === "discovery") && (
+        <div
+          className="pointer-events-none fixed left-[-9999px] top-0 overflow-hidden"
+          aria-hidden
+        >
+          <ShareableFutureCard
+            id="shareable-future-card"
+            title={draft.title}
+            characterName={draft.characterName}
+            artifactName={draft.artifactName}
+            position={draft.position}
+            cardHand={draft.cardHand}
+          />
+        </div>
+      )}
 
       {exploreEntryId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">

@@ -3,14 +3,15 @@
 @theme inline {
   --color-ffie-bg: #f7f5f2;
   --color-ffie-surface: #ffffff;
-  --color-ffie-ink: #1a1a1a;
-  --color-ffie-muted: #5c5c5c;
-  --color-ffie-line: #d8d4cc;
-  --color-ffie-accent: #5b3a7a;
-  --color-ffie-accent-soft: #ede7f3;
+  --color-ffie-ink: #231352;
+  --color-ffie-muted: rgba(35, 19, 82, 0.55);
+  --color-ffie-line: rgba(35, 19, 82, 0.12);
+  --color-ffie-accent: #6e52c4;
+  --color-ffie-accent-soft: #eee9fd;
   --color-ffie-br: #2d6a4f;
   --color-ffie-pt: #1d3557;
-  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
@@ -27,4 +28,10 @@ body {
 
 ::selection {
   background: color-mix(in srgb, var(--color-ffie-accent) 20%, white);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

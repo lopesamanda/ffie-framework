@@ -15,9 +15,11 @@ import {
 
 type ViewMode = "map" | "grid";
 
-const futureCommonsSeed: FutureEntry[] = [];
+type ExploreViewProps = {
+  futureCommons?: FutureEntry[];
+};
 
-export function ExploreView() {
+export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
   const [collection, setCollection] =
     useState<FutureCollection>("research_findings");
   const [view, setView] = useState<ViewMode>("map");
@@ -28,7 +30,7 @@ export function ExploreView() {
   const baseEntries =
     collection === "research_findings"
       ? researchFindingsSeed
-      : futureCommonsSeed;
+      : futureCommons;
 
   const filteredEntries = useMemo(() => {
     return baseEntries.filter((entry) => {

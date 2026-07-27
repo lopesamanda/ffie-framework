@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ExploreView } from "@/components/ExploreView";
+import { getPublishedSubmissions } from "@/lib/submissions";
 
 export const metadata: Metadata = {
   title: "Explore Futures",
@@ -7,7 +8,11 @@ export const metadata: Metadata = {
     "Research Findings and Future Commons on the Critical Feminist 2×2 Matrix.",
 };
 
-export default function ExplorePage() {
+export const dynamic = "force-dynamic";
+
+export default async function ExplorePage() {
+  const futureCommons = await getPublishedSubmissions();
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
       <header className="mb-10 max-w-3xl">
@@ -25,7 +30,7 @@ export default function ExplorePage() {
         </p>
       </header>
 
-      <ExploreView />
+      <ExploreView futureCommons={futureCommons} />
     </div>
   );
 }
