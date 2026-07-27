@@ -43,6 +43,8 @@ export type FutureEntry = {
   imageUrl?: string;
   /** Oracle Draw collective synthesis sentence. */
   drawSynthesis?: string;
+  /** ISO timestamp when published (Future Commons). */
+  publishedAt?: string;
 };
 
 export const QUADRANT_LABELS: Record<FutureQuadrant, string> = {

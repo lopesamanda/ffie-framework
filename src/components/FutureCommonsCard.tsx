@@ -6,6 +6,7 @@ import {
   ffieCardShell,
   ffieCardTitle,
 } from "@/lib/card-layout";
+import { isRecentlyPublished } from "@/lib/future-commons";
 import {
   excerptAtWordBoundary,
   narrativeNeedsExcerpt,
@@ -30,12 +31,20 @@ export function FutureCommonsCard({
   const maxLen = compact ? EXCERPT_COMPACT : EXCERPT_DEFAULT;
   const excerpt = excerptAtWordBoundary(entry.narrative, maxLen);
   const truncated = narrativeNeedsExcerpt(entry.narrative, maxLen);
+  const justPublished = isRecentlyPublished(entry);
 
   return (
     <article
       className={`flex h-full flex-col px-[18px] py-4 ${ffieCardShell} bg-ffie-surface ${className}`}
     >
-      <QuadrantPill quadrant={entry.quadrant} />
+      <div className="flex flex-wrap items-center gap-2">
+        <QuadrantPill quadrant={entry.quadrant} />
+        {justPublished && (
+          <span className="rounded-full border border-ffie-accent/35 bg-ffie-accent-soft/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-ffie-accent">
+            Just published
+          </span>
+        )}
+      </div>
       <h3 className={`mt-2 ${ffieCardTitle} ${compact ? "" : "text-lg"} ${FFIE_CARD_TEXT}`}>
         {entry.title}
       </h3>

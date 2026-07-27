@@ -106,6 +106,7 @@ export function mapSubmissionToFutureEntry(row: SubmissionRow): FutureEntry {
     status: row.status,
     imageUrl: row.image_url ?? undefined,
     drawSynthesis: row.draw_synthesis ?? undefined,
+    publishedAt: row.created_at,
   };
 }
 

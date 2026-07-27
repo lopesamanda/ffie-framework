@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isRecentlyPublished } from "@/lib/future-commons";
 import {
   COUNTRY_COLORS,
   QUADRANT_LABELS,
@@ -6,6 +7,9 @@ import {
 } from "@/types/future";
 
 export function FutureDetailContent({ entry }: { entry: FutureEntry }) {
+  const isResearchFinding = entry.collection === "research_findings";
+  const justPublished = isRecentlyPublished(entry);
+
   return (
     <article className="space-y-8">
       <header className="space-y-4">
@@ -22,6 +26,11 @@ export function FutureDetailContent({ entry }: { entry: FutureEntry }) {
           <span className="rounded-full border border-ffie-line px-2.5 py-1 text-xs text-ffie-muted">
             {entry.powerPosition}
           </span>
+          {justPublished && (
+            <span className="rounded-full border border-ffie-accent/35 bg-ffie-accent-soft/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-ffie-accent">
+              Just published
+            </span>
+          )}
         </div>
 
         <div>
@@ -41,6 +50,17 @@ export function FutureDetailContent({ entry }: { entry: FutureEntry }) {
           {entry.reflectionQuestion}
         </blockquote>
       </section>
+
+      {isResearchFinding && (
+        <div className="rounded-xl border border-ffie-accent/25 bg-[#f6f4ff] px-5 py-4">
+          <Link
+            href="/create"
+            className="text-sm font-medium italic text-ffie-accent transition hover:underline"
+          >
+            Inspired? Build your own future →
+          </Link>
+        </div>
+      )}
 
       <section className="rounded-xl border border-ffie-line bg-ffie-bg/60 p-5 text-sm">
         <p className="mb-4 text-xs font-medium uppercase tracking-[0.15em] text-ffie-muted">
@@ -101,7 +121,7 @@ export function FutureDetailContent({ entry }: { entry: FutureEntry }) {
           href="/create"
           className="rounded-full bg-ffie-accent px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
         >
-          Create a Future
+          {isResearchFinding ? "Build your own future" : "Create a Future"}
         </Link>
       </div>
     </article>

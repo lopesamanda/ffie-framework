@@ -27,6 +27,8 @@ export default async function ExplorePage() {
           <span className="text-ffie-ink">Extractive ↔ Emancipatory</span>.
           Vertical axis — Power Organization:{" "}
           <span className="text-ffie-ink">Hierarchical ↔ Collective Care</span>.
+          The matrix is the primary lens; country and scenario refine what you
+          see.
         </p>
       </header>
 

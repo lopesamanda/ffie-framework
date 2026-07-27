@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isRecentlyPublished } from "@/lib/future-commons";
 import {
   COUNTRY_COLORS,
   QUADRANT_LABELS,
@@ -11,6 +12,7 @@ const SIDEBAR_EXCERPT = 220;
 
 export function FuturePreviewPanel({ entry }: { entry: FutureEntry }) {
   const excerpt = excerptAtWordBoundary(entry.narrative, SIDEBAR_EXCERPT);
+  const justPublished = isRecentlyPublished(entry);
 
   return (
     <div className="space-y-4">
@@ -24,6 +26,11 @@ export function FuturePreviewPanel({ entry }: { entry: FutureEntry }) {
         <span className="rounded-full bg-ffie-accent-soft px-2.5 py-1 text-xs font-medium text-ffie-accent">
           {QUADRANT_LABELS[entry.quadrant]}
         </span>
+        {justPublished && (
+          <span className="rounded-full border border-ffie-accent/35 bg-ffie-accent-soft/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-ffie-accent">
+            Just published
+          </span>
+        )}
       </div>
 
       <div>
