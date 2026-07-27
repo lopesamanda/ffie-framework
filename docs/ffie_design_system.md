@@ -1,5 +1,5 @@
 # FFIE — Design System Reference (Figma Make)
-Consolidated record of what was specified across the three Figma Make build stages. This is a specification/decisions log, not a substitute for the live Figma file — cross-check details against the actual file before implementing in code, since Figma Make may have made small interpretive choices not captured here. Companion to `ffie_product_ux_foundations.md` (strategy/analysis) and `ffie_narrative_cards.md` (card content) — this file covers visual/interaction design only.
+Consolidated record of what was specified across the three Figma Make build stages. This is a specification/decisions log, not a substitute for the live Figma file — cross-check details against the actual file before implementing in code, since Figma Make may have made small interpretive choices not captured here. Companion to `ffie_product_ux_foundations.md` (strategy/analysis), `ffie_narrative_cards.md` (19-card deck content), and `ffie_ai_capability_cards.md` (8-card ideation set) — this file covers visual/interaction design only.
 
 ---
 
@@ -18,7 +18,7 @@ Category colors for the 19 Narrative Cards (sampled from the physical deck, appr
 
 Narrative Card component: flat, typographic card face (no illustrated portraits — a deliberate departure from the physical deck's tarot-style illustrations, to stay consistent with `ffie_product_ux_foundations.md`'s explicit rule against generic AI-generated portrait aesthetics). Category color as a top accent bar or subtle background tint, card name in the system's display type, tension line in italic/secondary style (matching the physical deck's existing typographic treatment for tension text), simple linear/geometric icon per category instead of a portrait.
 
-FFIE-specific components built at this stage: Narrative Card (flat/typographic), quadrant tag/pill, persona block, artifact block.
+FFIE-specific components built at this stage: Narrative Card (flat/typographic), AI Capability Card (neutral slate accent — distinct from narrative category colors; see `ffie_ai_capability_cards.md`), quadrant tag/pill, persona block, artifact block.
 
 ## Stage 3 — Five-Phase System, Oracle Draw, Motion, Accessibility, Matrix, Showcase
 

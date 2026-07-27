@@ -1,3 +1,4 @@
+/** Card copy: docs/ffie_ai_capability_cards.md. Guiding questions are app-layer UX (embody vs artifact context). */
 export type AiCapabilityCard = {
   id: string;
   name: string;
