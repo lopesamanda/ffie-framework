@@ -6,7 +6,17 @@ export type CharacterPronouns = {
   possessive: "her" | "his" | "their";
   possessiveCap: "Her" | "His" | "Their";
   object: "her" | "him" | "them";
+  verbForm: "singular" | "plural";
 };
+
+/** Pick plural or singular verb form (they → plural: "carry", "refuse"). */
+export function verbFor(
+  p: CharacterPronouns,
+  singular: string,
+  plural: string,
+): string {
+  return p.verbForm === "plural" ? plural : singular;
+}
 
 /** Explicit pronoun selection drives all narrative copy (not gender). */
 export function pronounsForSelection(
@@ -19,6 +29,7 @@ export function pronounsForSelection(
       possessive: "his",
       possessiveCap: "His",
       object: "him",
+      verbForm: "singular",
     };
   }
 
@@ -29,6 +40,7 @@ export function pronounsForSelection(
       possessive: "their",
       possessiveCap: "Their",
       object: "them",
+      verbForm: "plural",
     };
   }
 
@@ -38,13 +50,12 @@ export function pronounsForSelection(
     possessive: "her",
     possessiveCap: "Her",
     object: "her",
+    verbForm: "singular",
   };
 }
 
 /** @deprecated Use pronounsForSelection — gender no longer drives copy. */
-export function pronounsForGender(
-  gender: string,
-): CharacterPronouns {
+export function pronounsForGender(gender: string): CharacterPronouns {
   void gender;
   return pronounsForSelection("");
 }

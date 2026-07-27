@@ -8,6 +8,7 @@ export type SubmissionPayload = {
   narrative: string;
   reflectionQuestion: string;
   location: string;
+  year: number;
   characterName: string;
   characterAge?: number | null;
   characterGender?: string;
@@ -67,6 +68,7 @@ export async function POST(request: Request) {
     body.title,
     body.narrative,
     body.location,
+    body.year,
     body.characterName,
     body.role,
     body.desire,
@@ -94,6 +96,10 @@ export async function POST(request: Request) {
       { error: "Select 2–4 embedded artifact values" },
       { status: 400 },
     );
+  }
+
+  if (!Number.isFinite(body.year) || body.year < 2000) {
+    return NextResponse.json({ error: "Invalid year" }, { status: 400 });
   }
 
   let imageUrl: string | null = null;
@@ -128,6 +134,7 @@ export async function POST(request: Request) {
       narrative: body.narrative,
       reflection_question: body.reflectionQuestion,
       location: body.location,
+      year: body.year,
       character_name: body.characterName,
       character_age: body.characterAge ?? null,
       character_gender: body.characterGender || null,

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -13,7 +14,7 @@ import {
 } from "@/components/create/design/CategoryRegisterTiles";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleCard, OracleRevealedContent } from "@/components/create/design/OracleCard";
-import { OracleDrawPanel } from "@/components/create/design/OracleDrawPanel";
+import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { OracleSynthesisCallout } from "@/components/create/design/OracleSynthesisCallout";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { MatrixReveal } from "@/components/create/MatrixReveal";
@@ -22,7 +23,8 @@ import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
-import { NarrativeBlock } from "@/components/create/NarrativeBlank";
+import { CreateNarrativeScene } from "@/components/create/design/CreateNarrativeScene";
+import { NarrativeBlock, NarrativeBlank } from "@/components/create/NarrativeBlank";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { AiCapabilityCardPicker } from "@/components/create/AiCapabilityCardPicker";
 import {
@@ -30,7 +32,6 @@ import {
   SHAREABLE_CARD_HEIGHT,
   SHAREABLE_CARD_WIDTH,
 } from "@/components/create/ShareableFutureCard";
-import { FuturePreviewPanel } from "@/components/FuturePreviewPanel";
 import {
   buildCombinedTension,
   drawWorkshopHand,
@@ -76,15 +77,6 @@ import {
   type LikertScore,
 } from "@/lib/journey/types";
 
-const EXPLORATION_IDS = [
-  "br-valentina-insider",
-  "pt-taina-a-eye",
-  "pt-john-bell-open-human",
-];
-
-const FIELD =
-  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
-
 const CREATION_STEPS = [
   "Embody the future",
   "Name the artifact",
@@ -92,14 +84,17 @@ const CREATION_STEPS = [
   "Embedded values",
   "Hidden function",
   "Image (optional)",
-  "Where it lands",
 ];
+
+const FIELD =
+  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
 
 export function CreateJourney() {
   const router = useRouter();
   const [draft, setDraft] = useState<JourneyDraft | null>(null);
-  const [exploreEntryId, setExploreEntryId] = useState<string | null>(null);
   const [revealing, setRevealing] = useState(false);
+  const [oracleDrawIndex, setOracleDrawIndex] = useState(0);
+  const [oraclePhase, setOraclePhase] = useState<"fan" | "reflection">("fan");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
@@ -126,13 +121,10 @@ export function CreateJourney() {
     [update],
   );
 
-  const explorationEntries = useMemo(
-    () =>
-      EXPLORATION_IDS.map((id) =>
-        researchFindingsSeed.find((entry) => entry.id === id),
-      ).filter(Boolean),
-    [],
-  );
+  const resetOracleDraw = useCallback(() => {
+    setOracleDrawIndex(0);
+    setOraclePhase("fan");
+  }, []);
 
   const aiPrompt = useMemo(
     () => (draft ? buildAiImagePrompt(draft) : ""),
@@ -141,6 +133,7 @@ export function CreateJourney() {
 
   const handleDrawCards = () => {
     setRevealing(true);
+    resetOracleDraw();
     setTimeout(() => {
       const hand = drawWorkshopHand();
       update({
@@ -153,6 +146,7 @@ export function CreateJourney() {
 
   const handleShuffleCards = () => {
     setRevealing(true);
+    resetOracleDraw();
     setTimeout(() => {
       const hand = drawWorkshopHand();
       update({
@@ -243,6 +237,7 @@ export function CreateJourney() {
           characterGender: genderLabelForDraft(draft),
           characterRaceEthnicity: raceEthnicityForDraft(draft),
           role: draft.role,
+          year: draft.futureYear,
           aiFunction: draft.aiFunction,
           desire: draft.desire,
           fear: draft.fear,
@@ -348,59 +343,25 @@ export function CreateJourney() {
                 <CreateStageShell stage="orientation">
                   <CategoryRegisterTiles />
                   <EnvironmentalBanner />
-                  <div className="mt-8">
-                    <FfieButton onClick={() => goTo("exploration")}>
-                      See examples
-                    </FfieButton>
-                  </div>
-                </CreateStageShell>
-              )}
-
-              {draft.stage === "exploration" && (
-                <CreateStageShell stage="exploration">
-                  <div className="grid gap-4 md:grid-cols-3">
-                    {explorationEntries.map((entry, index) =>
-                      entry ? (
-                        <motion.button
-                          key={entry.id}
-                          type="button"
-                          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-                          animate={{
-                            opacity: 1,
-                            y: reduceMotion ? 0 : [0, -4, 0],
-                          }}
-                          transition={{
-                            opacity: { delay: index * 0.08 },
-                            y: reduceMotion
-                              ? { duration: 0 }
-                              : {
-                                  delay: index * 0.08,
-                                  duration: 4,
-                                  repeat: Infinity,
-                                  ease: "easeInOut",
-                                },
-                          }}
-                          onClick={() => setExploreEntryId(entry.id)}
-                          className={`px-[18px] py-4 text-left transition hover:-translate-y-0.5 hover:border-ffie-accent/30 ${ffieCardShell} bg-ffie-surface`}
-                        >
-                          <p className={`${ffieCardCategory} text-ffie-accent`}>
-                            Research Finding
-                          </p>
-                          <h3 className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}>
-                            {entry.title}
-                          </h3>
-                          <div className={`my-3 ${ffieCardDivider}`} />
-                          <p className={`text-sm leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
-                            {entry.tension}
-                          </p>
-                        </motion.button>
-                      ) : null,
-                    )}
-                  </div>
-                  <div className="mt-8">
+                  <div className="mt-8 flex flex-col items-start gap-4">
                     <FfieButton onClick={() => goTo("reflection")}>
                       Draw your cards
                     </FfieButton>
+                    <Link
+                      href="/explore"
+                      className={`${ffieCardShell} block max-w-md bg-ffie-surface px-[18px] py-4 transition hover:-translate-y-0.5 hover:border-ffie-accent/30`}
+                    >
+                      <p className={`${ffieCardCategory} text-ffie-accent`}>
+                        Need inspiration?
+                      </p>
+                      <p className={`mt-2 text-sm font-medium text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                        Browse real prototypes
+                      </p>
+                      <p className={`mt-1 text-xs text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                        Research Findings from the thesis — outside this linear
+                        flow.
+                      </p>
+                    </Link>
                   </div>
                 </CreateStageShell>
               )}
@@ -411,13 +372,9 @@ export function CreateJourney() {
                     <FfieButton disabled={revealing} onClick={handleDrawCards}>
                       {revealing ? "Drawing…" : "Reveal cards"}
                     </FfieButton>
-                  ) : (
+                  ) : oracleDrawIndex >= 4 ? (
                     <div className="space-y-6">
-                      <OracleDrawPanel
-                        hand={draft.cardHand}
-                        shuffling={revealing}
-                        onShuffle={handleShuffleCards}
-                      />
+                      <OracleSynthesisCallout hand={draft.cardHand} />
 
                       <div className="max-w-[560px] space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
@@ -439,14 +396,6 @@ export function CreateJourney() {
                           />
                         </OracleCard>
                       </div>
-
-                      {draft.cardHand.transversal.reflectionQuestion && (
-                        <blockquote className="max-w-prose border-l-2 border-[#2c8a52] pl-4 text-sm leading-relaxed text-ffie-ink">
-                          {draft.cardHand.transversal.reflectionQuestion}
-                        </blockquote>
-                      )}
-
-                      <OracleSynthesisCallout hand={draft.cardHand} />
 
                       <div className="rounded-xl border border-ffie-accent/20 bg-ffie-accent-soft p-4">
                         <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-accent">
@@ -484,6 +433,45 @@ export function CreateJourney() {
                         Build your future
                       </FfieButton>
                     </div>
+                  ) : (
+                    <OracleDeckFan
+                      hand={draft.cardHand}
+                      drawIndex={oracleDrawIndex}
+                      phase={oraclePhase}
+                      shuffling={revealing}
+                      onDraw={() => setOraclePhase("reflection")}
+                      onAdvance={() => {
+                        if (oracleDrawIndex >= 3) {
+                          setOracleDrawIndex(4);
+                          setOraclePhase("fan");
+                        } else {
+                          setOracleDrawIndex((i) => i + 1);
+                          setOraclePhase("fan");
+                        }
+                      }}
+                      onShuffle={handleShuffleCards}
+                      environmentalCard={
+                        <div className="max-w-[560px] space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#2c8a52]">
+                              Environmental Impact
+                            </span>
+                            <span className="rounded-[3px] border border-[#2c8a52] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.08em] text-[#2c8a52]">
+                              Always applied
+                            </span>
+                          </div>
+                          <OracleCard
+                            card={draft.cardHand.transversal}
+                            revealed
+                            className="!min-w-0 !flex-none !basis-full"
+                          >
+                            <OracleRevealedContent
+                              card={draft.cardHand.transversal}
+                            />
+                          </OracleCard>
+                        </div>
+                      }
+                    />
                   )}
                 </CreateStageShell>
               )}
@@ -563,7 +551,7 @@ export function CreateJourney() {
                   )}
 
                   {draft.creationStep === 2 && draft.cardHand && (
-                    <div className="space-y-4">
+                    <CreateNarrativeScene className="space-y-4">
                       {(() => {
                         const p = pronounsForSelection(draft.characterPronoun);
                         const who =
@@ -576,27 +564,22 @@ export function CreateJourney() {
                               <CardReferenceTag card={draft.cardHand.benefit} />
                               <CardReferenceTag card={draft.cardHand.trust} />
                             </div>
-                            <NarrativeBlock>
-                              <p className="mb-3 text-sm leading-relaxed text-ffie-ink">
-                                What does {who} actually do with {artifact}? At
-                                what moment in {p.possessive} day does{" "}
-                                {p.subject} use it?
-                              </p>
-                              <textarea
+                            <NarrativeBlock className="border-0 bg-transparent p-0">
+                              <NarrativeBlank
+                                before={`Every day, ${who} lets ${artifact} do this for ${p.object}: `}
+                                after={`. What does ${p.subject} gain from it — and what does ${p.subject} quietly stop questioning because of it?`}
                                 value={draft.publicPromise}
-                                onChange={(e) =>
-                                  update({ publicPromise: e.target.value })
+                                onChange={(publicPromise) =>
+                                  update({ publicPromise })
                                 }
-                                rows={4}
-                                placeholder="Describe the day-to-day use…"
-                                className={`${FIELD} resize-none`}
+                                placeholder="complete the sentence"
                               />
                             </NarrativeBlock>
                             <AiCapabilityCardPicker context="artifact" />
                           </>
                         );
                       })()}
-                    </div>
+                    </CreateNarrativeScene>
                   )}
 
                   {draft.creationStep === 3 && (
@@ -733,33 +716,6 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 6 && (
-                    <div className="w-full min-w-0 space-y-5">
-                      <p className="text-sm text-ffie-muted">
-                        Two questions place this future on the Critical Feminist
-                        Matrix — no dragging, no numbers.
-                      </p>
-                      <LikertQuestion
-                        question="In the world you imagined, does this technology mostly extract something from the people who use it — time, data, autonomy — or give something back?"
-                        lowLabel="Extracts"
-                        highLabel="Gives back"
-                        value={draft.systemLogicScore}
-                        onChange={(systemLogicScore: LikertScore) =>
-                          update({ systemLogicScore })
-                        }
-                      />
-                      <LikertQuestion
-                        question="Who decides how this technology is used in that future — a person or company at the top, or the community that lives with it, together?"
-                        lowLabel="Centralized decision"
-                        highLabel="Collective decision"
-                        value={draft.powerOrgScore}
-                        onChange={(powerOrgScore: LikertScore) =>
-                          update({ powerOrgScore })
-                        }
-                      />
-                    </div>
-                  )}
-
                   {draft.creationStep !== 0 && (
                   <div className="mt-8 flex gap-3">
                     {draft.creationStep > 0 && (
@@ -788,10 +744,7 @@ export function CreateJourney() {
                         (draft.creationStep === 3 &&
                           !isArtifactValuesComplete(draft)) ||
                         (draft.creationStep === 4 &&
-                          !draft.hiddenFunction.trim()) ||
-                        (draft.creationStep === 6 &&
-                          (draft.systemLogicScore == null ||
-                            draft.powerOrgScore == null))
+                          !draft.hiddenFunction.trim())
                       }
                       onClick={() => {
                         if (draft.creationStep < CREATION_STEPS.length - 1) {
@@ -799,38 +752,12 @@ export function CreateJourney() {
                           return;
                         }
 
-                        if (
-                          draft.systemLogicScore == null ||
-                          draft.powerOrgScore == null
-                        ) {
-                          return;
-                        }
-
-                        const placement = computePlacementFromLikert(
-                          draft.systemLogicScore,
-                          draft.powerOrgScore,
-                        );
-                        const title = buildTitle(
-                          draft.artifactName,
-                          draft.characterName,
-                        );
-                        const nextDraft = {
-                          ...draft,
-                          ...placement,
-                          title,
-                        };
-                        const narrative = buildNarrative(nextDraft);
-                        goTo("output", {
-                          ...placement,
-                          title,
-                          narrative,
-                          creationStep: 0,
-                        });
+                        goTo("output", { outputStep: 0 });
                       }}
                     >
                       {draft.creationStep < CREATION_STEPS.length - 1
                         ? "Next"
-                        : "See your future"}
+                        : "Place on the matrix"}
                     </FfieButton>
                   </div>
                   )}
@@ -839,6 +766,69 @@ export function CreateJourney() {
 
               {draft.stage === "output" && (
                 <CreateStageShell stage="output" subtitle="">
+                  {draft.outputStep === 0 ? (
+                    <div className="w-full min-w-0 space-y-5">
+                      <p className="text-sm text-ffie-muted">
+                        Two questions place this future on the Critical Feminist
+                        Matrix — no dragging, no numbers.
+                      </p>
+                      <LikertQuestion
+                        question="In the world you imagined, does this technology mostly extract something from the people who use it — time, data, autonomy — or give something back?"
+                        lowLabel="Extracts"
+                        highLabel="Gives back"
+                        value={draft.systemLogicScore}
+                        onChange={(systemLogicScore: LikertScore) =>
+                          update({ systemLogicScore })
+                        }
+                      />
+                      <LikertQuestion
+                        question="Who decides how this technology is used in that future — a person or company at the top, or the community that lives with it, together?"
+                        lowLabel="Centralized decision"
+                        highLabel="Collective decision"
+                        value={draft.powerOrgScore}
+                        onChange={(powerOrgScore: LikertScore) =>
+                          update({ powerOrgScore })
+                        }
+                      />
+                      <FfieButton
+                        disabled={
+                          draft.systemLogicScore == null ||
+                          draft.powerOrgScore == null
+                        }
+                        onClick={() => {
+                          if (
+                            draft.systemLogicScore == null ||
+                            draft.powerOrgScore == null
+                          ) {
+                            return;
+                          }
+                          const placement = computePlacementFromLikert(
+                            draft.systemLogicScore,
+                            draft.powerOrgScore,
+                          );
+                          const title = buildTitle(
+                            draft.artifactName,
+                            draft.characterName,
+                          );
+                          const nextDraft = {
+                            ...draft,
+                            ...placement,
+                            title,
+                          };
+                          const narrative = buildNarrative(nextDraft);
+                          update({
+                            ...placement,
+                            title,
+                            narrative,
+                            outputStep: 1,
+                          });
+                        }}
+                      >
+                        See your future
+                      </FfieButton>
+                    </div>
+                  ) : (
+                  <>
                   <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
                     <FutureCardPreview
                       draft={draft}
@@ -884,6 +874,8 @@ export function CreateJourney() {
                           : "Continue to Discovery"}
                     </FfieButton>
                   </div>
+                  </>
+                  )}
                 </CreateStageShell>
               )}
 
@@ -954,29 +946,6 @@ export function CreateJourney() {
         </div>
       )}
 
-      {exploreEntryId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-ffie-surface p-6 shadow-xl">
-            {(() => {
-              const entry = researchFindingsSeed.find(
-                (e) => e.id === exploreEntryId,
-              );
-              return entry ? (
-                <>
-                  <FuturePreviewPanel entry={entry} />
-                  <button
-                    type="button"
-                    onClick={() => setExploreEntryId(null)}
-                    className="mt-6 rounded-full border border-ffie-line px-4 py-2 text-sm"
-                  >
-                    Close
-                  </button>
-                </>
-              ) : null;
-            })()}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   GENDER_OPTIONS,
 } from "@/lib/journey/character-options";
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
+import { getFutureHorizonYear } from "@/lib/journey/future-horizon";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
 /** 5-point Likert used for automated matrix placement. */
@@ -49,7 +50,9 @@ export type JourneyDraft = {
   stage: JourneyStage;
   orientationStep: number;
   creationStep: number;
-  /** Sub-step within Embody the future (0–6). */
+  /** 0 = Likert placement, 1 = matrix reveal & share */
+  outputStep: number;
+  /** Sub-step within Embody the future (0–3). */
   embodySubStep: number;
   cardHand: CardHand | null;
   combinedTension: string;
@@ -93,6 +96,8 @@ export type JourneyDraft = {
   submittedId: string | null;
   title: string;
   narrative: string;
+  /** Horizon year for storage (current year + 10); user-facing copy uses FUTURE_HORIZON_LABEL. */
+  futureYear: number;
 };
 
 export { CHARACTER_VALUES } from "@/lib/journey/character-options";
@@ -198,7 +203,7 @@ export function buildNarrative(draft: JourneyDraft): string {
   const role = draft.role || "a participant in an innovation ecosystem";
   const artifact = draft.artifactName || "an unnamed artifact";
 
-  return `${who} is ${role} in ${where}, 2036. ${artifact} promises ${draft.publicPromise || "something better"}, but ${draft.hiddenFunction || "carries a tension the surface never names"}. The cards drawn — ${draft.combinedTension || "multiple tensions"} — still echo in how this future holds together.`;
+  return `${who} is ${role} in ${where}, ${draft.futureYear}. ${artifact} promises ${draft.publicPromise || "something better"}, but ${draft.hiddenFunction || "carries a tension the surface never names"}. The cards drawn — ${draft.combinedTension || "multiple tensions"} — still echo in how this future holds together.`;
 }
 
 export function buildReflectionQuestion(draft: JourneyDraft): string {
@@ -230,7 +235,7 @@ export function buildAiImagePrompt(draft: JourneyDraft): string {
   const trustCardName =
     draft.cardHand?.trust.name.trim() || "[trust card name]";
 
-  return `Act as a Speculative Technology Prototyper working within a feminist, decolonial design-fiction methodology. You are visualizing a diegetic artifact from ${location}, 2036 — not a generic sci-fi object, but something grounded in the specific tensions below.
+  return `Act as a Speculative Technology Prototyper working within a feminist, decolonial design-fiction methodology. You are visualizing a diegetic artifact from ${location}, ${draft.futureYear} — not a generic sci-fi object, but something grounded in the specific tensions below.
 
 Context: this artifact exists in a world shaped by ${benefitCardName}, ${riskCardName}, ${barrierCardName}, and ${trustCardName}, and by the material/ecological cost named by the Environmental Impact card. It belongs to ${characterName}, a ${characterRole}, whose deepest hope is ${characterDesire} and whose deepest fear is ${characterFear}.
 
@@ -240,7 +245,7 @@ Your task: produce two visual moments of the same artifact, not one.
 1. THE PROMISE — how this artifact is advertised, marketed, or presented to ${characterName} and people like ${p.object}. This should look aspirational and polished, exactly how the institution behind it wants it seen.
 2. THE HIDDEN FUNCTION — what is actually happening underneath, at the exact moment ${characterName} uses it. This should feel like something noticed almost by accident, not a dramatic reveal.
 
-Style guidance: avoid generic cyberpunk or dystopian sci-fi clichés (no neon holograms, no chrome robots). This is ${location} in 2036 — grounded, plausible, and specific to that place, not a placeless future. Favor a documentary or quasi-photographic register over a glossy product-render or advertisement aesthetic, so the image reads as evidence of something that could really exist, not a marketing mockup.`;
+Style guidance: avoid generic cyberpunk or dystopian sci-fi clichés (no neon holograms, no chrome robots). This is ${location} in ${draft.futureYear} — grounded, plausible, and specific to that place, not a placeless future. Favor a documentary or quasi-photographic register over a glossy product-render or advertisement aesthetic, so the image reads as evidence of something that could really exist, not a marketing mockup.`;
 }
 
 export function formatQuadrantLabel(quadrant: FutureQuadrant): string {
@@ -253,6 +258,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     stage: "entry",
     orientationStep: 0,
     creationStep: 0,
+    outputStep: 0,
     embodySubStep: 0,
     cardHand: null,
     combinedTension: "",
@@ -288,6 +294,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     submittedId: null,
     title: "",
     narrative: "",
+    futureYear: getFutureHorizonYear(),
   };
 }
 
@@ -310,6 +317,7 @@ export function loadDraft(): JourneyDraft | null {
       characterGender: parsed.characterGender ?? "",
       characterPronoun: parsed.characterPronoun ?? "",
       embodySubStep: parsed.embodySubStep ?? 0,
+      outputStep: parsed.outputStep ?? 0,
       characterAge: parsed.characterAge ?? "",
       characterRaceEthnicity: parsed.characterRaceEthnicity ?? "",
       raceSelfDescribe: parsed.raceSelfDescribe ?? "",
@@ -326,6 +334,7 @@ export function loadDraft(): JourneyDraft | null {
           parsed.characterCountry ?? "",
         ),
       values: parsed.values ?? [],
+      futureYear: parsed.futureYear ?? getFutureHorizonYear(),
     };
   } catch {
     return null;

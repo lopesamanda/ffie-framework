@@ -6,4 +6,4 @@ export const PRONOUN_OPTIONS: { id: CharacterPronounId; label: string }[] = [
   { id: "they_them", label: "They/Them" },
 ];
 
-export const EMBODY_SCREEN_COUNT = 7;
+export const EMBODY_SCREEN_COUNT = 4;

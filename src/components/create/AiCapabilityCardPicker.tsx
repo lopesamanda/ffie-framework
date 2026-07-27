@@ -83,6 +83,9 @@ function CapabilityCard({
         <h4 className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}>
           {card.name}
         </h4>
+        <p className={`mt-1.5 text-[10px] leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
+          {card.tags.join(" · ")}
+        </p>
         <p
           className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}
         >
@@ -120,16 +123,6 @@ function CapabilityCard({
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="flex flex-wrap gap-1 pt-1">
-            {card.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-ffie-bg px-2 py-0.5 text-[10px] text-ffie-muted"
-              >
-                {tag}
-              </span>
-            ))}
           </div>
         </div>
       )}

@@ -7,6 +7,7 @@ import {
   ffieCardShell,
   ffieCardTitle,
 } from "@/lib/card-layout";
+import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
@@ -41,7 +42,9 @@ export function FutureCardPreview({
       <div className="flex flex-wrap items-center gap-2">
         <QuadrantPill quadrant={quadrant} />
         {draft.location && (
-          <span className="text-xs text-ffie-muted">{draft.location} · 2036</span>
+          <span className="text-xs text-ffie-muted">
+            {draft.location} · {FUTURE_HORIZON_LABEL}
+          </span>
         )}
       </div>
 

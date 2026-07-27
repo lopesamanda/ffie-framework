@@ -22,12 +22,18 @@ FFIE-specific components built at this stage: Narrative Card (flat/typographic),
 
 ## Stage 3 — Five-Phase System, Oracle Draw, Motion, Accessibility, Matrix, Showcase
 
-### Five-Phase Create flow (7 screens)
-Entry → Orientation → Exploration → Reflection → Creation → Future Output → Discovery of Other Futures. Tone: ludic and narrative throughout, never clinical/form-like. The Phase Timeline is a persistent, animated wayfinding element across all 7 screens — the active node visibly travels as the user progresses, replacing a generic progress bar.
+### Five-Phase Create flow (revised screen counts, 2026)
+Entry → Orientation → Reflection (Oracle Draw) → Creation → Future Output → Discovery. Exploration is **optional** — a link at Orientation opens `/explore` (Research Findings) outside the linear flow. Tone: ludic and narrative throughout, never clinical/form-like.
 
-- **Entry**: full-bleed, fixed year (2036), one-line place-framing sentence, slow fade-in.
-- **Orientation**: invitational explanation of the draw mechanic; the four named categories (Risk, Benefit, Trust, Barrier) shown alongside the Environmental Impact transversal card as a fixed fifth element, always applied, never drawn.
-- **Exploration**: ambient motion (parallax/drift) over the Research Findings browsing screen.
+**Reflection — Oracle Draw:** fanned deck, sequential reveal (one card at a time), DRAWN chips accumulating, reflection panel with Next card / Complete draw. Environmental Impact always visible below (no draw). Synthesis sentence after all four cards.
+
+**Creation — Embody (4 screens):** pronoun → name/age/gender/race → role + location → desire + fear → values (3).
+
+**Creation — Artifact (5 steps):** name + type → day to day (merged AI function; capability cards once) → embedded values → hidden function → image (optional).
+
+**Future Output (2 screens):** combined Likert placement (both scales on one screen) → matrix reveal, share, and Future Commons opt-in.
+
+Legacy timeline still maps 7 journey stages internally; Exploration is no longer a mandatory step.
 - **Reflection**: sentence-completion / narrative-prompt style questions (see `ffie_narrative_cards.md` for the actual reflection question per card, and the character/artifact question rewrites already implemented in the app).
 - **Creation**: live-building canvas, the future card assembles on screen as the user answers.
 - **Future Output**: card flip/reveal animation; quadrant marker animates from center to its computed matrix position.

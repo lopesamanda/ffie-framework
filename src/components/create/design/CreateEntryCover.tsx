@@ -41,9 +41,9 @@ export function CreateEntryCover({ onBegin }: CreateEntryCoverProps) {
 
       <p
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-[18%] select-none text-center font-display text-[clamp(140px,28vw,220px)] font-extrabold leading-none tracking-[-0.04em] text-ffie-ink/[0.035] sm:top-[22%]"
+        className="pointer-events-none absolute inset-x-0 top-[18%] select-none text-center font-display text-[clamp(72px,16vw,140px)] font-extrabold leading-none tracking-[-0.04em] text-ffie-ink/[0.035] sm:top-[22%]"
       >
-        2036
+        10
       </p>
 
       <div className="relative z-10 mx-auto flex w-full max-w-[540px] flex-col items-center text-center">

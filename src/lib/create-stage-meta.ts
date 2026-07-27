@@ -30,7 +30,7 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     eyebrow: "The draw",
     title: "Four cards will shape your future.",
     subtitle:
-      "Each card carries a structural tension drawn from real conditions — not hypothetical scenarios. You will draw one from each register. Together, they are the soil your future grows from.",
+      "Each card carries a structural tension drawn from real conditions — not hypothetical scenarios. You will draw one from each register. Need inspiration? Browse Research Findings anytime via the link below.",
     accentColor: "#c8472a",
   },
   exploration: {
