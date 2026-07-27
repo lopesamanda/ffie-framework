@@ -8,6 +8,7 @@ import {
   ffieCardTitle,
 } from "@/lib/card-layout";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
+import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
@@ -33,6 +34,10 @@ export function FutureCardPreview({
       : draft.characterName
         ? `A future for ${draft.characterName}`
         : "Your future");
+
+  const synthesisLine =
+    draft.drawSynthesis ||
+    (draft.cardHand ? buildOracleSynthesis(draft.cardHand) : "");
 
   return (
     <div
@@ -64,6 +69,14 @@ export function FutureCardPreview({
         </p>
       )}
 
+      {synthesisLine && (
+        <p
+          className={`mt-3 text-sm font-medium italic text-ffie-accent ${FFIE_CARD_TEXT}`}
+        >
+          {synthesisLine}
+        </p>
+      )}
+
       {draft.narrative && (
         <>
           <div className={`my-4 ${ffieCardDivider}`} />
@@ -71,12 +84,6 @@ export function FutureCardPreview({
             {draft.narrative}
           </p>
         </>
-      )}
-
-      {draft.combinedTension && (
-        <p className={`mt-3 text-sm font-medium italic text-ffie-accent ${FFIE_CARD_TEXT}`}>
-          {draft.combinedTension}
-        </p>
       )}
 
       {(draft.publicPromise || draft.hiddenFunction) && (

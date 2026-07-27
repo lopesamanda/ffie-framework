@@ -30,6 +30,7 @@ create table if not exists submissions (
   position_y double precision not null,
   placement_justification text not null,
   card_provenance jsonb not null default '[]',
+  draw_synthesis text,
   reflection_text text,
   image_url text,
   created_at timestamptz not null default now()

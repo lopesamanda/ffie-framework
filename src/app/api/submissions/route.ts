@@ -28,6 +28,7 @@ export type SubmissionPayload = {
   position: { x: number; y: number };
   placementJustification: string;
   cardProvenance: string[];
+  drawSynthesis?: string;
   reflectionText: string;
   imageDataUrl?: string | null;
   submitToCommons: boolean;
@@ -156,6 +157,7 @@ export async function POST(request: Request) {
       position_y: body.position.y,
       placement_justification: body.placementJustification,
       card_provenance: body.cardProvenance,
+      draw_synthesis: body.drawSynthesis?.trim() || null,
       reflection_text: body.reflectionText,
       image_url: imageUrl,
     })

@@ -41,6 +41,8 @@ export type FutureEntry = {
   position: { x: number; y: number };
   status: FutureStatus;
   imageUrl?: string;
+  /** Oracle Draw collective synthesis sentence. */
+  drawSynthesis?: string;
 };
 
 export const QUADRANT_LABELS: Record<FutureQuadrant, string> = {

@@ -56,6 +56,8 @@ export type JourneyDraft = {
   embodySubStep: number;
   cardHand: CardHand | null;
   combinedTension: string;
+  /** Deterministic Oracle Draw synthesis sentence. */
+  drawSynthesis: string;
   reflectionText: string;
   characterName: string;
   characterAge: string;
@@ -262,6 +264,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     embodySubStep: 0,
     cardHand: null,
     combinedTension: "",
+    drawSynthesis: "",
     reflectionText: "",
     characterName: "",
     characterAge: "",
@@ -335,6 +338,7 @@ export function loadDraft(): JourneyDraft | null {
         ),
       values: parsed.values ?? [],
       futureYear: parsed.futureYear ?? getFutureHorizonYear(),
+      drawSynthesis: parsed.drawSynthesis ?? "",
     };
   } catch {
     return null;

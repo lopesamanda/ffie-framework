@@ -14,7 +14,7 @@ import {
 } from "@/components/create/design/CategoryRegisterTiles";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleCard, OracleRevealedContent } from "@/components/create/design/OracleCard";
-import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
+import { OracleDeckFan, OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
 import {
   OracleDrawRecap,
   OracleDrawReflectionPrompt,
@@ -31,6 +31,7 @@ import { CreateNarrativeScene } from "@/components/create/design/CreateNarrative
 import { NarrativeBlock, NarrativeBlank } from "@/components/create/NarrativeBlank";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { AiCapabilityCardPicker } from "@/components/create/AiCapabilityCardPicker";
+import { ArtifactImageUpload } from "@/components/create/ArtifactImageUpload";
 import {
   ShareableFutureCard,
   SHAREABLE_CARD_HEIGHT,
@@ -54,6 +55,7 @@ import {
   resolveArtifactValues,
 } from "@/lib/journey/artifact-options";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
+import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
@@ -129,6 +131,16 @@ export function CreateJourney() {
     setOraclePhase("fan");
   }, []);
 
+  const handleCreateAnotherFuture = useCallback(() => {
+    clearDraft();
+    resetOracleDraw();
+    setSubmitting(false);
+    setSubmitError(null);
+    const next = createInitialDraft(crypto.randomUUID());
+    saveDraft(next);
+    setDraft(next);
+  }, [resetOracleDraw]);
+
   const aiPrompt = useMemo(
     () => (draft ? buildAiImagePrompt(draft) : ""),
     [draft],
@@ -142,6 +154,7 @@ export function CreateJourney() {
       update({
         cardHand: hand,
         combinedTension: buildCombinedTension(hand),
+        drawSynthesis: buildOracleSynthesis(hand),
       });
       setRevealing(false);
     }, 900);
@@ -155,6 +168,7 @@ export function CreateJourney() {
       update({
         cardHand: hand,
         combinedTension: buildCombinedTension(hand),
+        drawSynthesis: buildOracleSynthesis(hand),
         reflectionText: "",
       });
       setRevealing(false);
@@ -263,6 +277,7 @@ export function CreateJourney() {
                 draft.cardHand.transversal.id,
               ]
             : [],
+          drawSynthesis: draft.drawSynthesis,
           reflectionText: draft.reflectionText,
           imageDataUrl: draft.imageDataUrl,
           submitToCommons: true,
@@ -609,10 +624,10 @@ export function CreateJourney() {
                             ))}
                           </div>
                         </div>
-                        <div className="flex flex-wrap gap-2 pt-1">
-                          <CardReferenceTag card={draft.cardHand.risk} />
-                          <CardReferenceTag card={draft.cardHand.barrier} />
-                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        <OracleFanRevealedCard card={draft.cardHand.risk} />
+                        <OracleFanRevealedCard card={draft.cardHand.barrier} />
                       </div>
                       <NarrativeBlock>
                         <p className="mb-3 text-sm leading-relaxed text-ffie-ink">
@@ -659,24 +674,10 @@ export function CreateJourney() {
                           Copy prompt
                         </button>
                       </div>
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium">
-                          Upload generated image (optional)
-                        </span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(event) => {
-                            const file = event.target.files?.[0];
-                            if (!file) return;
-                            const reader = new FileReader();
-                            reader.onload = () =>
-                              update({ imageDataUrl: reader.result as string });
-                            reader.readAsDataURL(file);
-                          }}
-                          className="text-sm"
-                        />
-                      </label>
+                      <ArtifactImageUpload
+                        value={draft.imageDataUrl}
+                        onChange={(imageDataUrl) => update({ imageDataUrl })}
+                      />
                     </div>
                   )}
 
@@ -872,13 +873,9 @@ export function CreateJourney() {
                     </FfieButton>
                     <FfieButton
                       variant="secondary"
-                      onClick={() => {
-                        clearDraft();
-                        const sessionId = crypto.randomUUID();
-                        setDraft(createInitialDraft(sessionId));
-                      }}
+                      onClick={handleCreateAnotherFuture}
                     >
-                      Start again
+                      Create another future
                     </FfieButton>
                   </div>
                 </CreateStageShell>
