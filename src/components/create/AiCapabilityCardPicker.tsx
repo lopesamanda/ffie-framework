@@ -6,7 +6,11 @@ import {
   type AiCapabilityCard,
 } from "@/data/ai-capability-cards";
 import type { ArtifactTypeId } from "@/lib/journey/character-options";
-import { orderCapabilityCardsForArtifact } from "@/lib/journey/artifact-capability-priorities";
+import { groupCardsByCluster } from "@/lib/journey/ai-capability-clusters";
+import {
+  getVisibleCardsForArtifact,
+  orderCapabilityCardsForArtifact,
+} from "@/lib/journey/artifact-capability-priorities";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
@@ -33,58 +37,87 @@ export function AiCapabilityCardPicker({
   artifactType?: ArtifactTypeId | "";
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
-  const { prioritized, other } = useMemo(
+  const { prioritized } = useMemo(
     () =>
-      context === "artifact"
+      context === "artifact" && artifactType
         ? orderCapabilityCardsForArtifact(artifactType)
-        : { prioritized: [] as AiCapabilityCard[], other: [...AI_CAPABILITY_CARDS] },
+        : { prioritized: [] as AiCapabilityCard[], other: [] as AiCapabilityCard[] },
     [context, artifactType],
   );
 
-  const showGroups = context === "artifact" && artifactType && prioritized.length > 0;
+  const prioritizedIds = useMemo(
+    () => new Set(prioritized.map((card) => card.id)),
+    [prioritized],
+  );
+
+  const clusteredGroups = useMemo(() => {
+    const cards =
+      context === "artifact" && artifactType
+        ? getVisibleCardsForArtifact(artifactType)
+        : [...AI_CAPABILITY_CARDS];
+    return groupCardsByCluster(cards);
+  }, [context, artifactType]);
+
+  const toggleExpanded = (id: string) => {
+    setExpandedId((current) => (current === id ? null : id));
+  };
+
+  const renderCard = (card: AiCapabilityCard, highlighted: boolean) => (
+    <CapabilityCard
+      key={card.id}
+      card={card}
+      context={context}
+      expanded={expandedId === card.id}
+      onToggle={() => toggleExpanded(card.id)}
+      highlighted={highlighted}
+    />
+  );
 
   return (
     <div className="space-y-3">
       <p className="text-xs leading-relaxed text-ffie-muted">{INTRO[context]}</p>
 
-      {showGroups ? (
-        <div className="space-y-5">
-          <CapabilityGroup
-            label="Suggested for this artifact type"
-            cards={prioritized}
-            context={context}
-            expandedId={expandedId}
-            onToggle={(id) =>
-              setExpandedId((current) => (current === id ? null : id))
-            }
-            highlighted
-          />
-          {other.length > 0 && (
+      {context === "artifact" && artifactType && prioritized.length > 0 ? (
+        <div className="space-y-4">
+          {!showAll ? (
             <CapabilityGroup
-              label="Other capabilities"
-              cards={other}
-              context={context}
-              expandedId={expandedId}
-              onToggle={(id) =>
-                setExpandedId((current) => (current === id ? null : id))
-              }
+              label="Suggested for this artifact type"
+              cards={prioritized}
+              renderCard={(card) => renderCard(card, true)}
             />
+          ) : (
+            <div className="space-y-5">
+              {clusteredGroups.map((group) => (
+                <CapabilityGroup
+                  key={group.label}
+                  label={group.label}
+                  cards={group.cards}
+                  renderCard={(card) =>
+                    renderCard(card, prioritizedIds.has(card.id))
+                  }
+                />
+              ))}
+            </div>
           )}
+
+          <button
+            type="button"
+            onClick={() => setShowAll((current) => !current)}
+            className="text-xs font-medium text-ffie-accent transition hover:underline"
+          >
+            {showAll ? "Show suggested only ↑" : "Show all capabilities ↓"}
+          </button>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {AI_CAPABILITY_CARDS.map((card) => (
-            <CapabilityCard
-              key={card.id}
-              card={card}
-              context={context}
-              expanded={expandedId === card.id}
-              onToggle={() =>
-                setExpandedId((current) =>
-                  current === card.id ? null : card.id,
-                )
-              }
+        <div className="space-y-5">
+          {clusteredGroups.map((group) => (
+            <CapabilityGroup
+              key={group.label}
+              label={group.label}
+              cards={group.cards}
+              renderCard={(card) => renderCard(card, false)}
             />
           ))}
         </div>
@@ -96,17 +129,11 @@ export function AiCapabilityCardPicker({
 function CapabilityGroup({
   label,
   cards,
-  context,
-  expandedId,
-  onToggle,
-  highlighted = false,
+  renderCard,
 }: {
   label: string;
   cards: AiCapabilityCard[];
-  context: AiCapabilityContext;
-  expandedId: string | null;
-  onToggle: (id: string) => void;
-  highlighted?: boolean;
+  renderCard: (card: AiCapabilityCard) => React.ReactNode;
 }) {
   return (
     <div className="space-y-2">
@@ -114,16 +141,7 @@ function CapabilityGroup({
         {label}
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
-        {cards.map((card) => (
-          <CapabilityCard
-            key={card.id}
-            card={card}
-            context={context}
-            expanded={expandedId === card.id}
-            onToggle={() => onToggle(card.id)}
-            highlighted={highlighted}
-          />
-        ))}
+        {cards.map((card) => renderCard(card))}
       </div>
     </div>
   );

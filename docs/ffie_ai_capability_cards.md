@@ -1,11 +1,24 @@
 # FFIE — AI Capability Cards
-FFIE-original reference set, not part of the Narrative Card Deck (see `ffie_narrative_cards.md` for that). These 13 cards exist purely as an ideation aid, shown during the Embody step (character_ai_function) and the artifact "Day to day" step (artifact_public_promise), to help non-technical users brainstorm what an AI-driven artifact could plausibly do. No external brand names or references appear anywhere in the product — content is original writing, inspired only by the general structural idea of pairing a capability with tags and concrete examples.
+FFIE-original reference set, not part of the Narrative Card Deck (see `ffie_narrative_cards.md` for that). These 15 cards exist purely as an ideation aid, shown during the Embody step (character_ai_function) and the artifact "Day to day" step (artifact_public_promise), to help non-technical users brainstorm what an AI-driven artifact could plausibly do. No external brand names or references appear anywhere in the product — content is original writing, inspired only by the general structural idea of pairing a capability with tags and concrete examples.
 
 Interaction: selecting a card expands it in place to show its example plus 1-2 short guiding micro-questions that help the user articulate their own answer (e.g., "Who would use this?", "What would they notice about it first?") — it does not autofill the answer for them. The text input stays empty until the user writes their own response.
 
-On the Day to day step, cards are reordered and grouped by `artifact_type`: suggested capabilities appear first with a subtle highlight; remaining cards stay visible under "Other capabilities." Cards 11–13 (Autonomous Planning & Execution, Negotiation & Transacting, Persistent Memory & Behavioral Modeling) surface only when `artifact_type` is **agent**.
+On the Day to day step, cards use **progressive disclosure**: only the 3–4 capabilities relevant to the selected `artifact_type` are shown by default (with a subtle highlight). A "Show all capabilities" toggle reveals the full set grouped under four thematic clusters. Cards 11–13 (Autonomous Planning & Execution, Negotiation & Transacting, Persistent Memory & Behavioral Modeling) surface only when `artifact_type` is **agent**.
+
+On the Embody step, all 15 cards are shown grouped under the four clusters (no artifact-type filtering).
 
 Language: English only (no bilingual toggle yet).
+
+---
+
+## Thematic clusters (full picker)
+
+| Cluster | Cards |
+|---------|-------|
+| **Understanding People** | Personalization & Recommendation, Biometric & Body Data, Predictive Scoring & Risk Analysis, Data Classification & Clustering, Persistent Memory & Behavioral Modeling |
+| **Communicating & Creating** | Language & Conversation, Image & Video Generation, Generative Design, Content Moderation & Filtering |
+| **Acting & Automating** | Automation & Task Delegation, Code Generation & Automation, Autonomous Planning & Execution, Negotiation & Transacting on Someone's Behalf |
+| **Tracking & Verifying** | Real-Time Monitoring, Data Aggregation & Identity Verification |
 
 ---
 
@@ -52,14 +65,14 @@ Language: English only (no bilingual toggle yet).
 - An elder-care app that also reports daily movement to family members
 
 ## 7. Automation & Task Delegation
-**Description:** Performs a repetitive task on someone's behalf without needing supervision each time.
+**Description:** Performs a repetitive, well-defined task on someone's behalf without needing supervision each time.
 **Tags:** Workflow Automation · Scheduling · Auto-Response
 **Examples:**
 - A freelance platform that auto-negotiates rates on a worker's behalf, always toward the lower end
 - A caregiving bot that auto-schedules therapy check-ins
 
 ## 8. Data Aggregation & Identity Verification
-**Description:** Combines many small pieces of personal data into a single verified profile.
+**Description:** Combines many small, already-existing pieces of personal data into a single verified profile.
 **Tags:** Identity Verification · Data Merging · Cross-Platform Tracking
 **Examples:**
 - A "universal ID" app that merges medical, financial, and social data into one score used everywhere
@@ -80,7 +93,7 @@ Language: English only (no bilingual toggle yet).
 - A fraud-detection system that flags transactions from certain neighborhoods as higher-risk by default
 
 ## 11. Autonomous Planning & Execution *(agent artifact type only)*
-**Description:** Breaks a goal into steps and carries them out on its own, without asking for approval at each stage.
+**Description:** Breaks a new, multi-step goal into its own plan and carries it out, adapting along the way — not just repeating a fixed task.
 **Tags:** Multi-Step Planning · Goal Decomposition · Unsupervised Execution
 **Examples:**
 - A travel agent that books flights, hotels, and cancels conflicting meetings, only notifying her after it's done
@@ -100,18 +113,34 @@ Language: English only (no bilingual toggle yet).
 - A personal agent that knows her sleep schedule, spending habits, and relationship patterns better than her closest friend, because it never stops watching
 - An agent that quietly changes its recommendations after "learning" she's pregnant, before she's told anyone
 
+## 14. Content Moderation & Filtering
+**Description:** Decides what content is visible, allowed, or removed, often at massive scale and speed.
+**Tags:** Content Flagging · Automated Takedowns · Visibility Ranking
+**Examples:**
+- A media platform that quietly reduces the reach of posts from certain voices, labeling them "sensitive" without explanation
+- A moderation system that removes health information in one dialect while allowing the same claim in another
+
+## 15. Generative Design
+**Description:** Creates or proposes the physical form, structure, or blueprint of an object, building, or product.
+**Tags:** Product Design · Structural Generation · Rapid Prototyping
+**Examples:**
+- A wearable designed entirely by AI to maximize data collection, with comfort treated as a secondary constraint
+- An AI architecture tool that proposes "efficient" public housing layouts that quietly minimize shared community space
+
 ---
 
-## Artifact-type relevance (Day to day step)
+## Artifact-type relevance (Day to day step — default view)
 
-| artifact_type | Suggested capabilities (shown first) |
-|---------------|--------------------------------------|
-| object | Biometric & Body Data, Real-Time Monitoring, Automation & Task Delegation |
-| app | Personalization & Recommendation, Language & Conversation, Image & Video Generation, Data Aggregation & Identity Verification, Code Generation & Automation, Data Classification & Clustering |
+| artifact_type | Suggested capabilities (shown by default) |
+|---------------|---------------------------------------------|
+| object | Biometric & Body Data, Real-Time Monitoring, Automation & Task Delegation, Generative Design |
+| app | Personalization & Recommendation, Language & Conversation, Image & Video Generation, Data Aggregation & Identity Verification, Code Generation & Automation, Data Classification & Clustering, Content Moderation & Filtering |
 | service | Language & Conversation, Predictive Scoring & Risk Analysis, Automation & Task Delegation, Code Generation & Automation |
-| policy | Predictive Scoring & Risk Analysis, Data Aggregation & Identity Verification, Real-Time Monitoring, Data Classification & Clustering |
-| narrative | Image & Video Generation, Language & Conversation, Personalization & Recommendation |
+| policy | Predictive Scoring & Risk Analysis, Data Aggregation & Identity Verification, Real-Time Monitoring, Data Classification & Clustering, Content Moderation & Filtering |
+| narrative | Image & Video Generation, Language & Conversation, Personalization & Recommendation, Content Moderation & Filtering |
 | agent | Automation & Task Delegation, Language & Conversation, Predictive Scoring & Risk Analysis, Data Aggregation & Identity Verification, Code Generation & Automation, Autonomous Planning & Execution, Negotiation & Transacting, Persistent Memory & Behavioral Modeling |
+
+Use **Show all capabilities** to browse the full clustered set for unexpected pairings.
 
 ---
 

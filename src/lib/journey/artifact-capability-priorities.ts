@@ -9,7 +9,12 @@ export const ARTIFACT_CAPABILITY_PRIORITY: Record<
   ArtifactTypeId,
   string[]
 > = {
-  object: ["biometric-body-data", "realtime-monitoring", "task-automation"],
+  object: [
+    "biometric-body-data",
+    "realtime-monitoring",
+    "task-automation",
+    "generative-design",
+  ],
   app: [
     "personalization-recommendation",
     "language-conversation",
@@ -17,6 +22,7 @@ export const ARTIFACT_CAPABILITY_PRIORITY: Record<
     "identity-data-fusion",
     "code-generation-automation",
     "data-classification-clustering",
+    "content-moderation-filtering",
   ],
   service: [
     "language-conversation",
@@ -29,11 +35,13 @@ export const ARTIFACT_CAPABILITY_PRIORITY: Record<
     "identity-data-fusion",
     "realtime-monitoring",
     "data-classification-clustering",
+    "content-moderation-filtering",
   ],
   narrative: [
     "image-video-generation",
     "language-conversation",
     "personalization-recommendation",
+    "content-moderation-filtering",
   ],
   agent: [
     "task-automation",
@@ -80,4 +88,10 @@ export function orderCapabilityCardsForArtifact(
   const other = visible.filter((card) => !prioritizedSet.has(card.id));
 
   return { prioritized, other };
+}
+
+export function getVisibleCardsForArtifact(
+  artifactType: ArtifactTypeId | "",
+): AiCapabilityCard[] {
+  return cardsVisibleForArtifactType(artifactType);
 }

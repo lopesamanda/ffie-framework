@@ -144,7 +144,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
     id: "task-automation",
     name: "Automation & Task Delegation",
     description:
-      "Performs a repetitive task on someone's behalf without needing supervision each time.",
+      "Performs a repetitive, well-defined task on someone's behalf without needing supervision each time.",
     tags: ["Workflow Automation", "Scheduling", "Auto-Response"],
     examples: [
       "A freelance platform that auto-negotiates rates on a worker's behalf, always toward the lower end",
@@ -164,7 +164,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
     id: "identity-data-fusion",
     name: "Data Aggregation & Identity Verification",
     description:
-      "Combines many small pieces of personal data into a single verified profile.",
+      "Combines many small, already-existing pieces of personal data into a single verified profile.",
     tags: [
       "Identity Verification",
       "Data Merging",
@@ -232,7 +232,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
     id: "autonomous-planning-execution",
     name: "Autonomous Planning & Execution",
     description:
-      "Breaks a goal into steps and carries them out on its own, without asking for approval at each stage.",
+      "Breaks a new, multi-step goal into its own plan and carries it out, adapting along the way — not just repeating a fixed task.",
     tags: [
       "Multi-Step Planning",
       "Goal Decomposition",
@@ -302,5 +302,45 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
     ],
     color: "#64748b",
     agentOnly: true,
+  },
+  {
+    id: "content-moderation-filtering",
+    name: "Content Moderation & Filtering",
+    description:
+      "Decides what content is visible, allowed, or removed, often at massive scale and speed.",
+    tags: ["Content Flagging", "Automated Takedowns", "Visibility Ranking"],
+    examples: [
+      "A media platform that quietly reduces the reach of posts from certain voices, labeling them 'sensitive' without explanation",
+      "A moderation system that removes health information in one dialect while allowing the same claim in another",
+    ],
+    guidingQuestions: [
+      "What disappears from view before anyone explains why?",
+      "Who decides what counts as acceptable — and who never gets to appeal?",
+    ],
+    artifactGuidingQuestions: [
+      "What content does the artifact hide, flag, or demote in daily use?",
+      "Whose voice reaches fewer people because of a label they never see?",
+    ],
+    color: "#64748b",
+  },
+  {
+    id: "generative-design",
+    name: "Generative Design",
+    description:
+      "Creates or proposes the physical form, structure, or blueprint of an object, building, or product.",
+    tags: ["Product Design", "Structural Generation", "Rapid Prototyping"],
+    examples: [
+      "A wearable designed entirely by AI to maximize data collection, with comfort treated as a secondary constraint",
+      "An AI architecture tool that proposes 'efficient' public housing layouts that quietly minimize shared community space",
+    ],
+    guidingQuestions: [
+      "What shape or structure gets proposed before a human draws anything?",
+      "What tradeoff was optimized — and who wasn't in the room when it was?",
+    ],
+    artifactGuidingQuestions: [
+      "What physical form or blueprint does the artifact generate or propose each day?",
+      "What constraint shaped the design that your character never asked for?",
+    ],
+    color: "#64748b",
   },
 ];
