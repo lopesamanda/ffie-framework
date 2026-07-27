@@ -21,11 +21,11 @@ export const ENVIRONMENTAL_IMPACT_CARD: NarrativeCard = {
     "AI infrastructures consume energy, water, and critical minerals, often displacing environmental impacts onto peripheral territories and historically exploited populations.",
   tension: "Innovation vs. extraction",
   examples: [
-    "Um data center numa região com seca frequente consumindo milhões de litros de água por ano pra resfriar servidores de IA",
-    "Mineração de terras raras para hardware de IA deslocando comunidades em territórios já explorados",
+    "A data center in a drought-prone region consuming millions of liters of water per year to cool AI servers",
+    "Rare-earth mining for AI hardware displacing communities in already exploited territories",
   ],
   reflectionQuestion:
-    "Onde fica, fisicamente, o custo ambiental dessa inteligência artificial — e quem paga esse custo de perto?",
+    "Where does the environmental cost of this artificial intelligence physically land — and who pays that cost up close?",
   category: "transversal",
   register: "tension",
   drawable: false,
@@ -40,11 +40,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "The logic of scalability eliminates cultural, social, and biological diversity.",
     tension: "Efficiency vs. plurality",
     examples: [
-      "Um app de tradução que só preserva os cinco idiomas mais falados, deixando centenas de línguas indígenas fora do uso digital",
-      "Um algoritmo de recomendação que mostra a mesma tendência pra todo mundo numa cidade, achatando a expressão cultural local",
+      "A translation app that only preserves the five most spoken languages, leaving hundreds of indigenous languages out of digital use",
+      "A recommendation algorithm that shows the same trend to everyone in a city, flattening local cultural expression",
     ],
     reflectionQuestion:
-      "O que se perde quando a mesma solução é aplicada a todo mundo, em todo lugar?",
+      "What is lost when the same solution is applied to everyone, everywhere?",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -57,11 +57,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Racism, sexism, and transphobia are reproduced by historical data.",
     tension: "Automation of injustice",
     examples: [
-      "Um algoritmo de contratação treinado em currículos de uma década que penaliza quem lista \"faculdade só para mulheres\"",
-      "Uma ferramenta de policiamento preditivo que sinaliza bairros com base em dados históricos de prisão já enviesados",
+      "A hiring algorithm trained on a decade of résumés that penalizes anyone who lists a women's college",
+      "A predictive policing tool that flags neighborhoods based on historically biased arrest data",
     ],
     reflectionQuestion:
-      "De onde vieram os dados que ensinaram essa IA — e quem eles deixaram de fora?",
+      "Where did the data that taught this AI come from — and who did it leave out?",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -74,11 +74,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Over-reliance leads to the loss of critical thinking and intellectual autonomy.",
     tension: "Convenience vs. education/development",
     examples: [
-      "Um assistente de escrita tão presente no trabalho diário que a equipe perde o hábito de argumentar sozinha",
-      "Um app de navegação usado com tanta frequência que a pessoa perde a capacidade de ler um mapa sem ele",
+      "A writing assistant so present in daily work that the team loses the habit of arguing on its own",
+      "A navigation app used so often that a person loses the ability to read a map without it",
     ],
     reflectionQuestion:
-      "O que essa pessoa deixou de saber fazer sozinha, desde que passou a confiar nessa IA?",
+      "What has this person stopped knowing how to do alone, since they started trusting this AI?",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -91,11 +91,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Women and children as the primary targets of technological abuse.",
     tension: "Innovation without protection",
     examples: [
-      "Um vídeo deepfake usado para assediar uma mulher pública com conteúdo explícito fabricado",
-      "Um clone de voz por IA usado para se passar por uma criança numa ligação de golpe aos pais",
+      "A deepfake video used to harass a public woman with fabricated explicit content",
+      "An AI voice clone used to impersonate a child in a scam call to parents",
     ],
     reflectionQuestion:
-      "Quem é mais vulnerável à violência que essa tecnologia pode causar, mesmo sem essa ser a intenção do design?",
+      "Who is most vulnerable to the violence this technology can cause, even when that is not the design intent?",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -108,11 +108,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Data, narratives, and values concentrated within a few Big Tech corporations.",
     tension: "Digital colonialism",
     examples: [
-      "Um modelo de IA treinado quase inteiramente com dados em inglês da América do Norte, depois vendido como neutro no mundo todo",
-      "Um punhado de empresas donas da infraestrutura de computação da qual toda startup de IA no mundo depende",
+      "An AI model trained almost entirely on North American English data, then sold as neutral worldwide",
+      "A handful of companies owning the computing infrastructure every AI startup in the world depends on",
     ],
     reflectionQuestion:
-      "Quem é dono da infraestrutura por trás dessa IA, e quem só usa o que sobra?",
+      "Who owns the infrastructure behind this AI, and who only gets to use what's left over?",
     category: "risk",
     register: "tension",
     drawable: true,
@@ -125,11 +125,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Access to opportunity and information flows through informal, referral-based networks that exclude those outside them, operating behind a claim of meritocracy.",
     tension: "Structural access restriction (apparent meritocracy)",
     examples: [
-      "Uma promoção decidida numa happy hour pra qual só alguns colegas foram convidados",
-      "Introduções a investidores de uma startup fluindo só por uma rede de ex-alunos de um único gênero",
+      "A promotion decided at a happy hour only some colleagues were invited to",
+      "Introductions to investors flowing only through an alumni network of a single gender",
     ],
     reflectionQuestion:
-      "Quem teve acesso a essa oportunidade só porque conhecia a pessoa certa?",
+      "Who had access to this opportunity only because they knew the right person?",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -142,11 +142,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Caregiving responsibilities are structurally penalized through wage gaps, leadership exclusion, and constrained career mobility.",
     tension: "Care as career cost",
     examples: [
-      "Uma avaliação de desempenho que pontua uma mãe recém-retornada mais baixo por \"disponibilidade reduzida\"",
-      "Um pipeline de promoção que exclui silenciosamente quem tirou licença estendida para cuidar de alguém",
+      "A performance review scoring a newly returned mother lower for \"reduced availability\"",
+      "A promotion pipeline silently excluding anyone who took extended leave to care for someone",
     ],
     reflectionQuestion:
-      "O que essa pessoa perdeu profissionalmente por ter cuidado de alguém?",
+      "What did this person lose professionally for having cared for someone?",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -159,11 +159,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Domination operates through everyday, often-denied mechanisms embedded in professional environments that present themselves as neutral.",
     tension: "Embodied harm in professional spaces (stay or resist)",
     examples: [
-      "Uma reunião onde a ideia de uma mulher é ignorada até ser repetida minutos depois por um colega homem, e creditada a ele",
-      "Um código de vestimenta aplicado com mais rigor a corpos femininos, sob o disfarce de \"profissionalismo\"",
+      "A meeting where a woman's idea is ignored until repeated minutes later by a male colleague and credited to him",
+      "A dress code applied more strictly to feminine bodies under the guise of \"professionalism\"",
     ],
     reflectionQuestion:
-      "Que tipo de dano essa pessoa aprendeu a não nomear, porque virou \"normal\" no ambiente onde trabalha?",
+      "What kind of harm has this person learned not to name, because it became \"normal\" in the environment where they work?",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -176,11 +176,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Diversity and inclusion initiatives are rolled back when capitalist logic treats them as a cost rather than a structural commitment.",
     tension: "Capitalism vs. structural equity (diversity as luxury)",
     examples: [
-      "Um programa de diversidade cortado do orçamento no primeiro trimestre de queda de receita, enquanto outros departamentos ficam intocados",
-      "Uma empresa removendo silenciosamente metas de gênero dos relatórios públicos após uma troca de liderança",
+      "A diversity program cut from the budget in the first quarter of declining revenue while other departments remain untouched",
+      "A company quietly removing gender targets from public reports after a leadership change",
     ],
     reflectionQuestion:
-      "O que aconteceu com o compromisso de equidade dessa empresa quando ele deixou de ser conveniente?",
+      "What happened to this company's equity commitment when it stopped being convenient?",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -193,11 +193,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "A material double bind between being recognized and being safe, documented specifically through Brazilian trans and non-binary participants' accounts.",
     tension: "Survival vs. authenticity",
     examples: [
-      "Um sistema de identificação corporativa sem opção além de gênero binário, forçando uma incompatibilidade com a identidade da pessoa",
-      "Uma pessoa trans escolhendo entre revelar sua identidade e continuar segura num ambiente hostil",
+      "A corporate ID system with no option beyond binary gender, forcing a mismatch with a person's identity",
+      "A trans person choosing between revealing their identity and staying safe in a hostile environment",
     ],
     reflectionQuestion:
-      "O que essa pessoa precisa esconder de si mesma pra continuar segura nesse espaço?",
+      "What does this person need to hide about themselves to stay safe in this space?",
     category: "barrier",
     register: "tension",
     drawable: true,
@@ -210,11 +210,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "AI increases productivity, accelerates decision-making, and expands the capabilities of those who already possess technical and cognitive capital.",
     tension: "Amplification of existing privileges",
     examples: [
-      "Um engenheiro sênior usando IA pra entregar numa tarde o que antes levava uma semana, ampliando a distância pra colegas juniores",
-      "Uma equipe bem financiada usando ferramentas de IA que uma equipe menor e sem recursos não consegue pagar",
+      "A senior engineer using AI to deliver in an afternoon what used to take a week, widening the gap with junior colleagues",
+      "A well-funded team using AI tools a smaller, under-resourced team cannot afford",
     ],
     reflectionQuestion:
-      "Quem já estava na frente, e ficou ainda mais na frente, com essa ferramenta?",
+      "Who was already ahead, and got even further ahead, with this tool?",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -227,11 +227,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "AI acts as an organizer, reviewer, and mental load reducer, particularly for women.",
     tension: "Protection vs. expansion of responsibilities",
     examples: [
-      "Uma mãe trabalhadora usando um assistente de IA pra gerenciar agenda, consultas médicas e prazos escolares num só lugar",
-      "Uma ferramenta de IA que redige e-mails de rotina, liberando horas antes gastas em trabalho administrativo invisível",
+      "A working mother using an AI assistant to manage schedule, medical appointments, and school deadlines in one place",
+      "An AI tool that drafts routine emails, freeing hours previously spent on invisible administrative work",
     ],
     reflectionQuestion:
-      "Que carga mental essa ferramenta tirou dos ombros de alguém — e isso muda algo estrutural, ou só alivia por fora?",
+      "What mental load did this tool take off someone's shoulders — and does that change anything structural, or only relieve it on the surface?",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -244,11 +244,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "When used intentionally, it can accelerate the learning curve for underrepresented groups.",
     tension: "Democratization conditioned upon access and literacy",
     examples: [
-      "Um tutor de IA gratuito ajudando um estudante de primeira geração a recuperar uma base que nunca teve acesso antes",
-      "Uma ferramenta de tradução por IA permitindo que alguém não-nativo no idioma se candidate a vagas antes fora de alcance",
+      "A free AI tutor helping a first-generation student recover a foundation they never had access to before",
+      "An AI translation tool allowing a non-native speaker to apply for jobs previously out of reach",
     ],
     reflectionQuestion:
-      "O que essa pessoa consegue fazer agora que não conseguia antes — e o que ainda falta pra esse acesso ser garantido de verdade?",
+      "What can this person do now that they couldn't before — and what is still missing for that access to be truly guaranteed?",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -261,11 +261,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Translation, transcription, support for neurodivergence, and linguistic inclusion.",
     tension: "Inclusion is not automatic; it depends on ethical design",
     examples: [
-      "Uma IA leitora de tela permitindo que uma pessoa cega navegue um site sozinha pela primeira vez",
-      "Uma ferramenta de legendagem em tempo real permitindo que uma pessoa surda acompanhe uma reunião sem precisar de intérprete humano toda vez",
+      "A screen-reading AI allowing a blind person to navigate a site alone for the first time",
+      "A real-time captioning tool allowing a deaf person to follow a meeting without a human interpreter every time",
     ],
     reflectionQuestion:
-      "Que barreira essa tecnologia realmente remove, e que barreira ela só disfarça?",
+      "Which barrier does this technology actually remove, and which does it only disguise?",
     category: "benefit",
     register: "potential",
     drawable: true,
@@ -277,11 +277,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     description: "Trust based on utility and results.",
     tension: "It works, therefore I trust it",
     examples: [
-      "Alguém que não entende bem como uma ferramenta de diagnóstico funciona, mas confia nela porque já acertou antes",
-      "Uma equipe adotando uma ferramenta de agendamento por IA só porque economiza tempo, sem auditar como ela decide",
+      "Someone who doesn't fully understand how a diagnostic tool works but trusts it because it has been right before",
+      "A team adopting an AI scheduling tool only because it saves time, without auditing how it decides",
     ],
     reflectionQuestion:
-      "Essa pessoa confia na ferramenta, ou só confia no resultado — e isso é a mesma coisa?",
+      "Does this person trust the tool, or only the outcome — and is that the same thing?",
     category: "trust",
     register: "potential",
     drawable: true,
@@ -294,11 +294,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "Trust mediated by control, human oversight, and clear boundaries.",
     tension: "Necessary but uncomfortable use",
     examples: [
-      "Um médico usando uma ferramenta de diagnóstico por IA só como segunda opinião, nunca como palavra final",
-      "Um gestor revisando cada decisão que uma ferramenta de IA de contratação toma antes de seguir adiante",
+      "A doctor using an AI diagnostic tool only as a second opinion, never as the final word",
+      "A manager reviewing every decision an AI hiring tool makes before moving forward",
     ],
     reflectionQuestion:
-      "Que limite essa pessoa colocou pra continuar confiando — e o que aconteceria se esse limite fosse removido?",
+      "What limit did this person set to keep trusting — and what would happen if that limit were removed?",
     category: "trust",
     register: "potential",
     drawable: true,
@@ -311,11 +311,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
       "The issue is not the tool itself, but the creators, the data, and the underlying interests.",
     tension: "Invisible power",
     examples: [
-      "Uma comunidade que não confia numa IA de saúde, não pela ferramenta em si, mas por quem a construiu e quem lucra com ela",
-      "Um trabalhador que assume que qualquer \"IA de produtividade\" introduzida pela gestão existe pra justificar demissões",
+      "A community that doesn't trust a health AI, not because of the tool itself, but because of who built it and who profits from it",
+      "A worker assuming any \"productivity AI\" introduced by management exists to justify layoffs",
     ],
     reflectionQuestion:
-      "Se essa pessoa não confia, é na tecnologia — ou em quem está por trás dela?",
+      "If this person doesn't trust, is it the technology — or whoever is behind it?",
     category: "trust",
     register: "potential",
     drawable: true,
@@ -327,11 +327,11 @@ export const NARRATIVE_CARDS: NarrativeCard[] = [
     description: "Algorithms reflect human values and social structures.",
     tension: "Mathematics does not equal justice",
     examples: [
-      "Uma ferramenta de contratação por IA apresentada como \"objetiva\" que ainda reflete os vieses dos currículos com que foi treinada",
-      "Um algoritmo de moderação de conteúdo vendido como neutro que sinaliza sistematicamente certos dialetos como \"tóxicos\"",
+      "An AI hiring tool presented as \"objective\" that still reflects the biases of the résumés it was trained on",
+      "A content moderation algorithm sold as neutral that systematically flags certain dialects as \"toxic\"",
     ],
     reflectionQuestion:
-      "Que valores essa IA carrega, mesmo sendo apresentada como neutra?",
+      "What values does this AI carry, even when it is presented as neutral?",
     category: "trust",
     register: "potential",
     drawable: true,
@@ -389,12 +389,12 @@ export function buildCombinedTension(hand: WorkshopHand): string {
 
 /** Seed text for artifact_public_promise from Potential cards in the hand */
 export function buildEcosystemAmbitionSeed(hand: WorkshopHand): string {
-  return `O ecossistema promete ${hand.benefit.tension.toLowerCase()} — e espera ${hand.trust.tension.toLowerCase()}.`;
+  return `The ecosystem promises ${hand.benefit.tension.toLowerCase()} — and expects ${hand.trust.tension.toLowerCase()}.`;
 }
 
 /** Starter for hidden_function collision prompt */
 export function buildWeaknessCollisionContext(hand: WorkshopHand): string {
-  return `${hand.risk.name} (${hand.risk.tension}) encontra ${hand.barrier.name} (${hand.barrier.tension}).`;
+  return `${hand.risk.name} (${hand.risk.tension}) meets ${hand.barrier.name} (${hand.barrier.tension}).`;
 }
 
 export const CATEGORY_LABELS: Record<CardCategory, string> = {

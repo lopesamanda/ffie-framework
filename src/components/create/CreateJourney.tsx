@@ -22,6 +22,7 @@ import {
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
 import { NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
+import { AiCapabilityCardPicker } from "@/components/create/AiCapabilityCardPicker";
 import { CATEGORY_LABELS } from "@/data/narrative-cards";
 import {
   ShareableFutureCard,
@@ -704,6 +705,7 @@ export function CreateJourney() {
                                 className={`${FIELD} resize-none`}
                               />
                             </NarrativeBlock>
+                            <AiCapabilityCardPicker context="artifact" />
                           </>
                         );
                       })()}
