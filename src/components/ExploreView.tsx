@@ -2,6 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  SegmentedControl,
+  SegmentedControlAccent,
+} from "@/components/create/design/SegmentedControl";
 import { FuturePreviewPanel } from "@/components/FuturePreviewPanel";
 import { FutureGrid, FutureMatrix } from "@/components/FutureMatrix";
 import { researchFindingsSeed } from "@/data/research-findings-seed";
@@ -43,58 +47,28 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="inline-flex rounded-full border border-ffie-line bg-ffie-surface p-1">
-          <button
-            type="button"
-            onClick={() => setCollection("research_findings")}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-              collection === "research_findings"
-                ? "bg-ffie-ink text-white"
-                : "text-ffie-muted hover:text-ffie-ink"
-            }`}
-          >
-            Research Findings
-          </button>
-          <button
-            type="button"
-            onClick={() => setCollection("future_commons")}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-              collection === "future_commons"
-                ? "bg-ffie-ink text-white"
-                : "text-ffie-muted hover:text-ffie-ink"
-            }`}
-          >
-            Future Commons
-          </button>
-        </div>
+        <SegmentedControl
+          ariaLabel="Collection"
+          value={collection}
+          onChange={setCollection}
+          options={[
+            { value: "research_findings", label: "Research Findings" },
+            { value: "future_commons", label: "Future Commons" },
+          ]}
+        />
 
-        <div className="inline-flex rounded-full border border-ffie-line bg-ffie-surface p-1">
-          <button
-            type="button"
-            onClick={() => setView("map")}
-            className={`rounded-full px-4 py-2 text-sm transition ${
-              view === "map"
-                ? "bg-ffie-accent-soft text-ffie-accent"
-                : "text-ffie-muted"
-            }`}
-          >
-            Map
-          </button>
-          <button
-            type="button"
-            onClick={() => setView("grid")}
-            className={`rounded-full px-4 py-2 text-sm transition ${
-              view === "grid"
-                ? "bg-ffie-accent-soft text-ffie-accent"
-                : "text-ffie-muted"
-            }`}
-          >
-            Grid
-          </button>
-        </div>
+        <SegmentedControlAccent
+          ariaLabel="View mode"
+          value={view}
+          onChange={setView}
+          options={[
+            { value: "map", label: "Map" },
+            { value: "grid", label: "Grid" },
+          ]}
+        />
       </div>
 
-      <p className="max-w-3xl text-sm leading-relaxed text-ffie-muted">
+      <p className="max-w-prose text-sm leading-relaxed text-ffie-muted">
         {collection === "research_findings" ? (
           <>
             The eight diegetic prototypes from the thesis — fixed, validated,
@@ -115,7 +89,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
           onChange={(event) =>
             setCountry(event.target.value as FutureCountry | "all")
           }
-          className="rounded-full border border-ffie-line bg-ffie-surface px-4 py-2 text-sm text-ffie-ink"
+          className="rounded-full border border-ffie-line bg-ffie-surface px-4 py-2 text-sm text-ffie-ink outline-none focus:border-ffie-accent/40"
         >
           <option value="all">All countries</option>
           <option value="Brazil">Brazil</option>
@@ -127,7 +101,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
           onChange={(event) =>
             setQuadrant(event.target.value as FutureQuadrant | "all")
           }
-          className="rounded-full border border-ffie-line bg-ffie-surface px-4 py-2 text-sm text-ffie-ink"
+          className="rounded-full border border-ffie-line bg-ffie-surface px-4 py-2 text-sm text-ffie-ink outline-none focus:border-ffie-accent/40"
         >
           <option value="all">All quadrants</option>
           {Object.entries(QUADRANT_LABELS).map(([key, label]) => (
@@ -148,7 +122,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
             highlightCountry={country}
           />
 
-          <aside className="rounded-2xl border border-ffie-line bg-ffie-surface p-6 shadow-sm lg:sticky lg:top-6">
+          <aside className="rounded-[12px] border border-ffie-line bg-ffie-surface p-6 shadow-[0_2px_8px_rgba(35,19,82,0.04)] lg:sticky lg:top-6">
             <AnimatePresence mode="wait">
               {selected ? (
                 <motion.div
@@ -166,13 +140,13 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="space-y-3 text-sm text-ffie-muted"
+                  className="max-w-prose space-y-3 text-sm text-ffie-muted"
                 >
                   <p className="font-medium text-ffie-ink">Select a future</p>
                   <p>
-                    Click a point on the matrix to read the narrative, tension,
-                    and reflection question. Or open any future as a shareable
-                    permalink from the grid view.
+                    Click a point on the matrix to read an excerpt and
+                    reflection question. Open any future for the complete
+                    narrative and data block — or browse the grid view.
                   </p>
                 </motion.div>
               )}

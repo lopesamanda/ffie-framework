@@ -4,6 +4,8 @@ export type AiCapabilityCard = {
   description: string;
   tags: string[];
   examples: string[];
+  /** Short prompts to help the user write their own answer — never autofilled. */
+  guidingQuestions: [string, string];
   /** Neutral slate — distinct from narrative category colors */
   color: string;
 };
@@ -11,117 +13,137 @@ export type AiCapabilityCard = {
 export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   {
     id: "personalization-recommendation",
-    name: "Personalização e Recomendação",
+    name: "Personalization & Recommendation",
     description:
-      "Aprende padrões do que alguém faz, compra ou precisa, e adapta o que mostra a seguir.",
+      "Learns patterns in what someone does, buys, or needs, and adapts what it shows next.",
     tags: [
-      "Recomendação de conteúdo",
-      "Perfil comportamental",
-      "Sugestão preditiva",
+      "Content recommendation",
+      "Behavioral profile",
+      "Predictive suggestion",
     ],
     examples: [
-      "Um app de bem-estar que recomenda tratamentos diferentes com base na renda inferida do usuário",
-      "Uma plataforma de vagas que mostra oportunidades diferentes pra homens e mulheres com base em cliques anteriores",
+      "A wellness app that recommends different treatments based on inferred user income",
+      "A jobs platform that surfaces different opportunities to men and women based on past clicks",
+    ],
+    guidingQuestions: [
+      "Who would use this capability in your character's day?",
+      "What would they notice about it first — convenience, or something unsettling?",
     ],
     color: "#64748b",
   },
   {
     id: "language-conversation",
-    name: "Linguagem e Conversa",
+    name: "Language & Conversation",
     description:
-      "Entende e gera linguagem humana o suficiente pra manter uma conversa ou escrever em nome de alguém.",
-    tags: ["Chatbot", "Geração de texto", "Análise de sentimento"],
+      "Understands and generates human language well enough to hold a conversation or write on someone's behalf.",
+    tags: ["Chatbot", "Text generation", "Sentiment analysis"],
     examples: [
-      "Um app de companhia que conversa sobre solidão com uma pessoa idosa",
-      "Um assistente de RH automatizado que analisa cartas de demissão em busca de 'risco de tom'",
+      "A companionship app that talks with an older person about loneliness",
+      "An automated HR assistant that scans resignation letters for 'tone risk'",
+    ],
+    guidingQuestions: [
+      "Who is the AI speaking to — or speaking for?",
+      "What feeling does the conversation leave behind?",
     ],
     color: "#64748b",
   },
   {
     id: "image-video-generation",
-    name: "Geração de Imagem e Vídeo",
+    name: "Image & Video Generation",
     description:
-      "Cria ou modifica conteúdo visual a partir de um comando ou material existente.",
-    tags: ["Mídia sintética", "Geração de rosto", "Transferência de estilo"],
+      "Creates or modifies visual content from a prompt or existing material.",
+    tags: ["Synthetic media", "Face generation", "Style transfer"],
     examples: [
-      "Um app de segurança em encontros que gera uma prévia sintética de quem você vai conhecer",
-      "Uma plataforma de mídia que gera capas automaticamente otimizadas pra engajamento, sem checar precisão",
+      "A dating safety app that generates a synthetic preview of who you are about to meet",
+      "A media platform that auto-generates engagement-optimized covers without checking accuracy",
+    ],
+    guidingQuestions: [
+      "What image or scene would your character encounter because of this?",
+      "Who controls what gets shown — and who cannot opt out?",
     ],
     color: "#64748b",
   },
   {
     id: "biometric-body-data",
-    name: "Dados Biométricos e Corporais",
+    name: "Biometric & Body Data",
     description:
-      "Lê sinais físicos de um corpo: rosto, voz, movimento, sinais vitais.",
-    tags: [
-      "Reconhecimento facial",
-      "Análise de voz",
-      "Monitoramento de saúde",
-    ],
+      "Reads physical signals from a body: face, voice, movement, vital signs.",
+    tags: ["Facial recognition", "Voice analysis", "Health monitoring"],
     examples: [
-      "Um wearable de bem-estar corporativo que reporta níveis de estresse pro gestor",
-      "Um app de dermatologia que analisa condições de pele por foto, treinado majoritariamente em peles claras",
+      "A corporate wellness wearable that reports stress levels to a manager",
+      "A dermatology app trained mostly on light skin tones that analyzes conditions from photos",
+    ],
+    guidingQuestions: [
+      "Whose body is being read — and who sees the results?",
+      "What happens when the reading is wrong or incomplete?",
     ],
     color: "#64748b",
   },
   {
     id: "predictive-scoring",
-    name: "Pontuação Preditiva e Análise de Risco",
+    name: "Predictive Scoring & Risk Analysis",
     description:
-      "Estima a probabilidade de um resultado futuro com base em dados passados.",
-    tags: [
-      "Score de crédito",
-      "Predição de risco",
-      "Triagem de elegibilidade",
-    ],
+      "Estimates the probability of a future outcome based on past data.",
+    tags: ["Credit score", "Risk prediction", "Eligibility screening"],
     examples: [
-      "Um app de seguro que precifica com base em risco de estilo de vida inferido",
-      "Uma plataforma de empréstimo que pontua 'confiabilidade' usando CEP e histórico de navegação",
+      "An insurance app that prices policies from inferred lifestyle risk",
+      "A lending platform that scores 'trustworthiness' using zip code and browsing history",
+    ],
+    guidingQuestions: [
+      "What decision gets made automatically because of the score?",
+      "Who is most likely to be misread by the model?",
     ],
     color: "#64748b",
   },
   {
     id: "realtime-monitoring",
-    name: "Monitoramento em Tempo Real",
+    name: "Real-Time Monitoring",
     description:
-      "Observa continuamente comportamento, localização ou atividade enquanto acontece.",
-    tags: [
-      "Rastreamento de atividade",
-      "Dados de localização",
-      "Monitoramento de produtividade",
-    ],
+      "Continuously observes behavior, location, or activity as it happens.",
+    tags: ["Activity tracking", "Location data", "Productivity monitoring"],
     examples: [
-      "Um kit de integração corporativa que rastreia digitação e crachá pra medir 'engajamento'",
-      "Um app de cuidado com idosos que também reporta a movimentação diária deles pra família",
+      "A corporate integration kit that tracks keystrokes and badge swipes to measure 'engagement'",
+      "An elder-care app that also reports daily movement to family members",
+    ],
+    guidingQuestions: [
+      "What is being watched, moment by moment?",
+      "Who receives the alert — and who never knows they were monitored?",
     ],
     color: "#64748b",
   },
   {
     id: "task-automation",
-    name: "Automação e Delegação de Tarefas",
+    name: "Task Automation & Delegation",
     description:
-      "Executa uma tarefa repetitiva em nome de alguém sem supervisão constante.",
-    tags: ["Automação de fluxo", "Agendamento", "Resposta automática"],
+      "Executes a repetitive task on someone's behalf without constant supervision.",
+    tags: ["Workflow automation", "Scheduling", "Auto-reply"],
     examples: [
-      "Uma plataforma freelancer que negocia tarifas automaticamente em nome do trabalhador, sempre pra baixo",
-      "Um bot de cuidado que agenda check-ins terapêuticos sozinho",
+      "A freelance platform that negotiates rates automatically on the worker's behalf — always downward",
+      "A care bot that schedules therapeutic check-ins on its own",
+    ],
+    guidingQuestions: [
+      "What task does your character stop doing themselves?",
+      "What do they lose control of when the task runs in the background?",
     ],
     color: "#64748b",
   },
   {
     id: "identity-data-fusion",
-    name: "Agregação de Dados e Verificação de Identidade",
+    name: "Data Aggregation & Identity Verification",
     description:
-      "Combina pequenos pedaços de dados pessoais num único perfil verificado.",
+      "Combines small pieces of personal data into a single verified profile.",
     tags: [
-      "Verificação de identidade",
-      "Fusão de dados",
-      "Rastreamento entre plataformas",
+      "Identity verification",
+      "Data fusion",
+      "Cross-platform tracking",
     ],
     examples: [
-      "Um 'ID universal' que funde dados médicos, financeiros e sociais num único score usado em todo lugar",
-      "Um sistema de reputação de trabalho por app que segue o trabalhador por toda plataforma que ele já usou",
+      "A 'universal ID' that merges medical, financial, and social data into one score used everywhere",
+      "A gig-work reputation system that follows a worker across every platform they have used",
+    ],
+    guidingQuestions: [
+      "What gets linked together that used to stay separate?",
+      "Who benefits from the single profile — the person, or someone else?",
     ],
     color: "#64748b",
   },

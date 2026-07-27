@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ffieCardShell } from "@/lib/card-layout";
 
 export const metadata: Metadata = {
   title: "About FFIE",
@@ -37,7 +38,7 @@ export default function AboutPage() {
       <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
         An instrument, not an explainer
       </h1>
-      <p className="mt-4 text-lg leading-relaxed text-ffie-muted">
+      <p className="mt-4 max-w-prose text-lg leading-relaxed text-ffie-muted">
         Two verbs: Explore and Create. See{" "}
         <code className="text-sm text-ffie-ink">docs/FFIE_product_brief.md</code>{" "}
         for the full product scope and{" "}
@@ -52,20 +53,26 @@ export default function AboutPage() {
           <a
             key={section.id}
             href={`#${section.id}`}
-            className="rounded-full border border-ffie-line px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-ffie-muted transition hover:border-ffie-accent/40 hover:text-ffie-ink"
+            className="rounded-full border border-ffie-line px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-ffie-muted transition hover:border-ffie-accent/40 hover:text-ffie-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ffie-accent"
           >
             {section.title}
           </a>
         ))}
       </nav>
 
-      <div className="mt-10 space-y-16">
+      <div className="mt-10 space-y-8">
         {sections.map((section) => (
-          <section key={section.id} id={section.id} className="scroll-mt-24">
-            <h2 className="text-2xl font-semibold tracking-tight">
+          <section
+            key={section.id}
+            id={section.id}
+            className={`scroll-mt-24 px-[18px] py-6 ${ffieCardShell} bg-ffie-surface`}
+          >
+            <h2 className="font-display text-xl font-bold tracking-tight">
               {section.title}
             </h2>
-            <p className="mt-4 leading-relaxed text-ffie-muted">{section.body}</p>
+            <p className="mt-4 max-w-prose leading-relaxed text-ffie-muted">
+              {section.body}
+            </p>
           </section>
         ))}
       </div>

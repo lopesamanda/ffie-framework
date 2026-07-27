@@ -5,6 +5,8 @@ export type StageMeta = {
   eyebrow: string;
   title: string;
   subtitle?: string;
+  /** Top accent for portal-style stage shell (design system). */
+  accentColor: string;
 };
 
 /** Maps 7 journey stages → 5 compact timeline phases (Figma PhaseTimelineCompact). */
@@ -21,8 +23,7 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     phaseLabel: "Entry",
     eyebrow: "Somewhere between Brazil and Portugal",
     title: "A future is taking shape.",
-    subtitle:
-      "This is not a survey. There are no right answers. You will draw cards, inhabit a life, and build something that does not yet exist.",
+    accentColor: "#6e52c4",
   },
   orientation: {
     phaseLabel: "Orientation",
@@ -30,6 +31,7 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     title: "Four cards will shape your future.",
     subtitle:
       "Each card carries a structural tension drawn from real conditions — not hypothetical scenarios. You will draw one from each register. Together, they are the soil your future grows from.",
+    accentColor: "#c8472a",
   },
   exploration: {
     phaseLabel: "Exploration",
@@ -37,6 +39,7 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     title: "Others have been here before you.",
     subtitle:
       "Three diegetic prototypes from the thesis — from the same 19-card deck you are about to use.",
+    accentColor: "#c48a1a",
   },
   reflection: {
     phaseLabel: "Reflection",
@@ -44,6 +47,7 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     title: "Your hand.",
     subtitle:
       "One card from each category, plus the Environmental Impact lens — always applied, never drawn.",
+    accentColor: "#1a2870",
   },
   creation: {
     phaseLabel: "Creation",
@@ -51,12 +55,13 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     title: "Give it a body.",
     subtitle:
       "Character, machine, artifact — then two questions place it on the matrix.",
+    accentColor: "#c22b7a",
   },
   output: {
     phaseLabel: "Your Future",
     eyebrow: "Your future",
     title: "It exists now.",
-    subtitle: undefined,
+    accentColor: "#6e52c4",
   },
   discovery: {
     phaseLabel: "Discovery",
@@ -64,5 +69,6 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     title: "Your future joins others.",
     subtitle:
       "These futures don't agree with each other. That's the point. Wander among them.",
+    accentColor: "#2c8a52",
   },
 };

@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AdminSubmissionListItem } from "@/lib/submissions";
+import { excerptAtWordBoundary } from "@/lib/text-excerpt";
+import { ffieCardShell, FFIE_CARD_TEXT } from "@/lib/card-layout";
 import { QUADRANT_LABELS, type FutureStatus } from "@/types/future";
 
 type Tab = FutureStatus;
@@ -14,9 +16,7 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 function truncate(text: string, max = 160) {
-  const trimmed = text.trim();
-  if (trimmed.length <= max) return trimmed;
-  return `${trimmed.slice(0, max).trimEnd()}…`;
+  return excerptAtWordBoundary(text, max);
 }
 
 function formatDate(iso: string) {
@@ -151,7 +151,7 @@ export function AdminModeration({ submissions }: Props) {
           visible.map((item) => (
             <article
               key={item.id}
-              className="rounded-2xl border border-ffie-line bg-ffie-surface p-6 shadow-sm"
+              className={`px-[18px] py-6 ${ffieCardShell} bg-ffie-surface`}
             >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0 flex-1 space-y-3">
@@ -171,7 +171,7 @@ export function AdminModeration({ submissions }: Props) {
                     {item.title}
                   </h2>
 
-                  <p className="text-sm leading-relaxed text-ffie-muted">
+                  <p className={`text-sm leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
                     {truncate(item.narrative)}
                   </p>
 

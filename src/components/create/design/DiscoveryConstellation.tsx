@@ -1,15 +1,8 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import Link from "next/link";
+import { FutureCommonsCard } from "@/components/FutureCommonsCard";
 import type { FutureEntry } from "@/types/future";
-import { QuadrantPill } from "@/components/create/design/QuadrantPill";
-import {
-  FFIE_CARD_TEXT,
-  ffieCardDivider,
-  ffieCardShell,
-  ffieCardTitle,
-} from "@/lib/card-layout";
 
 type Props = {
   futures: FutureEntry[];
@@ -54,23 +47,11 @@ export function DiscoveryConstellation({ futures }: Props) {
               rotate: pos.rotate,
             }}
           >
-            <Link
-              href={`/explore/${future.id}`}
-              className={`block px-[18px] py-4 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(35,19,82,0.12)] ${ffieCardShell} bg-ffie-surface`}
-            >
-              <QuadrantPill quadrant={future.quadrant} />
-              <p className={`mt-2 ${ffieCardTitle} ${FFIE_CARD_TEXT}`}>
-                {future.title}
-              </p>
-              {future.artifact.publicPromise && (
-                <>
-                  <div className={`my-2 ${ffieCardDivider}`} />
-                  <p className={`text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
-                    {future.artifact.publicPromise}
-                  </p>
-                </>
-              )}
-            </Link>
+            <FutureCommonsCard
+              entry={future}
+              compact
+              className="transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(35,19,82,0.12)]"
+            />
           </motion.div>
         );
       })}

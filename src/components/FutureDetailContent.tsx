@@ -35,7 +35,7 @@ export function FutureDetailContent({ entry }: { entry: FutureEntry }) {
         </div>
       </header>
 
-      <section className="space-y-4">
+      <section className="max-w-prose space-y-4">
         <p className="text-lg leading-relaxed text-ffie-ink">{entry.narrative}</p>
         <blockquote className="border-l-2 border-ffie-accent pl-4 text-base italic leading-relaxed text-ffie-muted">
           {entry.reflectionQuestion}

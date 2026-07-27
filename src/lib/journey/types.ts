@@ -76,7 +76,7 @@ export type JourneyDraft = {
   artifactValues: string[];
   artifactValueOther: string;
   imageDataUrl: string | null;
-  /** System Logic Likert (Q1) — Extrai ↔ Devolve */
+  /** System Logic Likert (Q1) — Extracts ↔ Gives back */
   systemLogicScore: LikertScore | null;
   /** Power Organization Likert (Q2) — centralizada ↔ coletiva */
   powerOrgScore: LikertScore | null;

@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { ffieCardShell } from "@/lib/card-layout";
 
 export default function HomePage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-      <section className="max-w-3xl">
+      <section className="max-w-prose">
         <p className="text-sm font-medium uppercase tracking-[0.2em] text-ffie-accent">
           Feminist Foresight in Innovation Ecosystems
         </p>
@@ -25,12 +26,12 @@ export default function HomePage() {
       <section className="mt-14 grid gap-6 md:grid-cols-2">
         <Link
           href="/explore"
-          className="group rounded-2xl border border-ffie-accent/20 bg-ffie-accent-soft p-8 transition hover:border-ffie-accent/40 hover:shadow-md"
+          className={`group px-[18px] py-8 transition hover:border-ffie-accent/40 hover:shadow-md ${ffieCardShell} border-ffie-accent/20 bg-ffie-accent-soft`}
         >
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ffie-accent">
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-accent">
             Explore Futures
           </p>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-ffie-accent">
+          <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-ffie-accent">
             Research Findings & Future Commons
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ffie-muted">
@@ -42,17 +43,17 @@ export default function HomePage() {
 
         <Link
           href="/create"
-          className="group rounded-2xl border border-ffie-line bg-ffie-surface p-8 transition hover:border-ffie-accent/40 hover:shadow-md"
+          className={`group px-[18px] py-8 transition hover:border-ffie-accent/40 hover:shadow-md ${ffieCardShell} bg-ffie-surface`}
         >
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ffie-muted">
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-muted">
             Create a Future
           </p>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight group-hover:text-ffie-accent">
+          <h2 className="mt-3 font-display text-2xl font-bold tracking-tight group-hover:text-ffie-accent">
             Draw cards. Build a future.
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ffie-muted">
             A guided journey from Narrative Cards to a shareable Future Output —
-            coming in the next increment.
+            embody a life, name an artifact, and place it on the matrix.
           </p>
         </Link>
       </section>

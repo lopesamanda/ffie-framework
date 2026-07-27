@@ -16,6 +16,8 @@ type Props = {
   title?: string;
   subtitle?: string;
   showTimeline?: boolean;
+  /** Entry uses timeline only — no duplicate title block (Figma Entry frame). */
+  headerMode?: "default" | "entry";
   children: React.ReactNode;
 };
 
@@ -25,18 +27,27 @@ export function CreateStageShell({
   title,
   subtitle,
   showTimeline = true,
+  headerMode = "default",
   children,
 }: Props) {
   const meta = STAGE_META[stage];
   const reduceMotion = useReducedMotion();
+  const isEntry = headerMode === "entry";
+  const resolvedTitle = title ?? meta.title;
+  const resolvedSubtitle = subtitle ?? meta.subtitle;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-ffie-line bg-ffie-bg shadow-[0_8px_32px_rgba(35,19,82,0.08)]">
+    <div
+      className="overflow-hidden rounded-2xl border border-ffie-line bg-ffie-bg shadow-[0_8px_32px_rgba(35,19,82,0.08)]"
+      style={{ borderTopWidth: 3, borderTopColor: meta.accentColor }}
+    >
       {showTimeline && (
         <div className="border-b border-ffie-line/50 bg-ffie-surface px-6 py-3 sm:px-10">
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <PhaseTimeline current={stage} />
-            <FfieEyebrow muted>{meta.phaseLabel}</FfieEyebrow>
+            <FfieEyebrow muted className="shrink-0">
+              {meta.phaseLabel}
+            </FfieEyebrow>
           </div>
         </div>
       )}
@@ -48,16 +59,20 @@ export function CreateStageShell({
         transition={{ duration: 0.35, ease: "easeOut" }}
         className="px-6 py-8 sm:px-10 sm:py-10"
       >
-        <FfieEyebrow>{eyebrow ?? meta.eyebrow}</FfieEyebrow>
-        <div className="mt-2">
-          <FfieHeading>{title ?? meta.title}</FfieHeading>
-        </div>
-        {(subtitle ?? meta.subtitle) && (
-          <div className="mt-3">
-            <FfieLead>{subtitle ?? meta.subtitle}</FfieLead>
-          </div>
+        {!isEntry && (
+          <>
+            <FfieEyebrow>{eyebrow ?? meta.eyebrow}</FfieEyebrow>
+            <div className="mt-2">
+              <FfieHeading as="h1">{resolvedTitle}</FfieHeading>
+            </div>
+            {resolvedSubtitle && (
+              <div className="mt-3 max-w-prose">
+                <FfieLead>{resolvedSubtitle}</FfieLead>
+              </div>
+            )}
+          </>
         )}
-        <div className="mt-8">{children}</div>
+        <div className={isEntry ? undefined : "mt-8"}>{children}</div>
       </motion.div>
     </div>
   );

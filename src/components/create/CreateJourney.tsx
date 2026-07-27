@@ -323,14 +323,22 @@ export function CreateJourney() {
           <AnimatePresence mode="wait">
             <motion.div
               key={draft.stage + draft.creationStep + oracleRevealIndex}
-              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduceMotion ? undefined : { opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
+              initial={
+                reduceMotion ? false : { opacity: 0, y: 16, scale: 0.985 }
+              }
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={
+                reduceMotion ? undefined : { opacity: 0, y: -12, scale: 0.99 }
+              }
+              transition={{ duration: 0.32, ease: "easeOut" }}
             >
               {draft.stage === "entry" && (
-                <CreateStageShell stage="entry">
+                <CreateStageShell stage="entry" headerMode="entry">
                   <div className="relative mx-auto max-w-lg text-center">
+                    <h1 className="sr-only">A future is taking shape</h1>
+                    <p className="mb-8 text-sm leading-relaxed text-ffie-muted">
+                      Somewhere between Brazil and Portugal
+                    </p>
                     <p
                       aria-hidden
                       className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none font-display text-[120px] font-bold leading-none tracking-tighter text-ffie-ink/[0.04] sm:text-[160px]"
@@ -485,7 +493,7 @@ export function CreateJourney() {
 
                               {isTransversalStep &&
                                 currentCard.reflectionQuestion && (
-                                  <blockquote className="max-w-2xl border-l-2 border-[#2c8a52] pl-4 text-sm leading-relaxed text-ffie-ink">
+                                  <blockquote className="max-w-prose border-l-2 border-[#2c8a52] pl-4 text-sm leading-relaxed text-ffie-ink">
                                     {currentCard.reflectionQuestion}
                                   </blockquote>
                                 )}
@@ -493,7 +501,7 @@ export function CreateJourney() {
                               {cardFlipped &&
                                 !isTransversalStep &&
                                 currentCard.reflectionQuestion && (
-                                <blockquote className="max-w-2xl border-l-2 border-ffie-accent pl-4 text-sm leading-relaxed text-ffie-ink">
+                                <blockquote className="max-w-prose border-l-2 border-ffie-accent pl-4 text-sm leading-relaxed text-ffie-ink">
                                   {currentCard.reflectionQuestion}
                                 </blockquote>
                               )}

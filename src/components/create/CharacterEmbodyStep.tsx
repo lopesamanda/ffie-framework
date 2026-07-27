@@ -18,6 +18,7 @@ import {
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 import { FfieButton } from "@/components/create/design/FfieButton";
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
+import { AiCapabilityCardPicker } from "@/components/create/AiCapabilityCardPicker";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
 
@@ -292,6 +293,7 @@ export function CharacterEmbodyStep({
                 placeholder="complete the sentence"
               />
             </NarrativeBlock>
+            <AiCapabilityCardPicker />
           </div>
         );
 
