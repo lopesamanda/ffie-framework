@@ -76,6 +76,10 @@ export type JourneyDraft = {
   values: string[];
   artifactName: string;
   artifactType: ArtifactTypeId | "";
+  /** Sub-step within Day to day (0 = main promise, 1 = reflective follow-up). */
+  dayToDaySubStep: number;
+  /** Reflective follow-up after the main day-to-day description. */
+  dayToDayReflection: string;
   publicPromise: string;
   hiddenFunction: string;
   artifactValues: string[];
@@ -283,6 +287,8 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     values: [],
     artifactName: "",
     artifactType: "",
+    dayToDaySubStep: 0,
+    dayToDayReflection: "",
     publicPromise: "",
     hiddenFunction: "",
     artifactValues: [],
@@ -328,6 +334,8 @@ export function loadDraft(): JourneyDraft | null {
       characterCountry: parsed.characterCountry ?? "",
       roleCustom: parsed.roleCustom ?? "",
       artifactType: parsed.artifactType ?? "",
+      dayToDaySubStep: parsed.dayToDaySubStep ?? 0,
+      dayToDayReflection: parsed.dayToDayReflection ?? "",
       artifactValues: parsed.artifactValues ?? [],
       artifactValueOther: parsed.artifactValueOther ?? "",
       location:

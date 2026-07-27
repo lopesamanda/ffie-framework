@@ -1,26 +1,45 @@
-/** Copy text with Clipboard API fallback for non-secure contexts. */
-export async function copyToClipboard(text: string): Promise<void> {
-  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return;
-    } catch {
-      /* fall through to execCommand */
-    }
+/** Copy text synchronously — required for clipboard access inside click handlers. */
+export function copyToClipboard(
+  text: string,
+  sourceElement?: HTMLTextAreaElement | HTMLInputElement | null,
+): void {
+  const value = text.trim();
+  if (!value) {
+    throw new Error("Nothing to copy");
   }
 
   if (typeof document === "undefined") {
     throw new Error("Clipboard unavailable");
   }
 
+  if (sourceElement) {
+    sourceElement.focus();
+    sourceElement.select();
+    sourceElement.setSelectionRange(0, value.length);
+    try {
+      if (document.execCommand("copy")) {
+        return;
+      }
+    } catch {
+      /* fall through */
+    }
+  }
+
   const textarea = document.createElement("textarea");
-  textarea.value = text;
+  textarea.value = value;
   textarea.setAttribute("readonly", "");
   textarea.style.position = "fixed";
   textarea.style.left = "-9999px";
+  textarea.style.top = "0";
   document.body.appendChild(textarea);
   textarea.select();
-  const ok = document.execCommand("copy");
+  textarea.setSelectionRange(0, value.length);
+  let ok = false;
+  try {
+    ok = document.execCommand("copy");
+  } catch {
+    ok = false;
+  }
   document.body.removeChild(textarea);
 
   if (!ok) {

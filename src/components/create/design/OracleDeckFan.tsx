@@ -130,16 +130,23 @@ function CoverCardFace({
   );
 }
 
-export function OracleFanRevealedCard({ card }: { card: NarrativeCard }) {
+export function OracleFanRevealedCard({
+  card,
+  includeReflection = false,
+}: {
+  card: NarrativeCard;
+  /** Show reflection prompt on the card face (Oracle Draw uses a side panel instead). */
+  includeReflection?: boolean;
+}) {
   const style = CATEGORY_STYLES[card.category];
   const label = ORACLE_CATEGORY_LABELS[card.category].toUpperCase();
 
   return (
     <div
-      className="h-[264px] w-[180px] overflow-hidden rounded-[12px] border border-[rgba(35,19,82,0.07)] border-t-4 bg-white shadow-[0_3px_5px_rgba(35,19,82,0.12)]"
+      className="w-[180px] shrink-0 rounded-[12px] border border-[rgba(35,19,82,0.07)] border-t-4 bg-white shadow-[0_3px_5px_rgba(35,19,82,0.12)]"
       style={{ borderTopColor: style.text }}
     >
-      <div className="flex h-full flex-col px-4 pb-3 pt-3.5">
+      <div className="flex flex-col px-4 pb-3.5 pt-3.5">
         <div className="flex items-center gap-1.5">
           <span className="text-[11px]" style={{ color: style.text }} aria-hidden>
             {ORACLE_CATEGORY_ICONS[card.category]}
@@ -152,17 +159,28 @@ export function OracleFanRevealedCard({ card }: { card: NarrativeCard }) {
           {card.name}
         </h4>
         <div className={`my-2.5 ${ffieCardDivider}`} />
-        <p className={`flex-1 text-[11px] italic leading-[1.6] text-ffie-muted ${FFIE_CARD_TEXT}`}>
+        <p className={`text-[11px] italic leading-[1.6] text-ffie-muted ${FFIE_CARD_TEXT}`}>
           &ldquo;{card.description}&rdquo;
         </p>
-        <div className={`my-2 ${ffieCardDivider}`} />
+        <div className={`my-2.5 ${ffieCardDivider}`} />
         <p className={ffieCardSectionLabel}>Tension</p>
         <p
-          className={`mt-0.5 text-[10px] font-medium ${FFIE_CARD_TEXT}`}
+          className={`mt-0.5 text-[10px] font-medium leading-snug ${FFIE_CARD_TEXT}`}
           style={{ color: style.text }}
         >
           {card.tension}
         </p>
+        {includeReflection && card.reflectionQuestion && (
+          <>
+            <div className={`my-2.5 ${ffieCardDivider}`} />
+            <p className={ffieCardSectionLabel}>Reflection</p>
+            <p
+              className={`mt-1 text-[10px] italic leading-[1.55] text-ffie-ink/70 ${FFIE_CARD_TEXT}`}
+            >
+              {card.reflectionQuestion}
+            </p>
+          </>
+        )}
       </div>
     </div>
   );
@@ -280,7 +298,7 @@ export function OracleDeckFan({
 
       {!allComplete && (
         <div className="flex flex-col gap-8 pt-2 lg:flex-row lg:items-start lg:gap-9">
-          <div className="relative h-[290px] w-full max-w-[260px] shrink-0">
+          <div className="relative min-h-[290px] w-full max-w-[260px] shrink-0 self-start">
             {remaining.map((key, index) => {
               const rotation = FAN_ROTATIONS[index] ?? 0;
               const isFront = index === 0;

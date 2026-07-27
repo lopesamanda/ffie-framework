@@ -61,7 +61,8 @@ export type ArtifactTypeId =
   | "app"
   | "service"
   | "policy"
-  | "narrative";
+  | "narrative"
+  | "agent";
 
 export const ARTIFACT_TYPE_OPTIONS: {
   id: ArtifactTypeId;
@@ -75,8 +76,14 @@ export const ARTIFACT_TYPE_OPTIONS: {
   },
   {
     id: "app",
-    label: "App",
+    label: "App/Platform",
     description: "Something they use online, an interface they access",
+  },
+  {
+    id: "agent",
+    label: "Agent",
+    description:
+      "Something that acts on her behalf, making decisions or taking actions in the world without her needing to ask each time.",
   },
   {
     id: "service",

@@ -1,6 +1,7 @@
 "use client";
 
 import { OracleSynthesisCallout } from "@/components/create/design/OracleSynthesisCallout";
+import { EnvironmentalImpactBadge } from "@/components/create/design/EnvironmentalImpactBadge";
 import {
   ORACLE_DRAW_ORDER,
   OracleFanRevealedCard,
@@ -33,17 +34,7 @@ export function OracleDrawRecap({ hand }: { hand: CardHand }) {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#2c8a52]">
-            Environmental Impact
-          </span>
-          <span className="rounded-[3px] border border-[#2c8a52] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.08em] text-[#2c8a52]">
-            Always applied
-          </span>
-        </div>
-        <OracleFanRevealedCard card={hand.transversal} />
-      </div>
+      <EnvironmentalImpactBadge card={hand.transversal} />
     </div>
   );
 }

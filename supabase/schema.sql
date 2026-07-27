@@ -22,6 +22,18 @@ create table if not exists submissions (
   artifact_name text not null,
   artifact_public_promise text not null,
   artifact_hidden_function text not null,
+  artifact_type text
+    check (
+      artifact_type is null
+      or artifact_type in (
+        'object',
+        'app',
+        'service',
+        'policy',
+        'narrative',
+        'agent'
+      )
+    ),
   artifact_values text[] not null default '{}',
   tension text not null,
   quadrant text not null,

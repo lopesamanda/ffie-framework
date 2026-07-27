@@ -61,3 +61,50 @@ export function NarrativeBlock({
     </div>
   );
 }
+
+type NarrativeTextareaProps = {
+  before?: string;
+  after?: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  rows?: number;
+  className?: string;
+};
+
+const TEXTAREA =
+  "mt-3 w-full resize-y rounded-lg border border-ffie-line bg-ffie-surface px-3 py-3 text-sm leading-relaxed text-ffie-ink outline-none transition placeholder:text-ffie-muted/70 focus:border-ffie-accent/40";
+
+/** Multi-line narrative prompt with optional framing sentence. */
+export function NarrativeTextarea({
+  before,
+  after,
+  value,
+  onChange,
+  placeholder,
+  rows = 5,
+  className = "",
+}: NarrativeTextareaProps) {
+  return (
+    <div className={className}>
+      {before && (
+        <p className="text-sm leading-relaxed text-ffie-ink sm:text-base">
+          {before}
+        </p>
+      )}
+      <textarea
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        rows={rows}
+        placeholder={placeholder}
+        className={TEXTAREA}
+        aria-label={placeholder ?? "Complete the response"}
+      />
+      {after && (
+        <p className="mt-2 text-sm leading-relaxed text-ffie-ink sm:text-base">
+          {after}
+        </p>
+      )}
+    </div>
+  );
+}

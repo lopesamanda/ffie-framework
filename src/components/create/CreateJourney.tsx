@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toPng } from "html-to-image";
@@ -13,8 +13,8 @@ import {
   EnvironmentalBanner,
 } from "@/components/create/design/CategoryRegisterTiles";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
-import { OracleCard, OracleRevealedContent } from "@/components/create/design/OracleCard";
 import { OracleDeckFan, OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
+import { EnvironmentalImpactBadge } from "@/components/create/design/EnvironmentalImpactBadge";
 import {
   MATRIX_EXPLANATION,
   MatrixArrivalScene,
@@ -30,7 +30,7 @@ import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
 import { CreateNarrativeScene } from "@/components/create/design/CreateNarrativeScene";
-import { NarrativeBlock, NarrativeBlank } from "@/components/create/NarrativeBlank";
+import { NarrativeBlock, NarrativeTextarea } from "@/components/create/NarrativeBlank";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { AiCapabilityCardPicker } from "@/components/create/AiCapabilityCardPicker";
 import { ArtifactImageUpload } from "@/components/create/ArtifactImageUpload";
@@ -109,6 +109,7 @@ export function CreateJourney() {
   const [copyPromptStatus, setCopyPromptStatus] = useState<
     "idle" | "copied" | "error"
   >("idle");
+  const aiPromptTextareaRef = useRef<HTMLTextAreaElement>(null);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -439,25 +440,9 @@ export function CreateJourney() {
                       }}
                       onShuffle={handleShuffleCards}
                       environmentalCard={
-                        <div className="max-w-[560px] space-y-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#2c8a52]">
-                              Environmental Impact
-                            </span>
-                            <span className="rounded-[3px] border border-[#2c8a52] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.08em] text-[#2c8a52]">
-                              Always applied
-                            </span>
-                          </div>
-                          <OracleCard
-                            card={draft.cardHand.transversal}
-                            revealed
-                            className="!min-w-0 !flex-none !basis-full"
-                          >
-                            <OracleRevealedContent
-                              card={draft.cardHand.transversal}
-                            />
-                          </OracleCard>
-                        </div>
+                        <EnvironmentalImpactBadge
+                          card={draft.cardHand.transversal}
+                        />
                       }
                     />
                   )}
@@ -550,25 +535,44 @@ export function CreateJourney() {
                           draft.role,
                           draft.roleCustom,
                         );
+                        const guideName =
+                          draft.characterName.trim() || p.subject;
+
+                        if (draft.dayToDaySubStep === 0) {
+                          return (
+                            <>
+                              <div className="flex flex-wrap gap-3">
+                                <OracleFanRevealedCard card={draft.cardHand.benefit} />
+                                <OracleFanRevealedCard card={draft.cardHand.trust} />
+                              </div>
+                              <NarrativeBlock className="border-0 bg-transparent p-0">
+                                <NarrativeTextarea
+                                  before={`Every day, in ${p.possessive} role as ${role}, ${who} lets ${artifact} do this:`}
+                                  value={draft.publicPromise}
+                                  onChange={(publicPromise) =>
+                                    update({ publicPromise })
+                                  }
+                                  placeholder={`Describe what it does, day to day — what ${guideName} sees, touches, or relies on because of it.`}
+                                  rows={6}
+                                />
+                              </NarrativeBlock>
+                              <AiCapabilityCardPicker context="artifact" />
+                            </>
+                          );
+                        }
+
                         return (
-                          <>
-                            <div className="flex flex-wrap gap-3">
-                              <OracleFanRevealedCard card={draft.cardHand.benefit} />
-                              <OracleFanRevealedCard card={draft.cardHand.trust} />
-                            </div>
-                            <NarrativeBlock className="border-0 bg-transparent p-0">
-                              <NarrativeBlank
-                                before={`Every day, in ${p.possessive} role as ${role}, ${who} lets ${artifact} do this: `}
-                                after="."
-                                value={draft.publicPromise}
-                                onChange={(publicPromise) =>
-                                  update({ publicPromise })
-                                }
-                                placeholder="complete the sentence"
-                              />
-                            </NarrativeBlock>
-                            <AiCapabilityCardPicker context="artifact" />
-                          </>
+                          <NarrativeBlock className="border-0 bg-transparent p-0">
+                            <NarrativeTextarea
+                              before={`What does ${p.subject} gain from it — and what does ${p.subject} quietly stop questioning because of it?`}
+                              value={draft.dayToDayReflection}
+                              onChange={(dayToDayReflection) =>
+                                update({ dayToDayReflection })
+                              }
+                              placeholder="A sentence or two is enough."
+                              rows={4}
+                            />
+                          </NarrativeBlock>
                         );
                       })()}
                     </CreateNarrativeScene>
@@ -621,6 +625,11 @@ export function CreateJourney() {
                           <p className="mt-1 text-ffie-ink">
                             {draft.publicPromise || "—"}
                           </p>
+                          {draft.dayToDayReflection && (
+                            <p className="mt-2 text-sm italic text-ffie-muted">
+                              {draft.dayToDayReflection}
+                            </p>
+                          )}
                         </div>
                         <div>
                           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
@@ -674,6 +683,7 @@ export function CreateJourney() {
                           AI image prompt — copy and run externally
                         </p>
                         <textarea
+                          ref={aiPromptTextareaRef}
                           readOnly
                           value={aiPrompt}
                           rows={8}
@@ -681,9 +691,12 @@ export function CreateJourney() {
                         />
                         <button
                           type="button"
-                          onClick={async () => {
+                          onClick={() => {
                             try {
-                              await copyToClipboard(aiPrompt);
+                              if (!aiPrompt.trim()) {
+                                throw new Error("Prompt is empty");
+                              }
+                              copyToClipboard(aiPrompt, aiPromptTextareaRef.current);
                               setCopyPromptStatus("copied");
                               window.setTimeout(
                                 () => setCopyPromptStatus("idle"),
@@ -716,12 +729,20 @@ export function CreateJourney() {
                       <FfieButton
                         variant="secondary"
                         onClick={() => {
+                          if (
+                            draft.creationStep === 2 &&
+                            draft.dayToDaySubStep === 1
+                          ) {
+                            update({ dayToDaySubStep: 0 });
+                            return;
+                          }
                           const nextStep = draft.creationStep - 1;
                           update({
                             creationStep: nextStep,
                             ...(nextStep === 0
                               ? { embodySubStep: EMBODY_SCREEN_COUNT - 1 }
                               : {}),
+                            ...(nextStep === 2 ? { dayToDaySubStep: 1 } : {}),
                           });
                         }}
                       >
@@ -734,15 +755,31 @@ export function CreateJourney() {
                           (!draft.artifactName.trim() ||
                             !draft.artifactType)) ||
                         (draft.creationStep === 2 &&
+                          draft.dayToDaySubStep === 0 &&
                           !draft.publicPromise.trim()) ||
+                        (draft.creationStep === 2 &&
+                          draft.dayToDaySubStep === 1 &&
+                          !draft.dayToDayReflection.trim()) ||
                         (draft.creationStep === 3 &&
                           !isArtifactValuesComplete(draft)) ||
                         (draft.creationStep === 4 &&
                           !draft.hiddenFunction.trim())
                       }
                       onClick={() => {
+                        if (
+                          draft.creationStep === 2 &&
+                          draft.dayToDaySubStep === 0
+                        ) {
+                          update({ dayToDaySubStep: 1 });
+                          return;
+                        }
                         if (draft.creationStep < CREATION_STEPS.length - 1) {
-                          update({ creationStep: draft.creationStep + 1 });
+                          update({
+                            creationStep: draft.creationStep + 1,
+                            ...(draft.creationStep === 2
+                              ? { dayToDaySubStep: 0 }
+                              : {}),
+                          });
                           return;
                         }
 
@@ -893,7 +930,7 @@ export function CreateJourney() {
                     </p>
                   )}
                   <DiscoveryConstellation futures={researchFindingsSeed} />
-                  <div className="mt-10 flex flex-wrap gap-3">
+                  <div className="relative z-10 mt-12 flex flex-wrap gap-3 border-t border-ffie-line/60 bg-ffie-bg pt-8">
                     <FfieButton
                       onClick={() =>
                         router.push(
