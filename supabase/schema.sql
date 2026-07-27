@@ -12,6 +12,8 @@ create table if not exists submissions (
   year int not null default 2036,
   character_name text not null,
   character_age int,
+  character_gender text,
+  character_race_ethnicity text,
   character_role text not null,
   character_ai_function text,
   character_desire text not null,

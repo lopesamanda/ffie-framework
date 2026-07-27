@@ -45,7 +45,13 @@ export function FutureCardPreview({
 
       {(draft.characterName || draft.role) && (
         <p className="mt-1 text-sm text-ffie-muted">
-          {[draft.characterName, draft.role].filter(Boolean).join(" · ")}
+          {[
+            draft.characterName,
+            draft.characterAge ? `${draft.characterAge}` : null,
+            draft.role,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
         </p>
       )}
 

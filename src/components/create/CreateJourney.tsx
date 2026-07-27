@@ -16,7 +16,10 @@ import { NarrativeCardFace } from "@/components/create/NarrativeCardFace";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { MatrixReveal } from "@/components/create/MatrixReveal";
 import { LikertQuestion } from "@/components/create/LikertQuestion";
-import { AiCapabilityCardPicker } from "@/components/create/AiCapabilityCardPicker";
+import {
+  CharacterEmbodyStep,
+  isCharacterEmbodyComplete,
+} from "@/components/create/CharacterEmbodyStep";
 import { CATEGORY_LABELS } from "@/data/narrative-cards";
 import {
   ShareableFutureCard,
@@ -35,6 +38,7 @@ import {
 import {
   researchFindingsSeed,
 } from "@/data/research-findings-seed";
+import { ARTIFACT_TYPE_OPTIONS } from "@/lib/journey/character-options";
 import {
   buildAiImagePrompt,
   buildNarrative,
@@ -43,12 +47,13 @@ import {
   clearDraft,
   computePlacementFromLikert,
   createInitialDraft,
+  genderLabelForDraft,
   getOrCreateSessionId,
   loadDraft,
   quadrantFromPosition,
-  ROLE_SUGGESTIONS,
+  raceEthnicityForDraft,
   saveDraft,
-  WORKSHOP_VALUES,
+  syncLocationFromParts,
   type JourneyDraft,
   type JourneyStage,
   type LikertScore,
@@ -64,11 +69,8 @@ const FIELD =
   "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
 
 const CREATION_STEPS = [
-  "Who carries it",
-  "The machine",
-  "Hope & fear",
-  "What guides her",
-  "Artifact name",
+  "Embody the future",
+  "Name the artifact",
   "Ecosystem ambition",
   "Goal × weakness",
   "Image (optional)",
@@ -212,8 +214,11 @@ export function CreateJourney() {
           title,
           narrative,
           reflectionQuestion,
-          location: draft.location,
+          location: syncLocationFromParts(draft) || draft.location,
           characterName: draft.characterName,
+          characterAge: Number.parseInt(draft.characterAge, 10) || null,
+          characterGender: genderLabelForDraft(draft),
+          characterRaceEthnicity: raceEthnicityForDraft(draft),
           role: draft.role,
           aiFunction: draft.aiFunction,
           desire: draft.desire,
@@ -537,169 +542,27 @@ export function CreateJourney() {
                   subtitle={`Step ${draft.creationStep + 1} of ${CREATION_STEPS.length} — ${CREATION_STEPS[draft.creationStep]}`}
                 >
                   {draft.creationStep === 0 && (
-                    <div className="space-y-4">
-                      <p className="text-sm leading-relaxed text-ffie-ink">
-                        Quem carrega essa tensão todos os dias? Dá um nome a
-                        ela, e diz o que ela faz.
-                      </p>
-                      <label className="block space-y-2">
-                        <span className="text-xs font-medium uppercase tracking-wide text-ffie-muted">
-                          Nome
-                        </span>
-                        <input
-                          value={draft.characterName}
-                          onChange={(e) =>
-                            update({ characterName: e.target.value })
-                          }
-                          placeholder="ex. Marina"
-                          className={FIELD}
-                        />
-                      </label>
-                      <label className="block space-y-2">
-                        <span className="text-xs font-medium uppercase tracking-wide text-ffie-muted">
-                          O que ela faz
-                        </span>
-                        <input
-                          value={draft.role}
-                          onChange={(e) => update({ role: e.target.value })}
-                          placeholder="Papel no ecossistema de inovação, 2036"
-                          className={FIELD}
-                        />
-                      </label>
-                      <div className="flex flex-wrap gap-2">
-                        {ROLE_SUGGESTIONS.map((suggestion) => (
-                          <button
-                            key={suggestion}
-                            type="button"
-                            onClick={() => update({ role: suggestion })}
-                            className="rounded-full border border-ffie-line px-3 py-1 text-xs text-ffie-muted hover:border-ffie-accent/40"
-                          >
-                            {suggestion}
-                          </button>
-                        ))}
-                      </div>
-                      <label className="block space-y-2">
-                        <span className="text-xs font-medium uppercase tracking-wide text-ffie-muted">
-                          De onde ela fala
-                        </span>
-                        <input
-                          value={draft.location}
-                          onChange={(e) => update({ location: e.target.value })}
-                          placeholder="Cidade, país, ou contexto"
-                          className={FIELD}
-                        />
-                      </label>
-                    </div>
+                    <CharacterEmbodyStep
+                      draft={draft}
+                      cardHand={draft.cardHand}
+                      onChange={(patch) => {
+                        const next = { ...draft, ...patch };
+                        if (
+                          "characterCity" in patch ||
+                          "characterCountry" in patch
+                        ) {
+                          next.location = syncLocationFromParts(next);
+                        }
+                        update(next);
+                      }}
+                    />
                   )}
 
                   {draft.creationStep === 1 && (
-                    <div className="space-y-4">
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium leading-relaxed text-ffie-ink">
-                          Existe uma máquina na vida dela que ela não escolheu.
-                          O que essa máquina faz, exatamente?
-                        </span>
-                        <textarea
-                          value={draft.aiFunction}
-                          onChange={(e) =>
-                            update({ aiFunction: e.target.value })
-                          }
-                          rows={3}
-                          className={FIELD}
-                        />
-                      </label>
-                      <AiCapabilityCardPicker
-                        value={draft.aiFunction}
-                        onSelect={(text) => update({ aiFunction: text })}
-                      />
-                    </div>
-                  )}
-
-                  {draft.creationStep === 2 && (
                     <div className="space-y-6">
                       <label className="block space-y-2">
-                        <span className="text-sm font-medium text-ffie-ink">
-                          Ela ainda tem esperança de que
-                        </span>
-                        <div className="flex items-stretch overflow-hidden rounded-xl border border-ffie-line">
-                          <span className="hidden shrink-0 bg-ffie-bg px-3 py-3 text-sm text-ffie-muted sm:inline">
-                            …
-                          </span>
-                          <input
-                            value={draft.desire}
-                            onChange={(e) => update({ desire: e.target.value })}
-                            placeholder="complete a frase"
-                            className={`min-w-0 flex-1 px-4 py-3 text-sm outline-none`}
-                          />
-                        </div>
-                      </label>
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium text-ffie-ink">
-                          O que ela mais teme é
-                        </span>
-                        <div className="flex items-stretch overflow-hidden rounded-xl border border-ffie-line">
-                          <span className="hidden shrink-0 bg-ffie-bg px-3 py-3 text-sm text-ffie-muted sm:inline">
-                            …
-                          </span>
-                          <input
-                            value={draft.fear}
-                            onChange={(e) => update({ fear: e.target.value })}
-                            placeholder="complete a frase"
-                            className={`min-w-0 flex-1 px-4 py-3 text-sm outline-none`}
-                          />
-                        </div>
-                      </label>
-                    </div>
-                  )}
-
-                  {draft.creationStep === 3 && (
-                    <div className="space-y-3">
-                      <p className="text-sm font-medium text-ffie-ink">
-                        O que guia as escolhas dela?
-                      </p>
-                      <p className="text-sm text-ffie-muted">
-                        Escolha três valores inegociáveis ({draft.values.length}
-                        /3)
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {WORKSHOP_VALUES.map((value) => {
-                          const selected = draft.values.includes(value);
-                          return (
-                            <button
-                              key={value}
-                              type="button"
-                              onClick={() => {
-                                if (selected) {
-                                  update({
-                                    values: draft.values.filter(
-                                      (v) => v !== value,
-                                    ),
-                                  });
-                                } else if (draft.values.length < 3) {
-                                  update({
-                                    values: [...draft.values, value],
-                                  });
-                                }
-                              }}
-                              className={`rounded-full border px-3 py-1.5 text-xs capitalize ${
-                                selected
-                                  ? "border-ffie-accent bg-ffie-accent-soft text-ffie-accent"
-                                  : "border-ffie-line text-ffie-muted"
-                              }`}
-                            >
-                              {value}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {draft.creationStep === 4 && (
-                    <div className="space-y-4">
-                      <label className="block space-y-2">
                         <span className="text-sm font-medium leading-relaxed text-ffie-ink">
-                          Esse objeto/sistema tem um nome. Qual é?
+                          This object or system has a name. What is it?
                         </span>
                         <input
                           value={draft.artifactName}
@@ -709,10 +572,47 @@ export function CreateJourney() {
                           className={FIELD}
                         />
                       </label>
+                      <div className="space-y-3 rounded-xl border border-dashed border-ffie-accent/25 bg-ffie-accent-soft/20 px-4 py-4">
+                        <p className="text-sm font-medium text-ffie-ink">
+                          What kind of artifact is it?
+                        </p>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          {ARTIFACT_TYPE_OPTIONS.map((option) => {
+                            const selected = draft.artifactType === option.id;
+                            return (
+                              <button
+                                key={option.id}
+                                type="button"
+                                onClick={() =>
+                                  update({ artifactType: option.id })
+                                }
+                                className={`rounded-xl border px-4 py-3 text-left transition ${
+                                  selected
+                                    ? "border-ffie-ink bg-ffie-ink text-ffie-bg"
+                                    : "border-ffie-line bg-ffie-surface text-ffie-ink hover:border-ffie-accent/40"
+                                }`}
+                              >
+                                <span className="block text-sm font-semibold">
+                                  {option.label}
+                                </span>
+                                <span
+                                  className={`mt-1 block text-xs ${
+                                    selected
+                                      ? "text-ffie-bg/80"
+                                      : "text-ffie-muted"
+                                  }`}
+                                >
+                                  {option.description}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  {draft.creationStep === 5 && draft.cardHand && (
+                  {draft.creationStep === 2 && draft.cardHand && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
                         O ecossistema de inovação publicamente diz que quer
@@ -755,7 +655,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 6 && draft.cardHand && (
+                  {draft.creationStep === 3 && draft.cardHand && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
                         Essa ambição encontra o risco e a barreira que você
@@ -794,7 +694,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 7 && (
+                  {draft.creationStep === 4 && (
                     <div className="space-y-4">
                       <div className="rounded-xl border border-ffie-line bg-ffie-bg/60 p-4">
                         <p className="text-xs uppercase tracking-wide text-ffie-muted">
@@ -835,7 +735,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 8 && (
+                  {draft.creationStep === 5 && (
                     <div className="space-y-5">
                       <p className="text-sm text-ffie-muted">
                         Duas perguntas colocam esse futuro na Critical Feminist
@@ -876,22 +776,15 @@ export function CreateJourney() {
                     <FfieButton
                       disabled={
                         (draft.creationStep === 0 &&
-                          (!draft.characterName.trim() ||
-                            !draft.role.trim() ||
-                            !draft.location.trim())) ||
+                          !isCharacterEmbodyComplete(draft)) ||
                         (draft.creationStep === 1 &&
-                          !draft.aiFunction.trim()) ||
+                          (!draft.artifactName.trim() ||
+                            !draft.artifactType)) ||
                         (draft.creationStep === 2 &&
-                          (!draft.desire.trim() || !draft.fear.trim())) ||
-                        (draft.creationStep === 3 &&
-                          draft.values.length !== 3) ||
-                        (draft.creationStep === 4 &&
-                          !draft.artifactName.trim()) ||
-                        (draft.creationStep === 5 &&
                           !draft.publicPromise.trim()) ||
-                        (draft.creationStep === 6 &&
+                        (draft.creationStep === 3 &&
                           !draft.hiddenFunction.trim()) ||
-                        (draft.creationStep === 8 &&
+                        (draft.creationStep === 5 &&
                           (draft.systemLogicScore == null ||
                             draft.powerOrgScore == null))
                       }

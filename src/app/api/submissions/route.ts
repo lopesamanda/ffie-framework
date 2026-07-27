@@ -9,6 +9,9 @@ export type SubmissionPayload = {
   reflectionQuestion: string;
   location: string;
   characterName: string;
+  characterAge?: number | null;
+  characterGender?: string;
+  characterRaceEthnicity?: string;
   role: string;
   aiFunction: string;
   desire: string;
@@ -117,6 +120,9 @@ export async function POST(request: Request) {
       reflection_question: body.reflectionQuestion,
       location: body.location,
       character_name: body.characterName,
+      character_age: body.characterAge ?? null,
+      character_gender: body.characterGender || null,
+      character_race_ethnicity: body.characterRaceEthnicity || null,
       character_role: body.role,
       character_ai_function: body.aiFunction || null,
       character_desire: body.desire,

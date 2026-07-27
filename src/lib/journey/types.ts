@@ -1,9 +1,17 @@
 import type {
   FutureQuadrant,
   PowerPosition,
+  FutureCountry,
 } from "@/types/future";
 import { QUADRANT_LABELS } from "@/types/future";
 import type { NarrativeCard } from "@/data/narrative-cards";
+import type { CharacterGenderId, ArtifactTypeId } from "@/lib/journey/character-options";
+import {
+  artifactTypePhrase,
+  composeLocation,
+  GENDER_OPTIONS,
+} from "@/lib/journey/character-options";
+import { pronounsForGender } from "@/lib/journey/character-pronouns";
 
 /** 5-point Likert used for automated matrix placement. */
 export type LikertScore = 1 | 2 | 3 | 4 | 5;
@@ -44,13 +52,21 @@ export type JourneyDraft = {
   combinedTension: string;
   reflectionText: string;
   characterName: string;
+  characterAge: string;
+  characterGender: CharacterGenderId | "";
+  characterRaceEthnicity: string;
+  raceSelfDescribe: string;
+  characterCity: string;
+  characterCountry: FutureCountry | "";
   location: string;
   role: string;
+  roleCustom: string;
   aiFunction: string;
   desire: string;
   fear: string;
   values: string[];
   artifactName: string;
+  artifactType: ArtifactTypeId | "";
   publicPromise: string;
   hiddenFunction: string;
   imageDataUrl: string | null;
@@ -73,29 +89,34 @@ export type JourneyDraft = {
   narrative: string;
 };
 
-export const WORKSHOP_VALUES = [
-  "diversity",
-  "intersectionality",
-  "socio-environmental justice",
-  "cooperation",
-  "horizontality",
-  "autonomy",
-  "consent",
-  "empathy",
-  "interoperability",
-  "open source",
-  "resilience",
-] as const;
+export { CHARACTER_VALUES } from "@/lib/journey/character-options";
 
+/** @deprecated Use ROLE_OPTIONS from character-options */
 export const ROLE_SUGGESTIONS = [
-  "Software engineer in a startup",
-  "Freelance designer",
+  "Startup founder",
+  "VC/investor",
+  "Hub coordinator",
+  "Freelancer",
+  "Peripheral/grassroots worker",
+  "Researcher",
   "Public sector manager",
-  "ESG & sustainability lead",
-  "Researcher in ethical AI",
-  "Community organizer",
-  "Healthcare administrator",
 ];
+
+/** @deprecated Use CHARACTER_VALUES from character-options */
+export const WORKSHOP_VALUES = [
+  "Cooperation",
+  "Horizontality",
+  "Diversity",
+  "Autonomy",
+  "Intersectionality",
+  "Consent",
+  "Socio-environmental Justice",
+  "Decentralization",
+  "Resilience",
+  "Empathy",
+  "Interoperability",
+  "Open Source",
+] as const;
 
 /**
  * Quadrant from signed coords (−1…1), matching Figma CriticalFeministMatrix:
@@ -179,16 +200,41 @@ export function buildReflectionQuestion(draft: JourneyDraft): string {
 }
 
 export function buildAiImagePrompt(draft: JourneyDraft): string {
-  return `Create a diegetic prototype image for a critical design futures workshop.
+  const location =
+    draft.location.trim() ||
+    composeLocation(draft.characterCity, draft.characterCountry) ||
+    "[location]";
+  const characterName = draft.characterName.trim() || "[character name]";
+  const characterRole = draft.role.trim() || "[character role]";
+  const characterDesire = draft.desire.trim() || "[character desire]";
+  const characterFear = draft.fear.trim() || "[character fear]";
+  const artifactName = draft.artifactName.trim() || "[artifact name]";
+  const artifactPublicPromise =
+    draft.publicPromise.trim() || "[artifact public promise]";
+  const artifactHiddenFunction =
+    draft.hiddenFunction.trim() || "[artifact hidden function]";
+  const artifactType = artifactTypePhrase(draft.artifactType);
+  const p = pronounsForGender(draft.characterGender);
 
-Persona (2036): ${draft.characterName || "[name]"}, ${draft.role || "[role]"} in ${draft.location || "[location]"}. 
-Desire: ${draft.desire || "[desire]"}. Fear: ${draft.fear || "[fear]"}. 
-Values: ${draft.values.join(", ") || "[values]"}. 
-Central tension: ${draft.combinedTension || "[tension]"}. 
+  const benefitCardName =
+    draft.cardHand?.benefit.name.trim() || "[benefit card name]";
+  const riskCardName = draft.cardHand?.risk.name.trim() || "[risk card name]";
+  const barrierCardName =
+    draft.cardHand?.barrier.name.trim() || "[barrier card name]";
+  const trustCardName =
+    draft.cardHand?.trust.name.trim() || "[trust card name]";
 
-Artifact: ${draft.artifactName || "[artifact name]"} — publicly promises ${draft.publicPromise || "[public promise]"}, but actually ${draft.hiddenFunction || "[hidden function]"}. 
+  return `Act as a Speculative Technology Prototyper working within a feminist, decolonial design-fiction methodology. You are visualizing a diegetic artifact from ${location}, 2036 — not a generic sci-fi object, but something grounded in the specific tensions below.
 
-Style: critical design, not glossy tech marketing. No generic AI portraits. Show the artifact in situ within an innovation ecosystem context. Institutional or organizational object, not a personal gadget disconnected from power structures.`;
+Context: this artifact exists in a world shaped by ${benefitCardName}, ${riskCardName}, ${barrierCardName}, and ${trustCardName}, and by the material/ecological cost named by the Environmental Impact card. It belongs to ${characterName}, a ${characterRole}, whose deepest hope is ${characterDesire} and whose deepest fear is ${characterFear}.
+
+The artifact, ${artifactName}, is ${artifactType}. Publicly, it is presented as: ${artifactPublicPromise}. In reality, it also does this, quietly: ${artifactHiddenFunction}.
+
+Your task: produce two visual moments of the same artifact, not one.
+1. THE PROMISE — how this artifact is advertised, marketed, or presented to ${characterName} and people like ${p.object}. This should look aspirational and polished, exactly how the institution behind it wants it seen.
+2. THE HIDDEN FUNCTION — what is actually happening underneath, at the exact moment ${characterName} uses it. This should feel like something noticed almost by accident, not a dramatic reveal.
+
+Style guidance: avoid generic cyberpunk or dystopian sci-fi clichés (no neon holograms, no chrome robots). This is ${location} in 2036 — grounded, plausible, and specific to that place, not a placeless future. Favor a documentary or quasi-photographic register over a glossy product-render or advertisement aesthetic, so the image reads as evidence of something that could really exist, not a marketing mockup.`;
 }
 
 export function formatQuadrantLabel(quadrant: FutureQuadrant): string {
@@ -205,13 +251,21 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     combinedTension: "",
     reflectionText: "",
     characterName: "",
+    characterAge: "",
+    characterGender: "",
+    characterRaceEthnicity: "",
+    raceSelfDescribe: "",
+    characterCity: "",
+    characterCountry: "",
     location: "",
     role: "",
+    roleCustom: "",
     aiFunction: "",
     desire: "",
     fear: "",
     values: [],
     artifactName: "",
+    artifactType: "",
     publicPromise: "",
     hiddenFunction: "",
     imageDataUrl: null,
@@ -243,11 +297,43 @@ export function loadDraft(): JourneyDraft | null {
       powerOrgScore: parsed.powerOrgScore ?? null,
       powerPosition: parsed.powerPosition ?? "marginalized",
       position: parsed.position ?? { x: 0, y: 0 },
+      characterGender: parsed.characterGender ?? "",
+      characterAge: parsed.characterAge ?? "",
+      characterRaceEthnicity: parsed.characterRaceEthnicity ?? "",
+      raceSelfDescribe: parsed.raceSelfDescribe ?? "",
+      characterCity: parsed.characterCity ?? "",
+      characterCountry: parsed.characterCountry ?? "",
+      roleCustom: parsed.roleCustom ?? "",
+      artifactType: parsed.artifactType ?? "",
+      location:
+        parsed.location ??
+        composeLocation(
+          parsed.characterCity ?? "",
+          parsed.characterCountry ?? "",
+        ),
       values: parsed.values ?? [],
     };
   } catch {
     return null;
   }
+}
+
+export function genderLabelForDraft(draft: JourneyDraft): string {
+  return (
+    GENDER_OPTIONS.find((option) => option.id === draft.characterGender)
+      ?.label ?? ""
+  );
+}
+
+export function raceEthnicityForDraft(draft: JourneyDraft): string {
+  if (draft.characterRaceEthnicity === "Self-describe") {
+    return draft.raceSelfDescribe.trim();
+  }
+  return draft.characterRaceEthnicity.trim();
+}
+
+export function syncLocationFromParts(draft: JourneyDraft): string {
+  return composeLocation(draft.characterCity, draft.characterCountry);
 }
 
 export function saveDraft(draft: JourneyDraft) {
