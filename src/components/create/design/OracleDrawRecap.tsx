@@ -1,6 +1,5 @@
 "use client";
 
-import { CardReferenceTag } from "@/components/create/CardReferenceTag";
 import { OracleSynthesisCallout } from "@/components/create/design/OracleSynthesisCallout";
 import {
   ORACLE_DRAW_ORDER,
@@ -62,12 +61,6 @@ export function OracleDrawReflectionPrompt({
 }) {
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        {ORACLE_DRAW_ORDER.map((key) => (
-          <CardReferenceTag key={key} card={hand[key]} compact />
-        ))}
-      </div>
-
       <OracleSynthesisCallout hand={hand} />
 
       <label className="block space-y-2">

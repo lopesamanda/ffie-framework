@@ -1,4 +1,5 @@
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
+import { CardReferenceTag } from "@/components/create/CardReferenceTag";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import {
   FFIE_CARD_TEXT,
@@ -145,13 +146,11 @@ function CardProvenance({ hand }: { hand: CardHand }) {
       <p className={ffieCardSectionLabel + " text-ffie-muted"}>
         Card provenance
       </p>
-      <ul className="mt-2 space-y-1 text-xs text-ffie-muted">
+      <div className="mt-2 flex flex-wrap gap-2">
         {cards.map((card) => (
-          <li key={card.id} className={FFIE_CARD_TEXT}>
-            {card.name} — <span className="italic">{card.tension}</span>
-          </li>
+          <CardReferenceTag key={card.id} card={card} compact />
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
