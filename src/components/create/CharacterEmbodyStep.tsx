@@ -24,6 +24,7 @@ import { FfieButton } from "@/components/create/design/FfieButton";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
+import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 
 export type CharacterEmbodyDraft = {
   characterName: string;
@@ -284,6 +285,7 @@ export function CharacterEmbodyStep({
         return (
           <EmbodyTensionScreen
             draft={draft}
+            role={resolvedCharacterRole(draft.role, draft.roleCustom)}
             cardHand={cardHand}
             p={p}
             onChange={onChange}

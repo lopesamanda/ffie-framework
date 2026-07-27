@@ -106,24 +106,43 @@ export async function POST(request: Request) {
   let imageUrl: string | null = null;
 
   if (body.imageDataUrl?.startsWith("data:")) {
-    const match = body.imageDataUrl.match(/^data:(.+);base64,(.+)$/);
-    if (match) {
-      const [, mime, base64] = match;
-      const ext = mime.includes("png") ? "png" : "jpg";
-      const path = `${body.sessionId}/${Date.now()}.${ext}`;
-      const buffer = Buffer.from(base64, "base64");
-
-      const { error: uploadError } = await supabase.storage
-        .from("submissions")
-        .upload(path, buffer, { contentType: mime, upsert: true });
-
-      if (!uploadError) {
-        const { data: publicUrl } = supabase.storage
-          .from("submissions")
-          .getPublicUrl(path);
-        imageUrl = publicUrl.publicUrl;
-      }
+    const match = body.imageDataUrl.match(/^data:([^;]+);base64,(.+)$/);
+    if (!match) {
+      return NextResponse.json(
+        { error: "Invalid image data URL format" },
+        { status: 400 },
+      );
     }
+
+    const [, mime, base64] = match;
+    const ext = mime.includes("png")
+      ? "png"
+      : mime.includes("webp")
+        ? "webp"
+        : "jpg";
+    const path = `${body.sessionId}/${Date.now()}.${ext}`;
+    const buffer = Buffer.from(base64, "base64");
+
+    const { error: uploadError } = await supabase.storage
+      .from("submissions")
+      .upload(path, buffer, { contentType: mime, upsert: true });
+
+    if (uploadError) {
+      console.error(
+        "[submissions] Supabase storage upload failed:",
+        uploadError.message,
+        uploadError,
+      );
+      return NextResponse.json(
+        { error: `Image upload failed: ${uploadError.message}` },
+        { status: 500 },
+      );
+    }
+
+    const { data: publicUrl } = supabase.storage
+      .from("submissions")
+      .getPublicUrl(path);
+    imageUrl = publicUrl.publicUrl;
   }
 
   const { data, error } = await supabase

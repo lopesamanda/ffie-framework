@@ -16,6 +16,10 @@ import { DiscoveryConstellation } from "@/components/create/design/DiscoveryCons
 import { OracleCard, OracleRevealedContent } from "@/components/create/design/OracleCard";
 import { OracleDeckFan, OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
 import {
+  MATRIX_EXPLANATION,
+  MatrixArrivalScene,
+} from "@/components/create/design/MatrixArrivalScene";
+import {
   OracleDrawRecap,
   OracleDrawReflectionPrompt,
 } from "@/components/create/design/OracleDrawRecap";
@@ -25,7 +29,6 @@ import { LikertQuestion } from "@/components/create/LikertQuestion";
 import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
-import { CardReferenceTag } from "@/components/create/CardReferenceTag";
 import { CreateNarrativeScene } from "@/components/create/design/CreateNarrativeScene";
 import { NarrativeBlock, NarrativeBlank } from "@/components/create/NarrativeBlank";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
@@ -55,6 +58,8 @@ import {
 } from "@/lib/journey/artifact-options";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
+import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
+import { copyToClipboard } from "@/lib/copy-to-clipboard";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
@@ -101,6 +106,9 @@ export function CreateJourney() {
   const [oraclePhase, setOraclePhase] = useState<"fan" | "reflection">("fan");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [copyPromptStatus, setCopyPromptStatus] = useState<
+    "idle" | "copied" | "error"
+  >("idle");
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -252,7 +260,7 @@ export function CreateJourney() {
           characterAge: Number.parseInt(draft.characterAge, 10) || null,
           characterGender: genderLabelForDraft(draft),
           characterRaceEthnicity: raceEthnicityForDraft(draft),
-          role: draft.role,
+          role: resolvedCharacterRole(draft.role, draft.roleCustom),
           year: draft.futureYear,
           aiFunction: draft.aiFunction,
           desire: draft.desire,
@@ -289,6 +297,7 @@ export function CreateJourney() {
       };
 
       if (!response.ok) {
+        console.error("[CreateJourney] Submission failed:", result.error);
         throw new Error(result.error ?? "Submission failed");
       }
 
@@ -537,16 +546,20 @@ export function CreateJourney() {
                           draft.characterName.trim() || p.subjectCap;
                         const artifact =
                           draft.artifactName.trim() || "this artifact";
+                        const role = resolvedCharacterRole(
+                          draft.role,
+                          draft.roleCustom,
+                        );
                         return (
                           <>
-                            <div className="flex flex-wrap gap-2">
-                              <CardReferenceTag card={draft.cardHand.benefit} />
-                              <CardReferenceTag card={draft.cardHand.trust} />
+                            <div className="flex flex-wrap gap-3">
+                              <OracleFanRevealedCard card={draft.cardHand.benefit} />
+                              <OracleFanRevealedCard card={draft.cardHand.trust} />
                             </div>
                             <NarrativeBlock className="border-0 bg-transparent p-0">
                               <NarrativeBlank
-                                before={`Every day, ${who} lets ${artifact} do this for ${p.object}: `}
-                                after={`. What does ${p.subject} gain from it — and what does ${p.subject} quietly stop questioning because of it?`}
+                                before={`Every day, in ${p.possessive} role as ${role}, ${who} lets ${artifact} do this: `}
+                                after="."
                                 value={draft.publicPromise}
                                 onChange={(publicPromise) =>
                                   update({ publicPromise })
@@ -668,10 +681,26 @@ export function CreateJourney() {
                         />
                         <button
                           type="button"
-                          onClick={() => navigator.clipboard.writeText(aiPrompt)}
+                          onClick={async () => {
+                            try {
+                              await copyToClipboard(aiPrompt);
+                              setCopyPromptStatus("copied");
+                              window.setTimeout(
+                                () => setCopyPromptStatus("idle"),
+                                2000,
+                              );
+                            } catch (error) {
+                              console.error("Copy prompt failed:", error);
+                              setCopyPromptStatus("error");
+                            }
+                          }}
                           className="mt-2 text-xs font-medium text-ffie-accent hover:underline"
                         >
-                          Copy prompt
+                          {copyPromptStatus === "copied"
+                            ? "Copied!"
+                            : copyPromptStatus === "error"
+                              ? "Copy failed — select text manually"
+                              : "Copy prompt"}
                         </button>
                       </div>
                       <ArtifactImageUpload
@@ -793,14 +822,19 @@ export function CreateJourney() {
                       </FfieButton>
                     </div>
                   ) : (
-                  <>
+                  <MatrixArrivalScene>
                   <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
                     <FutureCardPreview
                       draft={draft}
                       id="future-output-card"
                       compact
                     />
-                    <MatrixReveal position={draft.position} />
+                    <div>
+                      <MatrixReveal position={draft.position} />
+                      <p className="mt-4 text-sm leading-relaxed text-ffie-muted">
+                        {MATRIX_EXPLANATION}
+                      </p>
+                    </div>
                   </div>
                   <label className="mt-8 flex items-start gap-3 rounded-xl border border-ffie-line bg-ffie-surface p-4">
                     <input
@@ -839,7 +873,7 @@ export function CreateJourney() {
                           : "Continue to Discovery"}
                     </FfieButton>
                   </div>
-                  </>
+                  </MatrixArrivalScene>
                   )}
                 </CreateStageShell>
               )}

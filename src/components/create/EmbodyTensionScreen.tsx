@@ -50,6 +50,7 @@ type EmbodyTensionScreenProps = {
     desire: string;
     fear: string;
   };
+  role: string;
   cardHand: CardHand | null;
   p: CharacterPronouns;
   onChange: (patch: {
@@ -61,6 +62,7 @@ type EmbodyTensionScreenProps = {
 
 export function EmbodyTensionScreen({
   draft,
+  role,
   cardHand,
   p,
   onChange,
@@ -147,7 +149,7 @@ export function EmbodyTensionScreen({
         {cardHand && <RevealedOracleCard card={cardHand.benefit} />}
         <NarrativeBlock>
           <NarrativeBlank
-            before={`Because of this, ${p.subject} can finally `}
+            before={`As a ${role}, and because of this, ${p.subject} can finally `}
             after={` — but what did ${p.subject} have to give up, or give away, to get it?`}
             value={draft.aiFunction}
             onChange={(aiFunction) => onChange({ aiFunction })}
@@ -168,7 +170,7 @@ export function EmbodyTensionScreen({
         >
           <NarrativeBlock className="border-0 bg-transparent p-0">
             <NarrativeBlank
-              before={`${p.subjectCap} still holds on to the hope that `}
+              before={`In ${p.possessive} work as ${role}, ${p.subject} still holds on to the hope that `}
               after="."
               value={draft.desire}
               onChange={(desire) => onChange({ desire })}
@@ -196,7 +198,7 @@ export function EmbodyTensionScreen({
           )}
           <NarrativeBlock>
             <NarrativeBlank
-              before={`What ${p.subject} fears most — whether from the technology itself, or from the ecosystem around it — is that AI will `}
+              before={`As a ${role}, what ${p.subject} fears most — whether from the technology itself, or from the ecosystem around it — is that AI will `}
               after="."
               value={draft.fear}
               onChange={(fear) => onChange({ fear })}
