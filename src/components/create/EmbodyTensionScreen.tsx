@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
-import { exampleGhostPhrase } from "@/lib/journey/example-ghost";
 import type { CardHand } from "@/lib/journey/types";
 import type { CharacterPronouns } from "@/lib/journey/character-pronouns";
 
@@ -131,15 +130,6 @@ export function EmbodyTensionScreen({
     if (desireFilled) revealFear();
   };
 
-  const benefitGhost = cardHand
-    ? exampleGhostPhrase(cardHand.benefit)
-    : undefined;
-  const tradeoffGhost = cardHand
-    ? exampleGhostPhrase(cardHand.benefit, 1)
-    : undefined;
-  const desireGhost = cardHand ? exampleGhostPhrase(cardHand.trust) : undefined;
-  const fearGhost = cardHand ? exampleGhostPhrase(cardHand.risk) : undefined;
-
   return (
     <div className="space-y-8">
       {cardHand && (
@@ -159,12 +149,12 @@ export function EmbodyTensionScreen({
 
       <NarrativeBlock>
         <NarrativeBlank
-          before={`As a ${role}, and because of this, ${p.subject} can finally `}
+          before={`As a ${role}, AI finally lets ${p.subject} `}
           after={` — but somewhere in that trade, ${p.subject} stopped `}
           value={draft.aiFunction}
           onChange={(aiFunction) => onChange({ aiFunction })}
           onBlur={handleBenefitBlur}
-          placeholder={benefitGhost}
+          placeholder="…"
         />
         <NarrativeBlank
           before=""
@@ -172,7 +162,7 @@ export function EmbodyTensionScreen({
           value={draft.tradeoffLoss}
           onChange={(tradeoffLoss) => onChange({ tradeoffLoss })}
           onBlur={handleBenefitBlur}
-          placeholder={tradeoffGhost}
+          placeholder="…"
           className="mt-2"
         />
       </NarrativeBlock>
@@ -192,7 +182,7 @@ export function EmbodyTensionScreen({
               value={draft.desire}
               onChange={(desire) => onChange({ desire })}
               onBlur={handleDesireBlur}
-              placeholder={desireGhost}
+              placeholder="…"
             />
           </NarrativeBlock>
         </motion.div>
@@ -222,7 +212,7 @@ export function EmbodyTensionScreen({
               after="."
               value={draft.fear}
               onChange={(fear) => onChange({ fear })}
-              placeholder={fearGhost}
+              placeholder="…"
             />
           </NarrativeBlock>
         </motion.div>
