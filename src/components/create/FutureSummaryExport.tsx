@@ -1,6 +1,7 @@
 import { MatrixPositionDiagram } from "@/components/create/MatrixPositionDiagram";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
+import { buildWhyItExistsParagraph } from "@/lib/journey/future-card-copy";
 import { resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -34,7 +35,7 @@ export function FutureSummaryExport({
   const hiddenFunction =
     composeHiddenFunction(draft) || draft.hiddenFunction.trim();
   const values = resolveArtifactValues(draft);
-  const problemText = draft.artifactProblemTension.trim();
+  const whyItExistsText = buildWhyItExistsParagraph(draft);
 
   return (
     <div
@@ -72,9 +73,9 @@ export function FutureSummaryExport({
 
         <div className="mt-10 grid grid-cols-[1fr_280px] gap-10">
           <div className="space-y-6">
-            {problemText && (
+            {whyItExistsText && (
               <p className="text-lg leading-relaxed text-ffie-ink">
-                {problemText}
+                {whyItExistsText}
               </p>
             )}
 

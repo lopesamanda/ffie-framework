@@ -17,6 +17,7 @@ import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
 import { resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
 import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
+import { buildWhyItExistsParagraph } from "@/lib/journey/future-card-copy";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -182,7 +183,7 @@ export function FutureCardPreview({
   ]
     .filter(Boolean)
     .join(" · ");
-  const problemText = draft.artifactProblemTension.trim();
+  const whyItExistsText = buildWhyItExistsParagraph(draft);
   const sectorLabel = resolvedPersonaSector(
     draft.personaSector,
     draft.personaSectorCustom,
@@ -213,7 +214,7 @@ export function FutureCardPreview({
     1 +
     1 +
     (isFinalCard
-      ? (problemText ? 1 : 0) +
+      ? (whyItExistsText ? 1 : 0) +
         (artifactHeading ||
         draft.publicPromise ||
         hiddenFunctionDisplay ||
@@ -302,10 +303,10 @@ export function FutureCardPreview({
           )}
         </Wrap>
 
-        {isFinalCard && problemText && (
+        {isFinalCard && whyItExistsText && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <p className={`mt-3 text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
-              {problemText}
+              {whyItExistsText}
             </p>
           </Wrap>
         )}
