@@ -148,8 +148,8 @@ function PowerGroup({
     <div className="space-y-3">
       <div className="flex items-center gap-2.5">
         {powerId && (
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-ffie-accent-soft text-ffie-accent">
-            <PowerGlyph powerId={powerId} />
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-ffie-accent-soft text-ffie-accent">
+            <PowerGlyph powerId={powerId} size={20} />
           </span>
         )}
         <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ffie-ink">
