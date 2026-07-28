@@ -1,9 +1,7 @@
 import { AI_CAPABILITY_CARDS } from "@/data/ai-capability-cards";
+import { composeLocation } from "@/lib/journey/character-options";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
-import {
-  composeLocation,
-  type JourneyDraft,
-} from "@/lib/journey/types";
+import type { JourneyDraft } from "@/lib/journey/types";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 
 /** Display name for the selected capability card. */

@@ -3,12 +3,18 @@
 import {
   forwardRef,
   useCallback,
-  type ButtonHTMLAttributes,
   type MouseEvent,
 } from "react";
-import { motion, useAnimation, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  useAnimation,
+  useReducedMotion,
+  type HTMLMotionProps,
+} from "framer-motion";
 
-type SettleButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+type SettleButtonProps = Omit<HTMLMotionProps<"button">, "onClick"> & {
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+};
 
 /** Chip/card button with a brief scale-up-then-settle on click. */
 export const SettleButton = forwardRef<HTMLButtonElement, SettleButtonProps>(
@@ -43,3 +49,5 @@ export const SettleButton = forwardRef<HTMLButtonElement, SettleButtonProps>(
     );
   },
 );
+
+SettleButton.displayName = "SettleButton";
