@@ -56,6 +56,7 @@ import {
 } from "@/lib/journey/hidden-function";
 import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
+import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
@@ -230,7 +231,11 @@ export function CreateJourney() {
           characterGender: genderLabelForDraft(draft),
           characterRaceEthnicity: raceEthnicityForDraft(draft),
           role: resolvedCharacterRole(draft.role, draft.roleCustom),
-          personaSector: draft.personaSector || undefined,
+          personaSector:
+            resolvedPersonaSector(
+              draft.personaSector,
+              draft.personaSectorCustom,
+            ) || undefined,
           year: draft.futureYear,
           aiFunction: draft.aiFunction,
           desire: draft.desire,

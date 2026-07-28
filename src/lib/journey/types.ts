@@ -77,6 +77,7 @@ export type JourneyDraft = {
   role: string;
   roleCustom: string;
   personaSector: PersonaSector | "";
+  personaSectorCustom: string;
   aiFunction: string;
   tradeoffLoss: string;
   desire: string;
@@ -306,6 +307,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     role: "",
     roleCustom: "",
     personaSector: "",
+    personaSectorCustom: "",
     aiFunction: "",
     tradeoffLoss: "",
     desire: "",
@@ -386,6 +388,7 @@ export function loadDraft(): JourneyDraft | null {
       drawSynthesis: parsed.drawSynthesis ?? "",
       drawSynthesisTensions: parsed.drawSynthesisTensions ?? "",
       personaSector: parsed.personaSector ?? "",
+      personaSectorCustom: parsed.personaSectorCustom ?? "",
       closingReflection: parsed.closingReflection ?? "",
       hiddenFunctionExtremeValue: parsed.hiddenFunctionExtremeValue ?? "",
       hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",

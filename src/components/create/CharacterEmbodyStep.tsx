@@ -40,6 +40,7 @@ export type CharacterEmbodyDraft = {
   role: string;
   roleCustom: string;
   personaSector: PersonaSector | "";
+  personaSectorCustom: string;
   location: string;
   aiFunction: string;
   tradeoffLoss: string;
@@ -103,6 +104,8 @@ export function isEmbodyScreenComplete(
       return (
         draft.role.trim().length > 0 &&
         draft.personaSector !== "" &&
+        (draft.personaSector !== "Other" ||
+          draft.personaSectorCustom.trim().length > 0) &&
         draft.location.trim().length > 0
       );
     case 2:
@@ -281,11 +284,33 @@ export function CharacterEmbodyStep({
               <ChipSelect
                 label=""
                 options={[...PERSONA_SECTOR_OPTIONS]}
-                value={draft.personaSector || null}
+                value={
+                  draft.personaSector &&
+                  PERSONA_SECTOR_OPTIONS.includes(
+                    draft.personaSector as PersonaSector,
+                  )
+                    ? draft.personaSector
+                    : null
+                }
                 onChange={(personaSector) =>
-                  onChange({ personaSector: personaSector as PersonaSector })
+                  onChange({
+                    personaSector: personaSector as PersonaSector,
+                    personaSectorCustom:
+                      personaSector === "Other" ? draft.personaSectorCustom : "",
+                  })
                 }
               />
+              {draft.personaSector === "Other" && (
+                <input
+                  type="text"
+                  value={draft.personaSectorCustom}
+                  onChange={(event) =>
+                    onChange({ personaSectorCustom: event.target.value })
+                  }
+                  placeholder="Describe your sector"
+                  className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
+                />
+              )}
             </ChipField>
 
             <NarrativeBlock>

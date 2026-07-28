@@ -18,6 +18,7 @@ import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
 import { resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
 import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
+import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
@@ -182,6 +183,10 @@ export function FutureCardPreview({
     .filter(Boolean)
     .join(" · ");
   const problemText = draft.artifactProblemTension.trim();
+  const sectorLabel = resolvedPersonaSector(
+    draft.personaSector,
+    draft.personaSectorCustom,
+  );
   const artifactHeading = draft.artifactName.trim();
 
   const synthesisLine = showDrawSynthesis && !showCommonsNarrative
@@ -252,9 +257,9 @@ export function FutureCardPreview({
               seal={revealAnimated}
               sealDelay={sealDelay}
             />
-            {draft.personaSector && (
+            {sectorLabel && (
               <span className="rounded-full border border-ffie-line bg-ffie-bg px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-ffie-muted">
-                {draft.personaSector}
+                {sectorLabel}
               </span>
             )}
             {draft.location && (
