@@ -76,7 +76,11 @@ function AmbientMatrixField({ reduceMotion }: { reduceMotion: boolean }) {
             right: "right" in blob ? blob.right : undefined,
             bottom: "bottom" in blob ? blob.bottom : undefined,
           }}
-          animate={reduceMotion ? undefined : blob.drift}
+          animate={
+            reduceMotion
+              ? undefined
+              : { x: [...blob.drift.x], y: [...blob.drift.y] }
+          }
           transition={
             reduceMotion
               ? undefined
