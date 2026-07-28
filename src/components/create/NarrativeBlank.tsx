@@ -12,7 +12,7 @@ type NarrativeBlankProps = {
 };
 
 const BLANK =
-  "mx-1 inline-block min-w-[10ch] max-w-full border-b-2 border-ffie-ink/25 bg-transparent px-1 py-0.5 font-medium text-ffie-ink outline-none transition focus:border-ffie-accent";
+  "mx-1 inline-block min-w-[10ch] max-w-full border-b-2 border-ffie-ink/25 bg-transparent px-1 py-0.5 font-medium text-ffie-ink outline-none transition placeholder:font-normal placeholder:text-ffie-muted/55 focus:border-ffie-accent";
 
 export function NarrativeBlank({
   before,

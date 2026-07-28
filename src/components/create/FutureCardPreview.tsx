@@ -1,6 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
-import { NarrativeCardFace } from "@/components/create/NarrativeCardFace";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import {
   FFIE_CARD_TEXT,
@@ -147,14 +149,38 @@ function CardProvenance({ hand }: { hand: CardHand }) {
       <p className={ffieCardSectionLabel + " text-ffie-muted"}>
         Card provenance
       </p>
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div className="mt-2 flex flex-wrap items-center gap-2">
         {drawn.map((card) => (
           <CardReferenceTag key={card.id} card={card} compact />
         ))}
-      </div>
-      <div className="mt-4">
-        <NarrativeCardFace card={hand.transversal} />
+        <TransversalLensTag card={hand.transversal} />
       </div>
     </div>
+  );
+}
+
+function TransversalLensTag({ card }: { card: CardHand["transversal"] }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <span className="relative inline-flex">
+      <button
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        className="inline-flex items-center rounded-full border border-ffie-line/50 px-2 py-0.5 text-[10px] font-normal text-ffie-muted/75 transition hover:border-ffie-accent/30 hover:text-ffie-muted"
+        aria-expanded={open}
+        title={card.reflectionQuestion}
+      >
+        Transversal · {card.name}
+      </button>
+      {open && (
+        <span
+          role="tooltip"
+          className="absolute left-0 top-full z-10 mt-1.5 max-w-[220px] rounded-lg border border-ffie-line/70 bg-ffie-surface px-2.5 py-2 text-[10px] leading-snug text-ffie-muted shadow-sm"
+        >
+          {card.reflectionQuestion}
+        </span>
+      )}
+    </span>
   );
 }

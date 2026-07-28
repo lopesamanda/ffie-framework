@@ -1,4 +1,5 @@
 import type { AiCapabilityCard } from "@/data/ai-capability-cards";
+import { AI_CAPABILITY_CARDS } from "@/data/ai-capability-cards";
 
 export type AiCapabilityPowerId =
   | "power-to-know"
@@ -85,6 +86,23 @@ export function groupCardsByPower(
   }
 
   return groups;
+}
+
+export function cardsForPower(powerId: AiCapabilityPowerId): AiCapabilityCard[] {
+  const power = AI_CAPABILITY_POWERS.find((entry) => entry.id === powerId);
+  if (!power) return [];
+  const byId = new Map(AI_CAPABILITY_CARDS.map((card) => [card.id, card]));
+  return power.cardIds
+    .map((id) => byId.get(id))
+    .filter((card): card is AiCapabilityCard => card != null);
+}
+
+export function formatPersonaValuesList(values: string[]): string {
+  const picked = values.filter(Boolean);
+  if (picked.length === 0) return "the values they carry";
+  if (picked.length === 1) return picked[0]!;
+  if (picked.length === 2) return `${picked[0]} and ${picked[1]}`;
+  return `${picked.slice(0, -1).join(", ")}, and ${picked[picked.length - 1]}`;
 }
 
 /** @deprecated Use groupCardsByPower */

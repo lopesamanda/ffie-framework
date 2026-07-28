@@ -12,6 +12,7 @@ import {
   GENDER_OPTIONS,
 } from "@/lib/journey/character-options";
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
+import type { AiCapabilityPowerId } from "@/lib/journey/ai-capability-clusters";
 import { getFutureHorizonYear } from "@/lib/journey/future-horizon";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
@@ -71,11 +72,14 @@ export type JourneyDraft = {
   role: string;
   roleCustom: string;
   aiFunction: string;
+  tradeoffLoss: string;
   desire: string;
   fear: string;
   values: string[];
   artifactName: string;
   artifactType: ArtifactTypeId | "";
+  /** Selected AI Power on Day to day step. */
+  selectedAiPower: AiCapabilityPowerId | "";
   /** Sub-step within Day to day (0 = main promise, 1 = reflective follow-up). */
   dayToDaySubStep: number;
   /** Reflective follow-up after the main day-to-day description. */
@@ -282,11 +286,13 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     role: "",
     roleCustom: "",
     aiFunction: "",
+    tradeoffLoss: "",
     desire: "",
     fear: "",
     values: [],
     artifactName: "",
     artifactType: "",
+    selectedAiPower: "",
     dayToDaySubStep: 0,
     dayToDayReflection: "",
     publicPromise: "",
@@ -344,6 +350,8 @@ export function loadDraft(): JourneyDraft | null {
           parsed.characterCity ?? "",
           parsed.characterCountry ?? "",
         ),
+      tradeoffLoss: parsed.tradeoffLoss ?? "",
+      selectedAiPower: parsed.selectedAiPower ?? "",
       values: parsed.values ?? [],
       futureYear: parsed.futureYear ?? getFutureHorizonYear(),
       drawSynthesis: parsed.drawSynthesis ?? "",

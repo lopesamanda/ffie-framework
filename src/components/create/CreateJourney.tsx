@@ -31,7 +31,7 @@ import {
 import { CreateNarrativeScene } from "@/components/create/design/CreateNarrativeScene";
 import { NarrativeBlock, NarrativeTextarea } from "@/components/create/NarrativeBlank";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
-import { AiCapabilityCardPicker } from "@/components/create/AiCapabilityCardPicker";
+import { AiPowerSelector } from "@/components/create/AiPowerSelector";
 import { ArtifactImageUpload } from "@/components/create/ArtifactImageUpload";
 import {
   ShareableFutureCard,
@@ -534,10 +534,6 @@ export function CreateJourney() {
 
                         return (
                           <>
-                            <div className="flex flex-wrap gap-3">
-                              <OracleFanRevealedCard card={draft.cardHand.benefit} />
-                              <OracleFanRevealedCard card={draft.cardHand.trust} />
-                            </div>
                             <NarrativeBlock className="border-0 bg-transparent p-0">
                               <NarrativeTextarea
                                 before={`Every day, in ${p.possessive} role as ${role}, ${who} lets ${artifact} do this:`}
@@ -549,9 +545,13 @@ export function CreateJourney() {
                                 rows={6}
                               />
                             </NarrativeBlock>
-                            <AiCapabilityCardPicker
-                              context="artifact"
+                            <AiPowerSelector
+                              values={draft.values}
                               artifactType={draft.artifactType}
+                              selectedPower={draft.selectedAiPower}
+                              onSelectPower={(selectedAiPower) =>
+                                update({ selectedAiPower })
+                              }
                             />
                           </>
                         );
@@ -723,7 +723,8 @@ export function CreateJourney() {
                           (!draft.artifactName.trim() ||
                             !draft.artifactType)) ||
                         (draft.creationStep === 2 &&
-                          !draft.publicPromise.trim()) ||
+                          (!draft.publicPromise.trim() ||
+                            !draft.selectedAiPower)) ||
                         (draft.creationStep === 3 &&
                           !isArtifactValuesComplete(draft)) ||
                         (draft.creationStep === 4 &&

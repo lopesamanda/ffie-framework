@@ -37,6 +37,7 @@ export type CharacterEmbodyDraft = {
   roleCustom: string;
   location: string;
   aiFunction: string;
+  tradeoffLoss: string;
   desire: string;
   fear: string;
   values: string[];
@@ -96,13 +97,14 @@ export function isEmbodyScreenComplete(
     case 1:
       return draft.role.trim().length > 0 && draft.location.trim().length > 0;
     case 2:
+      return draft.values.length === 3;
+    case 3:
       return (
         draft.aiFunction.trim().length > 0 &&
+        draft.tradeoffLoss.trim().length > 0 &&
         draft.desire.trim().length > 0 &&
         draft.fear.trim().length > 0
       );
-    case 3:
-      return draft.values.length === 3;
     default:
       return false;
   }
@@ -283,17 +285,6 @@ export function CharacterEmbodyStep({
 
       case 2:
         return (
-          <EmbodyTensionScreen
-            draft={draft}
-            role={resolvedCharacterRole(draft.role, draft.roleCustom)}
-            cardHand={cardHand}
-            p={p}
-            onChange={onChange}
-          />
-        );
-
-      case 3:
-        return (
           <ChipField
             label={`The values ${p.subject} ${verbFor(p, "carries", "carry")} into this future:`}
           >
@@ -309,6 +300,17 @@ export function CharacterEmbodyStep({
               {draft.values.length}/3 selected
             </p>
           </ChipField>
+        );
+
+      case 3:
+        return (
+          <EmbodyTensionScreen
+            draft={draft}
+            role={resolvedCharacterRole(draft.role, draft.roleCustom)}
+            cardHand={cardHand}
+            p={p}
+            onChange={onChange}
+          />
         );
 
       default:

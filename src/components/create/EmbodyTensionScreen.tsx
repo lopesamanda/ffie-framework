@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
+import { exampleGhostPhrase } from "@/lib/journey/example-ghost";
 import type { CardHand } from "@/lib/journey/types";
 import type { CharacterPronouns } from "@/lib/journey/character-pronouns";
 
@@ -14,21 +15,6 @@ const revealMotion = {
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.32, ease: "easeOut" as const },
 };
-
-function RevealedOracleCard({ card }: { card: CardHand["benefit"] }) {
-  const reduceMotion = useReducedMotion();
-
-  return (
-    <motion.div
-      initial={reduceMotion ? false : revealMotion.initial}
-      animate={revealMotion.animate}
-      transition={revealMotion.transition}
-      className="w-fit"
-    >
-      <OracleFanRevealedCard card={card} />
-    </motion.div>
-  );
-}
 
 function useStickyReveal(initial: boolean) {
   const [revealed, setRevealed] = useState(initial);
@@ -47,6 +33,7 @@ function useStickyReveal(initial: boolean) {
 type EmbodyTensionScreenProps = {
   draft: {
     aiFunction: string;
+    tradeoffLoss: string;
     desire: string;
     fear: string;
   };
@@ -55,6 +42,7 @@ type EmbodyTensionScreenProps = {
   p: CharacterPronouns;
   onChange: (patch: {
     aiFunction?: string;
+    tradeoffLoss?: string;
     desire?: string;
     fear?: string;
   }) => void;
@@ -72,12 +60,13 @@ export function EmbodyTensionScreen({
   const fearSectionRef = useRef<HTMLDivElement>(null);
   const closingRef = useRef<HTMLParagraphElement>(null);
 
-  const aiFilled = draft.aiFunction.trim().length > 0;
+  const benefitFilled =
+    draft.aiFunction.trim().length > 0 && draft.tradeoffLoss.trim().length > 0;
   const desireFilled = draft.desire.trim().length > 0;
   const fearFilled = draft.fear.trim().length > 0;
 
   const { revealed: showDesire, reveal: revealDesire } = useStickyReveal(
-    desireFilled || aiFilled,
+    desireFilled || benefitFilled,
   );
   const { revealed: showFear, reveal: revealFear } = useStickyReveal(
     fearFilled || desireFilled,
@@ -86,7 +75,7 @@ export function EmbodyTensionScreen({
     fearFilled,
   );
 
-  const aiPauseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const benefitPauseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const desirePauseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scrollTo = (element: HTMLElement | null) => {
@@ -98,13 +87,13 @@ export function EmbodyTensionScreen({
   };
 
   useEffect(() => {
-    if (aiFilled) {
-      aiPauseRef.current = setTimeout(revealDesire, REVEAL_PAUSE_MS);
+    if (benefitFilled) {
+      benefitPauseRef.current = setTimeout(revealDesire, REVEAL_PAUSE_MS);
     }
     return () => {
-      if (aiPauseRef.current) clearTimeout(aiPauseRef.current);
+      if (benefitPauseRef.current) clearTimeout(benefitPauseRef.current);
     };
-  }, [aiFilled, revealDesire]);
+  }, [benefitFilled, revealDesire]);
 
   useEffect(() => {
     if (desireFilled) {
@@ -134,32 +123,60 @@ export function EmbodyTensionScreen({
     if (showClosing) scrollTo(closingRef.current);
   }, [showClosing, reduceMotion]);
 
-  const handleAiBlur = () => {
-    if (aiFilled) revealDesire();
+  const handleBenefitBlur = () => {
+    if (benefitFilled) revealDesire();
   };
 
   const handleDesireBlur = () => {
     if (desireFilled) revealFear();
   };
 
+  const benefitGhost = cardHand
+    ? exampleGhostPhrase(cardHand.benefit)
+    : undefined;
+  const tradeoffGhost = cardHand
+    ? exampleGhostPhrase(cardHand.benefit, 1)
+    : undefined;
+  const desireGhost = cardHand ? exampleGhostPhrase(cardHand.trust) : undefined;
+  const fearGhost = cardHand ? exampleGhostPhrase(cardHand.risk) : undefined;
+
   return (
     <div className="space-y-8">
-      {/* AI function + Benefit card */}
-      <div className="space-y-4">
-        {cardHand && <RevealedOracleCard card={cardHand.benefit} />}
-        <NarrativeBlock>
-          <NarrativeBlank
-            before={`As a ${role}, and because of this, ${p.subject} can finally `}
-            after={` — but what did ${p.subject} have to give up, or give away, to get it?`}
-            value={draft.aiFunction}
-            onChange={(aiFunction) => onChange({ aiFunction })}
-            onBlur={handleAiBlur}
-            placeholder={`what ${p.possessive} gains`}
-          />
-        </NarrativeBlock>
-      </div>
+      {cardHand && (
+        <>
+          <p className="text-sm leading-relaxed text-ffie-muted">
+            You drew <strong className="text-ffie-ink">{cardHand.benefit.name}</strong>{" "}
+            and <strong className="text-ffie-ink">{cardHand.trust.name}</strong>.
+            Let them shape what {p.subject} gains, and what {p.subject} still hopes
+            for:
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <OracleFanRevealedCard card={cardHand.benefit} />
+            <OracleFanRevealedCard card={cardHand.trust} />
+          </div>
+        </>
+      )}
 
-      {/* Desire — personal pause, soft violet tint */}
+      <NarrativeBlock>
+        <NarrativeBlank
+          before={`As a ${role}, and because of this, ${p.subject} can finally `}
+          after={` — but somewhere in that trade, ${p.subject} stopped `}
+          value={draft.aiFunction}
+          onChange={(aiFunction) => onChange({ aiFunction })}
+          onBlur={handleBenefitBlur}
+          placeholder={benefitGhost}
+        />
+        <NarrativeBlank
+          before=""
+          after="."
+          value={draft.tradeoffLoss}
+          onChange={(tradeoffLoss) => onChange({ tradeoffLoss })}
+          onBlur={handleBenefitBlur}
+          placeholder={tradeoffGhost}
+          className="mt-2"
+        />
+      </NarrativeBlock>
+
       {showDesire && (
         <motion.div
           ref={desireSectionRef}
@@ -175,13 +192,12 @@ export function EmbodyTensionScreen({
               value={draft.desire}
               onChange={(desire) => onChange({ desire })}
               onBlur={handleDesireBlur}
-              placeholder={`${p.possessive} deepest hope`}
+              placeholder={desireGhost}
             />
           </NarrativeBlock>
         </motion.div>
       )}
 
-      {/* Fear + Risk & Barrier cards */}
       {showFear && (
         <motion.div
           ref={fearSectionRef}
@@ -190,6 +206,10 @@ export function EmbodyTensionScreen({
           transition={revealMotion.transition}
           className="space-y-4"
         >
+          <p className="text-sm leading-relaxed text-ffie-muted">
+            You drew these two tensions. Let them shape what {p.subject}&apos;s
+            afraid of:
+          </p>
           {cardHand && (
             <div className="flex flex-wrap gap-3">
               <OracleFanRevealedCard card={cardHand.risk} />
@@ -202,7 +222,7 @@ export function EmbodyTensionScreen({
               after="."
               value={draft.fear}
               onChange={(fear) => onChange({ fear })}
-              placeholder={`${p.possessive} greatest fear`}
+              placeholder={fearGhost}
             />
           </NarrativeBlock>
         </motion.div>
