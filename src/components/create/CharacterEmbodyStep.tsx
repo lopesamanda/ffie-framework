@@ -192,6 +192,7 @@ export function CharacterEmbodyStep({
                     after={` and, ${FUTURE_HORIZON_LABEL}, ${p.subject} ${verbFor(p, "is", "are")} `}
                     value={draft.characterName}
                     onChange={(characterName) => onChange({ characterName })}
+                    placeholder="name"
                   />
                   <NarrativeBlank
                     before=""
@@ -199,6 +200,7 @@ export function CharacterEmbodyStep({
                     value={draft.characterAge}
                     onChange={(characterAge) => onChange({ characterAge })}
                     inputMode="numeric"
+                    placeholder="age"
                   />
                 </NarrativeBlock>
 
@@ -275,8 +277,8 @@ export function CharacterEmbodyStep({
                     role: event.target.value,
                   })
                 }
-                placeholder="Or describe in your own words"
-                className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
+                placeholder="type your own"
+                className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-xs placeholder:text-ffie-muted/70 focus:border-ffie-accent/40"
               />
             </ChipField>
 
@@ -307,8 +309,8 @@ export function CharacterEmbodyStep({
                   onChange={(event) =>
                     onChange({ personaSectorCustom: event.target.value })
                   }
-                  placeholder="Describe your sector"
-                  className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
+                  placeholder="type your own"
+                  className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-xs placeholder:text-ffie-muted/70 focus:border-ffie-accent/40"
                 />
               )}
             </ChipField>
@@ -319,7 +321,7 @@ export function CharacterEmbodyStep({
                 after=""
                 value={draft.location}
                 onChange={(location) => onChange({ location })}
-                placeholder="city, country, or context"
+                placeholder="location"
               />
             </NarrativeBlock>
           </div>

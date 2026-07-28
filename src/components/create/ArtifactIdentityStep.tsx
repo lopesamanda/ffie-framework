@@ -5,7 +5,7 @@ import { SettleButton } from "@/components/motion/SettleButton";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 const FIELD =
-  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
+  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none placeholder:text-xs placeholder:text-ffie-muted/70 focus:border-ffie-accent/40";
 
 export function ArtifactIdentityStep({
   draft,
@@ -23,6 +23,7 @@ export function ArtifactIdentityStep({
         <input
           value={draft.artifactName}
           onChange={(event) => onChange({ artifactName: event.target.value })}
+          placeholder="artifact name"
           className={FIELD}
         />
       </label>

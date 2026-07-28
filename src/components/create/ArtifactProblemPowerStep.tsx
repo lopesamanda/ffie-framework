@@ -5,7 +5,7 @@ import { pronounsForSelection, verbFor } from "@/lib/journey/character-pronouns"
 import type { JourneyDraft } from "@/lib/journey/types";
 
 const FIELD =
-  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
+  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none placeholder:text-xs placeholder:text-ffie-muted/70 focus:border-ffie-accent/40";
 
 function SubStepProgress({ completed }: { completed: boolean[] }) {
   return (
@@ -64,6 +64,7 @@ export function ArtifactProblemPowerStep({
             onChange({ artifactProblemTension: event.target.value })
           }
           rows={4}
+          placeholder="problem it solves or worsens"
           className={`${FIELD} resize-y`}
         />
       </section>

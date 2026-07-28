@@ -52,7 +52,7 @@ export function HiddenFunctionStep({
           after="."
           value={draft.hiddenFunctionCompletion}
           onChange={onCompletionChange}
-          placeholder="prioritize speed over safety"
+          placeholder="what's the risk for the persona or market?"
         />
       )}
 

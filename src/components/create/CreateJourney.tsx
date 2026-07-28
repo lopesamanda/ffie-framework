@@ -495,8 +495,8 @@ export function CreateJourney() {
                             onChange={(event) =>
                               update({ artifactValueOther: event.target.value })
                             }
-                            placeholder="Describe your value"
-                            className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
+                            placeholder="type your own"
+                            className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-xs placeholder:text-ffie-muted/70 focus:border-ffie-accent/40"
                           />
                         )}
                         <p className="text-xs text-ffie-muted">

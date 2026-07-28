@@ -10,11 +10,10 @@ import { verbFor, type CharacterPronouns } from "@/lib/journey/character-pronoun
 const REVEAL_PAUSE_MS = 700;
 
 const EMBODY_PLACEHOLDERS = {
-  benefit:
-    "e.g., see more clients than he could manage alone",
-  tradeoff: "e.g., double-checking his own numbers",
-  hope: "e.g., this becomes something everyone can access, not just him",
-  fear: "e.g., quietly replace his judgment with its own",
+  benefit: "ability improved by AI",
+  tradeoff: "habit that AI changed",
+  hope: "desire for the future",
+  fear: "fear related to AI",
 } as const;
 
 const lineDrift = (reduceMotion: boolean | null, delay = 0) =>
