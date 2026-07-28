@@ -87,7 +87,10 @@ import {
 
 const CREATION_STEPS = [
   "Embody the future",
-  "Name the artifact",
+  "Provisional name",
+  "Type",
+  "Problem / tension",
+  "AI power",
   "Day to day",
   "Embedded values",
   "Hidden function",
@@ -467,7 +470,8 @@ export function CreateJourney() {
                     <div className="space-y-6">
                       <label className="block space-y-2">
                         <span className="text-sm font-medium leading-relaxed text-ffie-ink">
-                          This object or system has a name. What is it?
+                          This object or system has a provisional name. What is
+                          it?
                         </span>
                         <input
                           value={draft.artifactName}
@@ -477,89 +481,106 @@ export function CreateJourney() {
                           className={FIELD}
                         />
                       </label>
-                      <div className="space-y-3 rounded-xl border border-dashed border-ffie-accent/25 bg-ffie-accent-soft/20 px-4 py-4">
-                        <p className="text-sm font-medium text-ffie-ink">
-                          What kind of artifact is it?
-                        </p>
-                        <div className="grid gap-2 sm:grid-cols-2">
-                          {ARTIFACT_TYPE_OPTIONS.map((option) => {
-                            const selected = draft.artifactType === option.id;
-                            return (
-                              <button
-                                key={option.id}
-                                type="button"
-                                onClick={() =>
-                                  update({ artifactType: option.id })
-                                }
-                                className={`rounded-xl border px-4 py-3 text-left transition ${
+                    </div>
+                  )}
+
+                  {draft.creationStep === 2 && (
+                    <div className="space-y-3 rounded-xl border border-dashed border-ffie-accent/25 bg-ffie-accent-soft/20 px-4 py-4">
+                      <p className="text-sm font-medium text-ffie-ink">
+                        What kind of artifact is it?
+                      </p>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {ARTIFACT_TYPE_OPTIONS.map((option) => {
+                          const selected = draft.artifactType === option.id;
+                          return (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() =>
+                                update({ artifactType: option.id })
+                              }
+                              className={`rounded-xl border px-4 py-3 text-left transition ${
+                                selected
+                                  ? "border-ffie-ink bg-ffie-ink text-ffie-bg"
+                                  : "border-ffie-line bg-ffie-surface text-ffie-ink hover:border-ffie-accent/40"
+                              }`}
+                            >
+                              <span className="block text-sm font-semibold">
+                                {option.label}
+                              </span>
+                              <span
+                                className={`mt-1 block text-xs ${
                                   selected
-                                    ? "border-ffie-ink bg-ffie-ink text-ffie-bg"
-                                    : "border-ffie-line bg-ffie-surface text-ffie-ink hover:border-ffie-accent/40"
+                                    ? "text-ffie-bg/80"
+                                    : "text-ffie-muted"
                                 }`}
                               >
-                                <span className="block text-sm font-semibold">
-                                  {option.label}
-                                </span>
-                                <span
-                                  className={`mt-1 block text-xs ${
-                                    selected
-                                      ? "text-ffie-bg/80"
-                                      : "text-ffie-muted"
-                                  }`}
-                                >
-                                  {option.description}
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
+                                {option.description}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
 
-                  {draft.creationStep === 2 && draft.cardHand && (
-                    <CreateNarrativeScene className="space-y-4">
+                  {draft.creationStep === 3 && (
+                    <div className="space-y-4">
                       {(() => {
                         const p = pronounsForSelection(draft.characterPronoun);
-                        const who =
-                          draft.characterName.trim() || p.subjectCap;
-                        const artifact =
-                          draft.artifactName.trim() || "this artifact";
-                        const role = resolvedCharacterRole(
-                          draft.role,
-                          draft.roleCustom,
-                        );
-                        const guideName =
-                          draft.characterName.trim() || p.subject;
-
                         return (
                           <>
-                            <NarrativeBlock className="border-0 bg-transparent p-0">
-                              <NarrativeTextarea
-                                before={`Every day, in ${p.possessive} role as ${role}, ${who} lets ${artifact} do this:`}
-                                value={draft.publicPromise}
-                                onChange={(publicPromise) =>
-                                  update({ publicPromise })
-                                }
-                                placeholder={`Describe what it does, day to day — what ${guideName} sees, touches, or relies on because of it.`}
-                                rows={6}
-                              />
-                            </NarrativeBlock>
-                            <AiPowerSelector
-                              values={draft.values}
-                              artifactType={draft.artifactType}
-                              selectedPower={draft.selectedAiPower}
-                              onSelectPower={(selectedAiPower) =>
-                                update({ selectedAiPower })
+                            <p className="text-sm leading-relaxed text-ffie-ink">
+                              You said {p.subject} fears AI will{" "}
+                              <strong className="font-medium text-ffie-ink">
+                                {draft.fear.trim()}
+                              </strong>
+                              . What problem or tension does this artifact
+                              respond to — or make worse?
+                            </p>
+                            <textarea
+                              value={draft.artifactProblemTension}
+                              onChange={(e) =>
+                                update({
+                                  artifactProblemTension: e.target.value,
+                                })
                               }
+                              rows={5}
+                              className={`${FIELD} resize-y`}
                             />
                           </>
                         );
                       })()}
+                    </div>
+                  )}
+
+                  {draft.creationStep === 4 && (
+                    <AiPowerSelector
+                      values={draft.values}
+                      artifactType={draft.artifactType}
+                      selectedPower={draft.selectedAiPower}
+                      onSelectPower={(selectedAiPower) =>
+                        update({ selectedAiPower })
+                      }
+                    />
+                  )}
+
+                  {draft.creationStep === 5 && (
+                    <CreateNarrativeScene className="space-y-4">
+                      <NarrativeBlock className="border-0 bg-transparent p-0">
+                        <NarrativeTextarea
+                          before="Describe what it does, day to day, now that you've chosen its power."
+                          value={draft.publicPromise}
+                          onChange={(publicPromise) =>
+                            update({ publicPromise })
+                          }
+                          rows={6}
+                        />
+                      </NarrativeBlock>
                     </CreateNarrativeScene>
                   )}
 
-                  {draft.creationStep === 3 && (
+                  {draft.creationStep === 6 && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
                         What values are embedded in it? Select 2–4 — comforting
@@ -596,7 +617,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 4 && draft.cardHand && (
+                  {draft.creationStep === 7 && draft.cardHand && (
                     <div className="space-y-4">
                       <div className="space-y-3 rounded-xl border border-ffie-line bg-ffie-bg/60 p-4 text-sm">
                         <div>
@@ -652,7 +673,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 5 && (
+                  {draft.creationStep === 8 && (
                     <div className="space-y-4">
                       <div className="rounded-xl border border-ffie-line bg-ffie-bg/60 p-4">
                         <p className="text-xs uppercase tracking-wide text-ffie-muted">
@@ -720,14 +741,16 @@ export function CreateJourney() {
                     <FfieButton
                       disabled={
                         (draft.creationStep === 1 &&
-                          (!draft.artifactName.trim() ||
-                            !draft.artifactType)) ||
-                        (draft.creationStep === 2 &&
-                          (!draft.publicPromise.trim() ||
-                            !draft.selectedAiPower)) ||
+                          !draft.artifactName.trim()) ||
+                        (draft.creationStep === 2 && !draft.artifactType) ||
                         (draft.creationStep === 3 &&
+                          !draft.artifactProblemTension.trim()) ||
+                        (draft.creationStep === 4 && !draft.selectedAiPower) ||
+                        (draft.creationStep === 5 &&
+                          !draft.publicPromise.trim()) ||
+                        (draft.creationStep === 6 &&
                           !isArtifactValuesComplete(draft)) ||
-                        (draft.creationStep === 4 &&
+                        (draft.creationStep === 7 &&
                           !draft.hiddenFunction.trim())
                       }
                       onClick={() => {

@@ -78,6 +78,8 @@ export type JourneyDraft = {
   values: string[];
   artifactName: string;
   artifactType: ArtifactTypeId | "";
+  /** Problem or tension the artifact responds to (references embody fear). */
+  artifactProblemTension: string;
   /** Selected AI Power on Day to day step. */
   selectedAiPower: AiCapabilityPowerId | "";
   /** Sub-step within Day to day (0 = main promise, 1 = reflective follow-up). */
@@ -292,6 +294,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     values: [],
     artifactName: "",
     artifactType: "",
+    artifactProblemTension: "",
     selectedAiPower: "",
     dayToDaySubStep: 0,
     dayToDayReflection: "",
@@ -340,6 +343,7 @@ export function loadDraft(): JourneyDraft | null {
       characterCountry: parsed.characterCountry ?? "",
       roleCustom: parsed.roleCustom ?? "",
       artifactType: parsed.artifactType ?? "",
+      artifactProblemTension: parsed.artifactProblemTension ?? "",
       dayToDaySubStep: parsed.dayToDaySubStep ?? 0,
       dayToDayReflection: parsed.dayToDayReflection ?? "",
       artifactValues: parsed.artifactValues ?? [],
