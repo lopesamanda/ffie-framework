@@ -664,6 +664,7 @@ export function CreateJourney() {
                       id="future-output-card"
                       compact
                       revealAnimated
+                      showCardTags
                     />
                     <div>
                       <p className="mb-4 text-sm leading-relaxed text-ffie-muted">

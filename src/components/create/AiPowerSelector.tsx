@@ -6,6 +6,7 @@ import type { ArtifactTypeId } from "@/lib/journey/character-options";
 import {
   AI_CAPABILITY_POWERS,
   cardsForPower,
+  DAY_TO_DAY_POWER_PLACEHOLDERS,
   formatPersonaValuesList,
   type AiCapabilityPowerId,
 } from "@/lib/journey/ai-capability-clusters";
@@ -15,7 +16,6 @@ import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
   ffieCardDescription,
-  ffieCardDivider,
   ffieCardSectionLabel,
   ffieCardTitle,
 } from "@/lib/card-layout";
@@ -121,6 +121,7 @@ export function AiPowerSelector({
                 key={card.id}
                 card={card}
                 selected={selectedCapabilityId === card.id}
+                selectedPower={selectedPower}
                 dayToDayDescription={
                   selectedCapabilityId === card.id ? dayToDayDescription : ""
                 }
@@ -143,6 +144,7 @@ export function AiPowerSelector({
 function SelectableCapabilityCard({
   card,
   selected,
+  selectedPower,
   dayToDayDescription,
   artifactGoalPitch,
   artifactName,
@@ -152,6 +154,7 @@ function SelectableCapabilityCard({
 }: {
   card: AiCapabilityCard;
   selected: boolean;
+  selectedPower: AiCapabilityPowerId;
   dayToDayDescription: string;
   artifactGoalPitch: string;
   artifactName: string;
@@ -159,6 +162,8 @@ function SelectableCapabilityCard({
   onDayToDayChange: (value: string) => void;
   onGoalPitchChange: (value: string) => void;
 }) {
+  const dayToDayPlaceholder = DAY_TO_DAY_POWER_PLACEHOLDERS[selectedPower];
+
   return (
     <div
       className={`rounded-xl border-2 bg-ffie-bg/40 transition ${
@@ -203,36 +208,36 @@ function SelectableCapabilityCard({
             </span>
           ))}
         </div>
-
-        <div className={`my-3 ${ffieCardDivider}`} />
-
-        <p className={ffieCardSectionLabel}>Example</p>
-        <p
-          className={`mt-2 text-sm italic leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
-        >
-          {card.examples[0]}
-        </p>
-
-        <div className="mt-3">
-          <p className={`${ffieCardCategory} text-ffie-muted`}>
-            Guiding questions
-          </p>
-          <ul className="mt-2 space-y-1.5">
-            {card.artifactGuidingQuestions.map((question) => (
-              <li
-                key={question}
-                className={`text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
-              >
-                · {question}
-              </li>
-            ))}
-          </ul>
-        </div>
       </SettleButton>
 
       {selected && (
         <div className="border-t border-ffie-accent/25 px-4 pb-4 pt-3">
-          <label className="block space-y-2">
+          <div className="rounded-lg border border-ffie-line/70 bg-white/70 px-3 py-3">
+            <p className={ffieCardSectionLabel}>Example</p>
+            <p
+              className={`mt-1.5 text-sm italic leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
+            >
+              {card.examples[0]}
+            </p>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <p className={`${ffieCardCategory} text-ffie-muted`}>
+              Use these to shape your answer
+            </p>
+            <ul className="space-y-1.5">
+              {card.artifactGuidingQuestions.map((question) => (
+                <li
+                  key={question}
+                  className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
+                >
+                  · {question}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <label className="mt-4 block space-y-2">
             <span className="text-sm leading-relaxed text-ffie-ink">
               Describe what it does, day to day, now that you&apos;ve chosen its
               power.
@@ -242,6 +247,7 @@ function SelectableCapabilityCard({
               onChange={(event) => onDayToDayChange(event.target.value)}
               rows={4}
               className={FIELD}
+              placeholder={dayToDayPlaceholder}
             />
           </label>
 

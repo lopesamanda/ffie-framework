@@ -135,6 +135,7 @@ export function FutureCardPreview({
   compact = false,
   showDrawSynthesis = true,
   showCardProvenance = true,
+  showCardTags = false,
   revealAnimated = false,
 }: {
   draft: JourneyDraft;
@@ -144,6 +145,8 @@ export function FutureCardPreview({
   showDrawSynthesis?: boolean;
   /** Hide Card Provenance until the full Oracle reveal sequence is complete. */
   showCardProvenance?: boolean;
+  /** Colored card-name tags below synthesis — final output only, not side preview. */
+  showCardTags?: boolean;
   /** Staggered reveal on the final Future output card. */
   revealAnimated?: boolean;
 }) {
@@ -172,7 +175,7 @@ export function FutureCardPreview({
     1 +
     1 +
     (synthesisLine ? 1 : 0) +
-    (draft.cardHand ? 1 : 0) +
+    (showCardTags && draft.cardHand ? 1 : 0) +
     (draft.publicPromise || hiddenFunctionDisplay ? 1 : 0) +
     (draft.imageDataUrl ? 1 : 0);
 
@@ -241,7 +244,7 @@ export function FutureCardPreview({
           </Wrap>
         )}
 
-        {draft.cardHand && (
+        {showCardTags && draft.cardHand && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <DrawnCardTags hand={draft.cardHand} />
           </Wrap>

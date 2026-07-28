@@ -180,14 +180,12 @@ export function CharacterEmbodyStep({
                     after={` and, ${FUTURE_HORIZON_LABEL}, ${p.subject} is `}
                     value={draft.characterName}
                     onChange={(characterName) => onChange({ characterName })}
-                    placeholder="name"
                   />
                   <NarrativeBlank
                     before=""
                     after=" years old."
                     value={draft.characterAge}
                     onChange={(characterAge) => onChange({ characterAge })}
-                    placeholder="age"
                     inputMode="numeric"
                   />
                 </NarrativeBlock>
@@ -230,7 +228,6 @@ export function CharacterEmbodyStep({
                       onChange={(event) =>
                         onChange({ raceSelfDescribe: event.target.value })
                       }
-                      placeholder="Describe in your own words"
                       className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
                     />
                   )}

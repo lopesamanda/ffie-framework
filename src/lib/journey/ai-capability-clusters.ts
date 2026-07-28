@@ -108,5 +108,18 @@ export function formatPersonaValuesList(values: string[]): string {
 /** @deprecated Use groupCardsByPower */
 export const groupCardsByCluster = groupCardsByPower;
 
+/** Static day-to-day textarea placeholders — one per Power, not per card. */
+export const DAY_TO_DAY_POWER_PLACEHOLDERS: Record<AiCapabilityPowerId, string> =
+  {
+    "power-to-know":
+      "e.g., what does it notice, track, or predict about her each day — and how does that shape what it shows her?",
+    "power-to-speak-make":
+      "e.g., what does it generate or say on her behalf — and how often does she use it?",
+    "power-to-act":
+      "e.g., what does it do automatically, without her asking each time?",
+    "power-to-watch":
+      "e.g., what does it monitor, and who sees that information?",
+  };
+
 /** @deprecated Use AI_CAPABILITY_POWERS */
 export const AI_CAPABILITY_CLUSTERS = AI_CAPABILITY_POWERS;
