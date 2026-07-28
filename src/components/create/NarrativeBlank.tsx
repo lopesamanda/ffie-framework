@@ -14,10 +14,10 @@ type NarrativeBlankProps = {
 };
 
 const INLINE_BLANK =
-  "mx-1 inline-block max-w-full border-b-2 border-ffie-ink/25 bg-transparent px-1 py-0.5 text-sm font-medium text-ffie-ink outline-none transition placeholder:text-[10px] placeholder:font-normal placeholder:leading-snug placeholder:text-ffie-muted/55 focus:border-ffie-accent sm:placeholder:text-[11px]";
+  "mx-1 inline-block max-w-full border-b-2 border-ffie-ink/25 bg-transparent px-1 py-0.5 text-sm font-medium text-ffie-ink outline-none transition placeholder:text-xs placeholder:font-normal placeholder:leading-snug placeholder:text-ffie-muted/60 focus:border-ffie-accent sm:placeholder:text-[13px]";
 
 const STACKED_BLANK =
-  "w-full resize-y rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm leading-relaxed text-ffie-ink outline-none transition placeholder:text-xs placeholder:text-ffie-muted/70 focus:border-ffie-accent/40";
+  "w-full resize-y rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm leading-relaxed text-ffie-ink outline-none transition placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40";
 
 export function NarrativeBlank({
   before,
@@ -108,7 +108,7 @@ type NarrativeTextareaProps = {
 };
 
 const TEXTAREA =
-  "mt-3 w-full resize-y rounded-lg border border-ffie-line bg-ffie-surface px-3 py-3 text-sm leading-relaxed text-ffie-ink outline-none transition placeholder:text-xs placeholder:text-ffie-muted/70 focus:border-ffie-accent/40";
+  "mt-3 w-full resize-y rounded-lg border border-ffie-line bg-ffie-surface px-3 py-3 text-sm leading-relaxed text-ffie-ink outline-none transition placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40";
 
 /** Multi-line narrative prompt with optional framing sentence. */
 export function NarrativeTextarea({

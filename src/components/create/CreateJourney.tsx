@@ -496,7 +496,7 @@ export function CreateJourney() {
                               update({ artifactValueOther: event.target.value })
                             }
                             placeholder="type your own"
-                            className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-xs placeholder:text-ffie-muted/70 focus:border-ffie-accent/40"
+                            className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40"
                           />
                         )}
                         <p className="text-xs text-ffie-muted">

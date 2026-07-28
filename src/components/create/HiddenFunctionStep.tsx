@@ -3,6 +3,7 @@
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import type { JourneyDraft } from "@/lib/journey/types";
+import { OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
 import { NarrativeBlank } from "@/components/create/NarrativeBlank";
 import { SettleButton } from "@/components/motion/SettleButton";
 
@@ -15,12 +16,20 @@ export function HiddenFunctionStep({
   onSelectExtremeValue: (value: string) => void;
   onCompletionChange: (completion: string) => void;
 }) {
+  const hand = draft.cardHand;
   const values = resolveArtifactValues(draft);
   const selectedValue = draft.hiddenFunctionExtremeValue;
   const artifactName = draft.artifactName.trim() || "this artifact";
 
   return (
     <div className="space-y-5">
+      {hand && (
+        <div className="flex flex-wrap gap-3">
+          <OracleFanRevealedCard card={hand.risk} />
+          <OracleFanRevealedCard card={hand.barrier} />
+        </div>
+      )}
+
       <div className="space-y-3">
         <p className="text-sm leading-relaxed text-ffie-ink">
           Which of these values, if it went too far, would reveal this

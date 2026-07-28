@@ -11,7 +11,7 @@ export type PowerPosition = "marginalized" | "hegemonic";
 export type FutureCountry = "Brazil" | "Portugal";
 
 export type PersonaSector =
-  | "Finances"
+  | "Finance"
   | "Health"
   | "Education"
   | "ESG"
@@ -19,6 +19,8 @@ export type PersonaSector =
   | "Media"
   | "Retail/Commerce"
   | "Public Sector"
+  | "Innovation"
+  | "Deeptech"
   | "Other";
 
 export type FutureCollection = "research_findings" | "future_commons";
