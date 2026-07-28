@@ -60,9 +60,7 @@ import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
-  ffieCardDivider,
   ffieCardShell,
-  ffieCardTitle,
 } from "@/lib/card-layout";
 import {
   buildNarrative,

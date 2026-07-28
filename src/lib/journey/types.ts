@@ -106,6 +106,7 @@ export type JourneyDraft = {
   hiddenFunctionCompletion: string;
   artifactValues: string[];
   artifactValueOther: string;
+  imageDataUrl: string | null;
   /** Optional closing reflection on the final Future card. */
   closingReflection: string;
   /** System Logic Likert (Q1) — Extracts ↔ Gives back */
@@ -390,6 +391,7 @@ export function loadDraft(): JourneyDraft | null {
       personaSector: parsed.personaSector ?? "",
       personaSectorCustom: parsed.personaSectorCustom ?? "",
       closingReflection: parsed.closingReflection ?? "",
+      imageDataUrl: parsed.imageDataUrl ?? null,
       hiddenFunctionExtremeValue: parsed.hiddenFunctionExtremeValue ?? "",
       hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",
       artifactGoalPitch: parsed.artifactGoalPitch ?? "",
