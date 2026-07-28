@@ -10,6 +10,7 @@ import {
   type AiCapabilityPowerId,
 } from "@/lib/journey/ai-capability-clusters";
 import { PowerGlyph } from "@/components/create/design/PowerGlyph";
+import { SettleButton } from "@/components/motion/SettleButton";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
@@ -90,9 +91,8 @@ export function AiPowerSelector({
         {AI_CAPABILITY_POWERS.map((power) => {
           const selected = selectedPower === power.id;
           return (
-            <button
+            <SettleButton
               key={power.id}
-              type="button"
               onClick={() => onSelectPower(power.id)}
               className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                 selected
@@ -105,7 +105,7 @@ export function AiPowerSelector({
                 <PowerGlyph powerId={power.id} size={14} />
               </span>
               {power.label}
-            </button>
+            </SettleButton>
           );
         })}
       </div>
@@ -168,8 +168,7 @@ function SelectableCapabilityCard({
       }`}
       style={{ borderTopWidth: 3, borderTopColor: card.color }}
     >
-      <button
-        type="button"
+      <SettleButton
         onClick={onSelect}
         aria-pressed={selected}
         className="w-full px-4 py-3 text-left"
@@ -229,7 +228,7 @@ function SelectableCapabilityCard({
             ))}
           </ul>
         </div>
-      </button>
+      </SettleButton>
 
       {selected && (
         <div className="border-t border-ffie-accent/25 px-4 pb-4 pt-3">

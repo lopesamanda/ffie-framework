@@ -115,13 +115,23 @@ export async function POST(request: Request) {
     }
 
     const [, mime, base64] = match;
-    const ext = mime.includes("png")
-      ? "png"
-      : mime.includes("webp")
-        ? "webp"
-        : "jpg";
-    const path = `${body.sessionId}/${Date.now()}.${ext}`;
+    if (mime !== "image/png" && mime !== "image/jpeg") {
+      return NextResponse.json(
+        { error: "Image must be PNG or JPG" },
+        { status: 400 },
+      );
+    }
+
     const buffer = Buffer.from(base64, "base64");
+    if (buffer.byteLength > 10 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Image must be 10 MB or smaller" },
+        { status: 400 },
+      );
+    }
+
+    const ext = mime.includes("png") ? "png" : "jpg";
+    const path = `${body.sessionId}/${Date.now()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from("submissions")

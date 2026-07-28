@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HomeHero } from "@/components/home/HomeHero";
+import { MiniOracleDrawPreview } from "@/components/home/MiniOracleDrawPreview";
 import { ScrollRevealSection } from "@/components/motion/ScrollRevealSection";
 import { ffieCardShell } from "@/lib/card-layout";
 
@@ -29,18 +30,23 @@ export default function HomePage() {
 
           <Link
             href="/create"
-            className={`group px-[18px] py-8 transition hover:border-ffie-accent/40 hover:shadow-md ${ffieCardShell} bg-ffie-surface`}
+            className={`group relative overflow-hidden px-[18px] py-8 transition hover:border-ffie-accent/40 hover:shadow-md ${ffieCardShell} bg-ffie-surface`}
           >
-            <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-muted">
-              Create a Future
-            </p>
-            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight group-hover:text-ffie-accent">
-              Draw cards. Build a future.
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-ffie-muted">
-              A guided journey from Narrative Cards to a shareable Future Output —
-              embody a life, name an artifact, and place it on the matrix.
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-muted">
+                  Create a Future
+                </p>
+                <h2 className="mt-3 font-display text-2xl font-bold tracking-tight group-hover:text-ffie-accent">
+                  Draw cards. Build a future.
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-ffie-muted">
+                  A guided journey from Narrative Cards to a shareable Future Output —
+                  embody a life, name an artifact, and place it on the matrix.
+                </p>
+              </div>
+              <MiniOracleDrawPreview />
+            </div>
           </Link>
         </ScrollRevealSection>
       </div>

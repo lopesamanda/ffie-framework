@@ -8,6 +8,7 @@ import {
   OracleFanTransversalCard,
 } from "@/components/create/design/OracleDeckFan";
 import { NarrativeBlank } from "@/components/create/NarrativeBlank";
+import { SettleButton } from "@/components/motion/SettleButton";
 
 export function HiddenFunctionStep({
   draft,
@@ -40,9 +41,8 @@ export function HiddenFunctionStep({
           {values.map((value) => {
             const selected = selectedValue === value;
             return (
-              <button
+              <SettleButton
                 key={value}
-                type="button"
                 onClick={() => onSelectExtremeValue(value)}
                 className={`rounded-full border px-3 py-1.5 text-sm transition ${
                   selected
@@ -51,7 +51,7 @@ export function HiddenFunctionStep({
                 }`}
               >
                 {value}
-              </button>
+              </SettleButton>
             );
           })}
         </div>

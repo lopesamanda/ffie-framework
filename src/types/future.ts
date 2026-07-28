@@ -78,6 +78,14 @@ export const QUADRANT_TEXT_COLORS: Record<FutureQuadrant, string> = {
   fragmented: "#92400e",
 };
 
+/** Secondary ambient blob accent per quadrant (Future card background). */
+export const QUADRANT_AMBIENT_ACCENTS: Record<FutureQuadrant, string> = {
+  techno_optimist: "#93c5fd",
+  feminist_preferred: "#a7f3d0",
+  dominant_dystopian: "#fecaca",
+  fragmented: "#fde68a",
+};
+
 export const COUNTRY_COLORS: Record<FutureCountry, string> = {
   Brazil: "#2d6a4f",
   Portugal: "#1d3557",

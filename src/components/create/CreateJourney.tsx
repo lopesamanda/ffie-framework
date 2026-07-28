@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toPng } from "html-to-image";
@@ -15,6 +15,8 @@ import {
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { TimeTravelTransition } from "@/components/create/design/TimeTravelTransition";
+import { PhaseSweepOverlay } from "@/components/motion/PhaseSweepOverlay";
+import { ArtifactMaterializePanel } from "@/components/create/ArtifactMaterializePanel";
 import { MATRIX_FRAMEWORK_INTRO } from "@/lib/journey/matrix-copy";
 import {
   OracleDrawRecap,
@@ -98,6 +100,12 @@ export function CreateJourney() {
   const [oraclePhase, setOraclePhase] = useState<"fan" | "reflection">("fan");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [phaseSweep, setPhaseSweep] = useState<{
+    id: string;
+    run: () => void;
+  } | null>(null);
+  const phaseSweepRef = useRef(phaseSweep);
+  phaseSweepRef.current = phaseSweep;
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -121,6 +129,22 @@ export function CreateJourney() {
     },
     [update],
   );
+
+  const runPhaseSweep = useCallback(
+    (id: string, run: () => void) => {
+      if (reduceMotion) {
+        run();
+        return;
+      }
+      setPhaseSweep({ id, run });
+    },
+    [reduceMotion],
+  );
+
+  const completePhaseSweep = useCallback(() => {
+    phaseSweepRef.current?.run();
+    setPhaseSweep(null);
+  }, []);
 
   const resetOracleDraw = useCallback(() => {
     setOracleDrawIndex(0);
@@ -402,7 +426,11 @@ export function CreateJourney() {
 
                       <FfieButton
                         disabled={!draft.reflectionText.trim()}
-                        onClick={() => goTo("creation", { creationStep: 0 })}
+                        onClick={() =>
+                          runPhaseSweep("draw-embody", () =>
+                            goTo("creation", { creationStep: 0 }),
+                          )
+                        }
                       >
                         Build your future
                       </FfieButton>
@@ -444,7 +472,9 @@ export function CreateJourney() {
                         update({ embodySubStep })
                       }
                       onComplete={() =>
-                        update({ creationStep: 1, embodySubStep: 0 })
+                        runPhaseSweep("embody-artifact", () =>
+                          update({ creationStep: 1, embodySubStep: 0 }),
+                        )
                       }
                     />
                   )}
@@ -546,7 +576,9 @@ export function CreateJourney() {
                           return;
                         }
 
-                        goTo("output", { outputStep: 0 });
+                        runPhaseSweep("artifact-matrix", () =>
+                          goTo("output", { outputStep: 0 }),
+                        );
                       }}
                     >
                       {draft.creationStep < CREATION_STEPS.length - 1
@@ -640,6 +672,10 @@ export function CreateJourney() {
                       <MatrixReveal position={draft.position} />
                     </div>
                   </div>
+                  <ArtifactMaterializePanel
+                    draft={draft}
+                    onImageChange={(imageDataUrl) => update({ imageDataUrl })}
+                  />
                   <label className="mt-8 flex items-start gap-3 rounded-xl border border-ffie-line bg-ffie-surface p-4">
                     <input
                       type="checkbox"
@@ -749,6 +785,11 @@ export function CreateJourney() {
           />
         </div>
       )}
+
+      <PhaseSweepOverlay
+        active={Boolean(phaseSweep)}
+        onComplete={completePhaseSweep}
+      />
 
     </div>
   );

@@ -18,6 +18,10 @@ import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
 import type { FutureQuadrant } from "@/types/future";
+import {
+  QUADRANT_AMBIENT_ACCENTS,
+  QUADRANT_COLORS,
+} from "@/types/future";
 import type { NarrativeCard } from "@/data/narrative-cards";
 
 const REVEAL_STAGGER = 0.08;
@@ -29,8 +33,69 @@ function revealItem(index: number, reduceMotion: boolean | null) {
   return {
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const, delay: index * REVEAL_STAGGER },
+    transition: {
+      duration: 0.35,
+      ease: [0.16, 1, 0.3, 1] as const,
+      delay: index * REVEAL_STAGGER,
+    },
   };
+}
+
+function QuadrantAmbientField({
+  quadrant,
+  reduceMotion,
+}: {
+  quadrant: FutureQuadrant;
+  reduceMotion: boolean | null;
+}) {
+  const primary = QUADRANT_COLORS[quadrant];
+  const accent = QUADRANT_AMBIENT_ACCENTS[quadrant];
+
+  const blobs = [
+    { color: primary, top: "8%", left: "-6%", size: "min(52vw, 240px)" },
+    { color: accent, bottom: "4%", right: "-8%", size: "min(48vw, 220px)" },
+  ] as const;
+
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]"
+    >
+      {blobs.map((blob, index) => (
+        <motion.div
+          key={index}
+          className="absolute rounded-full blur-3xl"
+          style={{
+            backgroundColor: blob.color,
+            opacity: 0.22,
+            width: blob.size,
+            height: blob.size,
+            top: "top" in blob ? blob.top : undefined,
+            left: "left" in blob ? blob.left : undefined,
+            right: "right" in blob ? blob.right : undefined,
+            bottom: "bottom" in blob ? blob.bottom : undefined,
+          }}
+          animate={
+            reduceMotion
+              ? undefined
+              : {
+                  x: index === 0 ? [0, 12, -8, 0] : [0, -10, 14, 0],
+                  y: index === 0 ? [0, -10, 6, 0] : [0, 8, -12, 0],
+                }
+          }
+          transition={
+            reduceMotion
+              ? undefined
+              : {
+                  duration: 28 + index * 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+          }
+        />
+      ))}
+    </div>
+  );
 }
 
 function DrawnCardTags({ hand }: { hand: CardHand }) {
@@ -103,6 +168,18 @@ export function FutureCardPreview({
   const hiddenFunctionDisplay =
     composeHiddenFunction(draft) || draft.hiddenFunction;
 
+  const revealSectionCount =
+    1 +
+    1 +
+    (synthesisLine ? 1 : 0) +
+    (draft.cardHand ? 1 : 0) +
+    (draft.publicPromise || hiddenFunctionDisplay ? 1 : 0) +
+    (draft.imageDataUrl ? 1 : 0);
+
+  const sealDelay = revealAnimated
+    ? (revealSectionCount - 1) * REVEAL_STAGGER + 0.35
+    : 0;
+
   const Wrap = revealAnimated ? motion.div : "div";
   let revealIndex = 0;
   const nextReveal = () => {
@@ -112,109 +189,129 @@ export function FutureCardPreview({
   };
 
   return (
-    <div
-      id={id}
-      className={`${ffieCardShell} bg-ffie-surface ${compact ? "p-5" : "p-6"}`}
-    >
-      <Wrap {...(revealAnimated ? nextReveal() : {})}>
-        <div className="flex flex-wrap items-center gap-2">
-          <QuadrantPill quadrant={quadrant} />
-          {draft.location && (
-            <span className="text-xs text-ffie-muted">
-              {draft.location} · {FUTURE_HORIZON_LABEL}
-            </span>
-          )}
-        </div>
-      </Wrap>
-
-      <Wrap {...(revealAnimated ? nextReveal() : {})}>
-        <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
-          {title}
-        </h3>
-
-        {(draft.characterName || draft.role) && (
-          <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
-            {[
-              draft.characterName,
-              draft.characterAge ? `${draft.characterAge}` : null,
-              draft.role,
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
-        )}
-      </Wrap>
-
-      {synthesisLine && (
-        <Wrap {...(revealAnimated ? nextReveal() : {})}>
-          <p
-            className={`mt-3 text-sm font-medium italic text-ffie-accent ${FFIE_CARD_TEXT}`}
-          >
-            {synthesisLine}
-          </p>
-        </Wrap>
+    <div className="relative">
+      {revealAnimated && (
+        <QuadrantAmbientField quadrant={quadrant} reduceMotion={reduceMotion} />
       )}
 
-      {draft.cardHand && (
+      <div
+        id={id}
+        className={`relative ${ffieCardShell} bg-ffie-surface/95 backdrop-blur-[1px] ${compact ? "p-5" : "p-6"}`}
+      >
         <Wrap {...(revealAnimated ? nextReveal() : {})}>
-          <DrawnCardTags hand={draft.cardHand} />
-        </Wrap>
-      )}
-
-      {(draft.publicPromise || hiddenFunctionDisplay) && (
-        <Wrap {...(revealAnimated ? nextReveal() : {})}>
-          <div className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}>
-            <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
-              <p className={ffieCardSectionLabel + " text-ffie-accent"}>
-                Goal
-              </p>
-              <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-                {draft.publicPromise || "—"}
-              </p>
-            </div>
-            <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
-              <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
-                Weakness
-              </p>
-              <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-                {hiddenFunctionDisplay || "—"}
-              </p>
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <QuadrantPill
+              quadrant={quadrant}
+              seal={revealAnimated}
+              sealDelay={sealDelay}
+            />
+            {draft.location && (
+              <span className="text-xs text-ffie-muted">
+                {draft.location} · {FUTURE_HORIZON_LABEL}
+              </span>
+            )}
           </div>
         </Wrap>
-      )}
 
-      {resolveArtifactValues(draft).length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {resolveArtifactValues(draft).map((value) => (
-            <span
-              key={value}
-              className="rounded-full border border-ffie-line bg-ffie-bg px-2.5 py-0.5 text-xs text-ffie-ink"
+        <Wrap {...(revealAnimated ? nextReveal() : {})}>
+          <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
+            {title}
+          </h3>
+
+          {(draft.characterName || draft.role) && (
+            <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
+              {[
+                draft.characterName,
+                draft.characterAge ? `${draft.characterAge}` : null,
+                draft.role,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          )}
+        </Wrap>
+
+        {synthesisLine && (
+          <Wrap {...(revealAnimated ? nextReveal() : {})}>
+            <p
+              className={`mt-3 text-sm font-medium italic text-ffie-accent ${FFIE_CARD_TEXT}`}
             >
-              {value}
-            </span>
-          ))}
-        </div>
-      )}
+              {synthesisLine}
+            </p>
+          </Wrap>
+        )}
 
-      {draft.imageDataUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={draft.imageDataUrl}
-          alt="Uploaded artifact"
-          className="mt-4 max-h-48 w-full rounded-[12px] object-cover"
-        />
-      )}
+        {draft.cardHand && (
+          <Wrap {...(revealAnimated ? nextReveal() : {})}>
+            <DrawnCardTags hand={draft.cardHand} />
+          </Wrap>
+        )}
 
-      {draft.cardHand && !compact && showCardProvenance && (
-        <CardProvenance hand={draft.cardHand} />
-      )}
+        {(draft.publicPromise || hiddenFunctionDisplay) && (
+          <Wrap {...(revealAnimated ? nextReveal() : {})}>
+            <div
+              className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}
+            >
+              <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
+                <p className={ffieCardSectionLabel + " text-ffie-accent"}>
+                  Goal
+                </p>
+                <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                  {draft.publicPromise || "—"}
+                </p>
+              </div>
+              <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
+                <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
+                  Weakness
+                </p>
+                <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                  {hiddenFunctionDisplay || "—"}
+                </p>
+              </div>
+            </div>
+          </Wrap>
+        )}
+
+        {resolveArtifactValues(draft).length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {resolveArtifactValues(draft).map((value) => (
+              <span
+                key={value}
+                className="rounded-full border border-ffie-line bg-ffie-bg px-2.5 py-0.5 text-xs text-ffie-ink"
+              >
+                {value}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {draft.imageDataUrl && (
+          <Wrap {...(revealAnimated ? nextReveal() : {})}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={draft.imageDataUrl}
+              alt="Uploaded artifact"
+              className="mt-4 max-h-48 w-full rounded-[12px] object-cover"
+            />
+          </Wrap>
+        )}
+
+        {draft.cardHand && !compact && showCardProvenance && (
+          <CardProvenance hand={draft.cardHand} />
+        )}
+      </div>
     </div>
   );
 }
 
 function CardProvenance({ hand }: { hand: CardHand }) {
-  const drawn = [hand.risk, hand.benefit, hand.trust, hand.barrier, hand.transversal];
+  const drawn = [
+    hand.risk,
+    hand.benefit,
+    hand.trust,
+    hand.barrier,
+    hand.transversal,
+  ];
   return (
     <div className="mt-4 border-t border-ffie-line pt-4">
       <p className={ffieCardSectionLabel + " text-ffie-muted"}>

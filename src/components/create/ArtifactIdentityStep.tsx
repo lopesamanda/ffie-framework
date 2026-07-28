@@ -1,6 +1,7 @@
 "use client";
 
 import { ARTIFACT_TYPE_OPTIONS } from "@/lib/journey/character-options";
+import { SettleButton } from "@/components/motion/SettleButton";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 const FIELD =
@@ -34,9 +35,8 @@ export function ArtifactIdentityStep({
           {ARTIFACT_TYPE_OPTIONS.map((option) => {
             const selected = draft.artifactType === option.id;
             return (
-              <button
+              <SettleButton
                 key={option.id}
-                type="button"
                 onClick={() => onChange({ artifactType: option.id })}
                 className={`rounded-xl border px-4 py-3 text-left transition ${
                   selected
@@ -52,7 +52,7 @@ export function ArtifactIdentityStep({
                 >
                   {option.description}
                 </span>
-              </button>
+              </SettleButton>
             );
           })}
         </div>
