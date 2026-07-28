@@ -32,8 +32,8 @@ export function buildOracleSynthesis(
   const sentence1 = `In this future, ${riskTension} collides with ${barrierTension}.`;
 
   const sentence2 = isAffirmingTrust(hand.trust)
-    ? `But ${benefitTension} still holds — because ${trustTension}.`
-    : `Yet ${benefitTension} isn't enough — ${trustTension} still lingers.`;
+    ? `But ${benefitTension} still holds — because that's what trust in AI looks like here: ${trustTension}.`
+    : `Yet ${benefitTension} isn't enough — trust in AI still lingers as ${trustTension}.`;
 
   return `${sentence1} ${sentence2}`;
 }

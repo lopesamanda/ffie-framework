@@ -19,31 +19,38 @@ import {
   ffieCardTitle,
 } from "@/lib/card-layout";
 
-const DAY_TO_DAY_FIELD =
-  "mt-3 w-full resize-y rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
+const FIELD =
+  "w-full resize-y rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
 
 type AiPowerSelectorProps = {
   values: string[];
   artifactType: ArtifactTypeId | "";
+  artifactName: string;
   selectedPower: AiCapabilityPowerId | "";
   selectedCapabilityId: string;
   dayToDayDescription: string;
+  artifactGoalPitch: string;
   onSelectPower: (powerId: AiCapabilityPowerId) => void;
   onSelectCapability: (capabilityId: string) => void;
   onDayToDayChange: (value: string) => void;
+  onGoalPitchChange: (value: string) => void;
 };
 
 export function AiPowerSelector({
   values,
   artifactType,
+  artifactName,
   selectedPower,
   selectedCapabilityId,
   dayToDayDescription,
+  artifactGoalPitch,
   onSelectPower,
   onSelectCapability,
   onDayToDayChange,
+  onGoalPitchChange,
 }: AiPowerSelectorProps) {
   const valuesPhrase = formatPersonaValuesList(values);
+  const displayName = artifactName.trim() || "this artifact";
 
   const powerCards = useMemo(() => {
     if (!selectedPower) return [] as AiCapabilityCard[];
@@ -58,7 +65,7 @@ export function AiPowerSelector({
     <div className="space-y-4">
       <p className="text-sm leading-relaxed text-ffie-ink">
         Given <span className="font-medium">{valuesPhrase}</span>, which power
-        does the AI bring to this artifact?
+        does Artificial Intelligence bring to this artifact?
       </p>
 
       <div className="flex flex-wrap gap-2">
@@ -95,8 +102,13 @@ export function AiPowerSelector({
               dayToDayDescription={
                 selectedCapabilityId === card.id ? dayToDayDescription : ""
               }
+              artifactGoalPitch={
+                selectedCapabilityId === card.id ? artifactGoalPitch : ""
+              }
+              artifactName={displayName}
               onSelect={() => onSelectCapability(card.id)}
               onDayToDayChange={onDayToDayChange}
+              onGoalPitchChange={onGoalPitchChange}
             />
           ))}
         </div>
@@ -109,14 +121,20 @@ function SelectableCapabilityCard({
   card,
   selected,
   dayToDayDescription,
+  artifactGoalPitch,
+  artifactName,
   onSelect,
   onDayToDayChange,
+  onGoalPitchChange,
 }: {
   card: AiCapabilityCard;
   selected: boolean;
   dayToDayDescription: string;
+  artifactGoalPitch: string;
+  artifactName: string;
   onSelect: () => void;
   onDayToDayChange: (value: string) => void;
+  onGoalPitchChange: (value: string) => void;
 }) {
   return (
     <div
@@ -137,53 +155,56 @@ function SelectableCapabilityCard({
         <h4 className={`mt-1 ${ffieCardTitle} text-sm ${FFIE_CARD_TEXT}`}>
           {card.name}
         </h4>
-
-        <p
-          className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}
-        >
-          {card.description}
-        </p>
-
-        <div className="mt-2.5 flex flex-wrap gap-1.5">
-          {card.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-ffie-line bg-ffie-accent-soft/60 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        <div className={`my-3 ${ffieCardDivider}`} />
-
-        <p className={ffieCardSectionLabel}>Example</p>
-        <p
-          className={`mt-2 text-sm italic leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
-        >
-          {card.examples[0]}
-        </p>
-
-        <div className="mt-3">
-          <p className={`${ffieCardCategory} text-ffie-muted`}>
-            Guiding questions
-          </p>
-          <ul className="mt-2 space-y-1.5">
-            {card.artifactGuidingQuestions.map((question) => (
-              <li
-                key={question}
-                className={`text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
-              >
-                · {question}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {!selected && (
+          <p className="mt-2 text-xs text-ffie-accent">Tap to select</p>
+        )}
       </button>
 
       {selected && (
         <div className="border-t border-ffie-line/60 px-4 pb-4 pt-3">
-          <label className="block space-y-2">
+          <p
+            className={`${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}
+          >
+            {card.description}
+          </p>
+
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {card.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-ffie-line bg-ffie-accent-soft/60 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className={`my-3 ${ffieCardDivider}`} />
+
+          <p className={ffieCardSectionLabel}>Example</p>
+          <p
+            className={`mt-2 text-sm italic leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
+          >
+            {card.examples[0]}
+          </p>
+
+          <div className="mt-3">
+            <p className={`${ffieCardCategory} text-ffie-muted`}>
+              Guiding questions
+            </p>
+            <ul className="mt-2 space-y-1.5">
+              {card.artifactGuidingQuestions.map((question) => (
+                <li
+                  key={question}
+                  className={`text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
+                >
+                  · {question}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <label className="mt-4 block space-y-2">
             <span className="text-sm leading-relaxed text-ffie-ink">
               Describe what it does, day to day, now that you&apos;ve chosen its
               power.
@@ -192,7 +213,21 @@ function SelectableCapabilityCard({
               value={dayToDayDescription}
               onChange={(event) => onDayToDayChange(event.target.value)}
               rows={4}
-              className={DAY_TO_DAY_FIELD}
+              className={FIELD}
+            />
+          </label>
+
+          <label className="mt-4 block space-y-2">
+            <span className="text-sm leading-relaxed text-ffie-muted">
+              Optional: if {artifactName} had a pitch line — the one impact it
+              claims to deliver — what would it be?
+            </span>
+            <textarea
+              value={artifactGoalPitch}
+              onChange={(event) => onGoalPitchChange(event.target.value)}
+              rows={2}
+              className={FIELD}
+              placeholder="One line — skippable."
             />
           </label>
         </div>

@@ -28,7 +28,6 @@ import { LikertQuestion } from "@/components/create/LikertQuestion";
 import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
-import { CreateNarrativeScene } from "@/components/create/design/CreateNarrativeScene";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import {
   ShareableFutureCard,
@@ -86,7 +85,6 @@ const CREATION_STEPS = [
   "Embody the future",
   "Identity",
   "Problem & capability",
-  "Goal pitch",
   "Embedded values",
   "Hidden function",
 ];
@@ -156,10 +154,12 @@ export function CreateJourney() {
   };
 
   const handleShuffleCards = () => {
+    if (!draft?.cardHand) return;
+    const previousHand = draft.cardHand;
     setRevealing(true);
     resetOracleDraw();
     setTimeout(() => {
-      const hand = drawWorkshopHand();
+      const hand = drawWorkshopHand(previousHand);
       update({
         cardHand: hand,
         combinedTension: buildCombinedTension(hand),
@@ -465,30 +465,6 @@ export function CreateJourney() {
                   )}
 
                   {draft.creationStep === 3 && (
-                    <CreateNarrativeScene className="space-y-4">
-                      <label className="block space-y-2">
-                        <span className="text-sm leading-relaxed text-ffie-ink">
-                          If{" "}
-                          <strong>
-                            {draft.artifactName.trim() || "this artifact"}
-                          </strong>{" "}
-                          had a pitch line — the one impact it claims to deliver
-                          — what would it be?
-                        </span>
-                        <textarea
-                          value={draft.artifactGoalPitch}
-                          onChange={(event) =>
-                            update({ artifactGoalPitch: event.target.value })
-                          }
-                          rows={4}
-                          className={`${FIELD} resize-y`}
-                          placeholder="One line — the promise on the label."
-                        />
-                      </label>
-                    </CreateNarrativeScene>
-                  )}
-
-                  {draft.creationStep === 4 && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
                         What values are embedded in it? Select 2–3 — comforting
@@ -514,7 +490,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 5 && draft.cardHand && (
+                  {draft.creationStep === 4 && draft.cardHand && (
                     <HiddenFunctionStep
                       draft={draft}
                       onSelectExtremeValue={(hiddenFunctionExtremeValue) =>
@@ -566,10 +542,8 @@ export function CreateJourney() {
                             !draft.selectedAiCapability ||
                             !draft.publicPromise.trim())) ||
                         (draft.creationStep === 3 &&
-                          !draft.artifactGoalPitch.trim()) ||
-                        (draft.creationStep === 4 &&
                           !isArtifactValuesComplete(draft)) ||
-                        (draft.creationStep === 5 &&
+                        (draft.creationStep === 4 &&
                           !isHiddenFunctionComplete(draft) &&
                           !draft.hiddenFunction.trim())
                       }

@@ -9,10 +9,15 @@ type NarrativeBlankProps = {
   placeholder?: string;
   inputMode?: "text" | "numeric";
   className?: string;
+  /** Stacked textarea — wraps long placeholders instead of truncating. */
+  layout?: "inline" | "stacked";
 };
 
-const BLANK =
+const INLINE_BLANK =
   "mx-1 inline-block min-w-[10ch] max-w-full border-b-2 border-ffie-ink/25 bg-transparent px-1 py-0.5 font-medium text-ffie-ink outline-none transition placeholder:font-normal placeholder:text-ffie-muted/55 focus:border-ffie-accent";
+
+const STACKED_BLANK =
+  "w-full resize-y rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm leading-relaxed text-ffie-ink outline-none transition placeholder:text-ffie-muted/70 focus:border-ffie-accent/40";
 
 export function NarrativeBlank({
   before,
@@ -23,7 +28,30 @@ export function NarrativeBlank({
   placeholder,
   inputMode = "text",
   className = "",
+  layout = "inline",
 }: NarrativeBlankProps) {
+  if (layout === "stacked") {
+    return (
+      <div className={`space-y-2 ${className}`}>
+        {(before || after) && (
+          <p className="text-sm leading-relaxed text-ffie-ink sm:text-base">
+            {before}
+            {after}
+          </p>
+        )}
+        <textarea
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          rows={2}
+          className={STACKED_BLANK}
+          aria-label={placeholder ?? "Complete the sentence"}
+        />
+      </div>
+    );
+  }
+
   return (
     <p
       className={`text-sm leading-relaxed text-ffie-ink sm:text-base ${className}`}
@@ -38,7 +66,7 @@ export function NarrativeBlank({
         onChange={(event) => onChange(event.target.value)}
         onBlur={onBlur}
         placeholder={placeholder}
-        className={BLANK}
+        className={INLINE_BLANK}
         aria-label={placeholder ?? "Complete the sentence"}
       />
       {after}
