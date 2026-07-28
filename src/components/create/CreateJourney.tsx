@@ -513,10 +513,8 @@ export function CreateJourney() {
                       onSelectExtremeValue={(hiddenFunctionExtremeValue) =>
                         update({
                           hiddenFunctionExtremeValue,
-                          hiddenFunction: composeHiddenFunction({
-                            ...draft,
-                            hiddenFunctionExtremeValue,
-                          }),
+                          hiddenFunctionCompletion: "",
+                          hiddenFunction: "",
                         })
                       }
                       onCompletionChange={(hiddenFunctionCompletion) =>

@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
-import { OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
+import {
+  OracleFanRevealedCard,
+  OracleFanTransversalCard,
+} from "@/components/create/design/OracleDeckFan";
 import type { CardHand } from "@/lib/journey/types";
 import { verbFor, type CharacterPronouns } from "@/lib/journey/character-pronouns";
 
@@ -224,7 +227,7 @@ export function EmbodyTensionScreen({
             {...lineDrift(reduceMotion, 0)}
             className="text-sm leading-relaxed text-ffie-muted"
           >
-            You drew these two tensions. Let them shape what {p.subject}{" "}
+            You drew these cards. Let them shape what {p.subject}{" "}
             {verbFor(p, "is", "are")} afraid of:
           </motion.p>
           {cardHand && (
@@ -234,6 +237,7 @@ export function EmbodyTensionScreen({
             >
               <OracleFanRevealedCard card={cardHand.risk} />
               <OracleFanRevealedCard card={cardHand.barrier} />
+              <OracleFanTransversalCard card={cardHand.transversal} />
             </motion.div>
           )}
           <NarrativeBlock>
