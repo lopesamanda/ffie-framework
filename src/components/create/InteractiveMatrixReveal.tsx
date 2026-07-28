@@ -43,12 +43,18 @@ export function InteractiveMatrixReveal({
   onDotClick,
   prominent = false,
   stageRef,
+  hidePlacementCaption = false,
+  hideQuadrantCopy = false,
+  className = "",
 }: {
   position: { x: number; y: number };
   interactive?: boolean;
   onDotClick?: (anchor: { x: number; y: number }) => void;
   prominent?: boolean;
   stageRef?: React.RefObject<HTMLElement | null>;
+  hidePlacementCaption?: boolean;
+  hideQuadrantCopy?: boolean;
+  className?: string;
 }) {
   const unit = signedToUnit(position.x, position.y);
   const { cx, cy } = plotToSvg(unit.x, unit.y);
@@ -77,11 +83,13 @@ export function InteractiveMatrixReveal({
 
   return (
     <div
-      className={`mx-auto space-y-4 ${prominent ? "max-w-2xl" : "max-w-md"}`}
+      className={`mx-auto space-y-4 ${prominent ? "max-w-none" : "max-w-md"} ${className}`}
     >
-      <p className="text-center text-sm text-ffie-muted">
-        Your answers placed this future here — on the Critical Feminist Matrix.
-      </p>
+      {!hidePlacementCaption && (
+        <p className="text-center text-sm text-ffie-muted">
+          Your answers placed this future here — on the Critical Feminist Matrix.
+        </p>
+      )}
       <svg
         viewBox={`0 0 ${PLOT.width} ${PLOT.height}`}
         className={`mx-auto w-full rounded-2xl border border-ffie-line bg-ffie-surface ${
@@ -310,12 +318,16 @@ export function InteractiveMatrixReveal({
           </>
         )}
       </svg>
-      <p className="text-center font-display text-base font-bold text-ffie-ink">
-        {formatQuadrantLabel(quadrant)}
-      </p>
-      <p className="mx-auto max-w-prose text-center text-sm leading-relaxed text-ffie-muted">
-        {QUADRANT_DESCRIPTIONS[quadrant]}
-      </p>
+      {!hideQuadrantCopy && (
+        <>
+          <p className="text-center font-display text-base font-bold text-ffie-ink">
+            {formatQuadrantLabel(quadrant)}
+          </p>
+          <p className="mx-auto max-w-prose text-center text-sm leading-relaxed text-ffie-muted">
+            {QUADRANT_DESCRIPTIONS[quadrant]}
+          </p>
+        </>
+      )}
     </div>
   );
 }

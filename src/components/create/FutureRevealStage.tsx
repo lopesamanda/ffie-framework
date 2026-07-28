@@ -5,7 +5,14 @@ import { motion, useReducedMotion } from "framer-motion";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { FutureWorkWithPanel } from "@/components/create/FutureWorkWithPanel";
 import { InteractiveMatrixReveal } from "@/components/create/InteractiveMatrixReveal";
-import { MATRIX_FRAMEWORK_INTRO } from "@/lib/journey/matrix-copy";
+import {
+  MATRIX_FRAMEWORK_INTRO,
+  QUADRANT_DESCRIPTIONS,
+} from "@/lib/journey/matrix-copy";
+import {
+  formatQuadrantLabel,
+  quadrantFromPosition,
+} from "@/lib/journey/types";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 type Anchor = { x: number; y: number };
@@ -13,10 +20,14 @@ type Anchor = { x: number; y: number };
 export function FutureRevealStage({
   draft,
   cardId = "future-output-card",
+  actionFooter,
   children,
 }: {
   draft: JourneyDraft;
   cardId?: string;
+  /** Functional action buttons — rendered in a footer bar beneath the Future card. */
+  actionFooter?: ReactNode;
+  /** Expandable panels and secondary links below the reveal block. */
   children?: ReactNode;
 }) {
   const reduceMotion = useReducedMotion();
@@ -26,6 +37,8 @@ export function FutureRevealStage({
   const [cardRevealed, setCardRevealed] = useState(false);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
   const [transformOrigin, setTransformOrigin] = useState<string>("center center");
+
+  const quadrant = quadrantFromPosition(draft.position.x, draft.position.y);
 
   const handleDotClick = (dotCenter: Anchor) => {
     setAnchor(dotCenter);
@@ -45,73 +58,95 @@ export function FutureRevealStage({
   }, [anchor, cardRevealed]);
 
   return (
-    <div ref={stageRef} className="space-y-6">
-      <p className="max-w-3xl text-sm leading-relaxed text-ffie-muted">
-        {MATRIX_FRAMEWORK_INTRO}
-      </p>
-
-      <InteractiveMatrixReveal
-        position={draft.position}
-        interactive={!cardRevealed}
-        onDotClick={handleDotClick}
-        prominent
-        stageRef={stageRef}
-      />
-
+    <div ref={stageRef} className="space-y-8">
       {!cardRevealed && (
-        <motion.p
-          className="text-center text-base font-semibold text-ffie-accent md:text-lg"
-          animate={
-            reduceMotion
-              ? undefined
-              : { opacity: [0.65, 1, 0.65], scale: [0.98, 1, 0.98] }
-          }
-          transition={
-            reduceMotion
-              ? undefined
-              : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
-          }
-        >
-          Click the dot on the matrix to reveal your future.
-        </motion.p>
-      )}
-
-      {cardRevealed && (
-        <div
-          ref={outputLayoutRef}
-          className="relative mx-auto w-full max-w-4xl lg:flex lg:items-start lg:gap-6 xl:gap-8"
-        >
-          <motion.div
-            ref={cardRef}
-            className="mx-auto w-full max-w-md shrink-0 px-1 sm:px-0 lg:mx-0"
-            style={{ transformOrigin }}
-            initial={
-              reduceMotion ? false : { scale: 0.06, opacity: 0 }
-            }
-            animate={{ scale: 1, opacity: 1 }}
-            transition={
-              reduceMotion
-                ? { duration: 0 }
-                : { duration: 0.52, ease: [0.16, 1, 0.3, 1] }
-            }
-          >
-            <FutureCardPreview
-              draft={draft}
-              id={cardId}
-              compact
-              revealAnimated={!reduceMotion}
-              showCommonsNarrative
-            />
-          </motion.div>
-
-          <FutureWorkWithPanel
-            layoutRef={outputLayoutRef}
-            sourceRef={cardRef}
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-center lg:gap-10 xl:gap-12">
+          <InteractiveMatrixReveal
+            position={draft.position}
+            interactive
+            onDotClick={handleDotClick}
+            prominent
+            hidePlacementCaption
+            hideQuadrantCopy
+            stageRef={stageRef}
+            className="w-full"
           />
+
+          <div className="flex flex-col justify-center space-y-6 lg:py-4">
+            <p className="text-sm leading-relaxed text-ffie-muted">
+              {MATRIX_FRAMEWORK_INTRO}
+            </p>
+
+            <div className="space-y-2 rounded-xl border border-ffie-line/70 bg-ffie-surface/60 px-5 py-4">
+              <p className="font-display text-lg font-bold text-ffie-ink">
+                {formatQuadrantLabel(quadrant)}
+              </p>
+              <p className="text-sm leading-relaxed text-ffie-muted">
+                {QUADRANT_DESCRIPTIONS[quadrant]}
+              </p>
+            </div>
+
+            <motion.p
+              className="text-base font-semibold text-ffie-accent md:text-lg"
+              animate={
+                reduceMotion
+                  ? undefined
+                  : { opacity: [0.65, 1, 0.65], scale: [0.98, 1, 0.98] }
+              }
+              transition={
+                reduceMotion
+                  ? undefined
+                  : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+              }
+            >
+              Click the dot on the matrix to reveal your future.
+            </motion.p>
+          </div>
         </div>
       )}
 
-      {cardRevealed && children}
+      {cardRevealed && (
+        <div className="space-y-6">
+          <div
+            ref={outputLayoutRef}
+            className="relative mx-auto w-full max-w-5xl lg:flex lg:items-start lg:gap-6 xl:gap-8"
+          >
+            <div className="mx-auto w-full max-w-md shrink-0 lg:mx-0">
+              <motion.div
+                ref={cardRef}
+                className="px-1 sm:px-0"
+                style={{ transformOrigin }}
+                initial={
+                  reduceMotion ? false : { scale: 0.06, opacity: 0 }
+                }
+                animate={{ scale: 1, opacity: 1 }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : { duration: 0.52, ease: [0.16, 1, 0.3, 1] }
+                }
+              >
+                <FutureCardPreview
+                  draft={draft}
+                  id={cardId}
+                  compact
+                  revealAnimated={!reduceMotion}
+                  showCommonsNarrative
+                />
+              </motion.div>
+
+              {actionFooter}
+            </div>
+
+            <FutureWorkWithPanel
+              layoutRef={outputLayoutRef}
+              sourceRef={cardRef}
+            />
+          </div>
+
+          {children}
+        </div>
+      )}
     </div>
   );
 }

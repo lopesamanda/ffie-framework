@@ -16,7 +16,7 @@ import { DiscoveryConstellation } from "@/components/create/design/DiscoveryCons
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { TimeTravelTransition } from "@/components/create/design/TimeTravelTransition";
 import { FutureRevealStage } from "@/components/create/FutureRevealStage";
-import { FutureOutputNextSteps } from "@/components/create/FutureOutputNextSteps";
+import { FutureOutputActionFooter } from "@/components/create/FutureOutputNextSteps";
 import {
   FutureSummaryExport,
   FUTURE_SUMMARY_EXPORT_HEIGHT,
@@ -652,63 +652,64 @@ export function CreateJourney() {
                     startYear={new Date().getFullYear()}
                     endYear={draft.futureYear}
                   >
-                  <FutureRevealStage draft={draft} cardId="future-output-card">
-                    <FutureOutputNextSteps
-                      onBringToLife={() => setShowMaterialize((open) => !open)}
-                      onDownload={handleDownloadSummary}
-                      onPublish={() => setShowPublish((open) => !open)}
-                      bringToLifeActive={showMaterialize}
-                      downloading={downloadingSummary}
-                      submitting={submitting}
-                      materializePanel={
-                        showMaterialize ? (
-                          <ArtifactMaterializePanel
-                            draft={draft}
-                            onImageChange={(imageDataUrl) =>
-                              update({ imageDataUrl })
+                  <FutureRevealStage
+                    draft={draft}
+                    cardId="future-output-card"
+                    actionFooter={
+                      <FutureOutputActionFooter
+                        onBringToLife={() => setShowMaterialize((open) => !open)}
+                        onDownload={handleDownloadSummary}
+                        onPublish={() => setShowPublish((open) => !open)}
+                        bringToLifeActive={showMaterialize}
+                        downloading={downloadingSummary}
+                        submitting={submitting}
+                      />
+                    }
+                  >
+                    {showMaterialize && (
+                      <ArtifactMaterializePanel
+                        draft={draft}
+                        onImageChange={(imageDataUrl) =>
+                          update({ imageDataUrl })
+                        }
+                      />
+                    )}
+                    {showPublish && (
+                      <div className="mx-auto max-w-md space-y-4 rounded-xl border border-ffie-line bg-ffie-surface p-4 lg:mx-0">
+                        <label className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={draft.submitToCommons}
+                            onChange={(e) =>
+                              update({ submitToCommons: e.target.checked })
                             }
+                            className="mt-1 accent-ffie-accent"
                           />
-                        ) : null
-                      }
-                      publishPanel={
-                        showPublish ? (
-                          <div className="space-y-4 rounded-xl border border-ffie-line bg-ffie-surface p-4">
-                            <label className="flex items-start gap-3">
-                              <input
-                                type="checkbox"
-                                checked={draft.submitToCommons}
-                                onChange={(e) =>
-                                  update({ submitToCommons: e.target.checked })
-                                }
-                                className="mt-1 accent-ffie-accent"
-                              />
-                              <span className="text-sm text-ffie-muted">
-                                Submit this diegetic prototype to the Future
-                                Commons for moderation. If approved, it will
-                                appear alongside Research Findings — always
-                                labeled as community-created. An image is
-                                optional.
-                              </span>
-                            </label>
-                            {submitError && (
-                              <p className="text-sm text-red-700">{submitError}</p>
-                            )}
-                            <FfieButton
-                              disabled={
-                                submitting ||
-                                !draft.placementJustification.trim() ||
-                                !draft.submitToCommons
-                              }
-                              onClick={handleFinishOutput}
-                            >
-                              {submitting
-                                ? "Submitting…"
-                                : "Submit for moderation"}
-                            </FfieButton>
-                          </div>
-                        ) : null
-                      }
-                    />
+                          <span className="text-sm text-ffie-muted">
+                            Submit this diegetic prototype to the Future
+                            Commons for moderation. If approved, it will
+                            appear alongside Research Findings — always
+                            labeled as community-created. An image is
+                            optional.
+                          </span>
+                        </label>
+                        {submitError && (
+                          <p className="text-sm text-red-700">{submitError}</p>
+                        )}
+                        <FfieButton
+                          disabled={
+                            submitting ||
+                            !draft.placementJustification.trim() ||
+                            !draft.submitToCommons
+                          }
+                          onClick={handleFinishOutput}
+                        >
+                          {submitting
+                            ? "Submitting…"
+                            : "Submit for moderation"}
+                        </FfieButton>
+                      </div>
+                    )}
                     <p className="text-center">
                       <button
                         type="button"

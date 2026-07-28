@@ -47,22 +47,22 @@ export default async function HomePage() {
 
             <Link
               href="/create"
-              className={`group relative overflow-hidden px-[18px] py-7 transition hover:border-ffie-accent/40 hover:shadow-md ${ffieCardShell} bg-ffie-surface`}
+              className={`group flex flex-col gap-6 px-[18px] py-7 transition hover:border-ffie-accent/40 hover:shadow-md sm:flex-row sm:items-stretch sm:gap-5 ${ffieCardShell} bg-ffie-surface`}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-muted">
-                    Create a Future
-                  </p>
-                  <h2 className="mt-3 font-display text-2xl font-bold tracking-tight group-hover:text-ffie-accent">
-                    Draw cards. Build a future.
-                  </h2>
-                  <p className="mt-3 text-sm leading-relaxed text-ffie-muted">
-                    A guided journey from narrative cards to a shareable future.
-                    Embody a life, name an artifact, and place it on the matrix.
-                  </p>
-                </div>
-                <MiniOracleDrawPreview />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-muted">
+                  Create a Future
+                </p>
+                <h2 className="mt-3 font-display text-2xl font-bold tracking-tight group-hover:text-ffie-accent">
+                  Draw cards. Build a future.
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-ffie-muted">
+                  A guided journey from narrative cards to a shareable future.
+                  Embody a life, name an artifact, and place it on the matrix.
+                </p>
+              </div>
+              <div className="flex w-full items-center justify-center sm:w-[42%] sm:max-w-[220px] sm:self-center">
+                <MiniOracleDrawPreview className="h-[200px] w-[125px]" />
               </div>
             </Link>
           </div>
