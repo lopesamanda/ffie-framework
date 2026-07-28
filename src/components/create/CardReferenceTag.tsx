@@ -12,9 +12,12 @@ import {
 export function CardReferenceTag({
   card,
   compact = false,
+  showReflectionQuestion = false,
 }: {
   card: NarrativeCard;
   compact?: boolean;
+  /** Muted reflection line beneath the card name (Card Provenance). */
+  showReflectionQuestion?: boolean;
 }) {
   const style = CATEGORY_STYLES[card.category];
   const label = ORACLE_CATEGORY_LABELS[card.category].toUpperCase();
@@ -37,6 +40,11 @@ export function CardReferenceTag({
         >
           {card.name}
         </span>
+        {showReflectionQuestion && card.reflectionQuestion && (
+          <span className="mt-1.5 text-[10px] font-normal leading-snug text-ffie-muted/80">
+            {card.reflectionQuestion}
+          </span>
+        )}
       </span>
     );
   }

@@ -468,3 +468,18 @@ export const CATEGORY_LABELS: Record<CardCategory, string> = {
   barrier: "Ecosystem Barrier",
   transversal: "Transversal Lens",
 };
+
+/** 1–2 example lines per register for The Draw orientation preview (not tied to a specific drawable card). */
+export function registerExamplePreviews(
+  category: CardCategory,
+  limit = 2,
+): string[] {
+  const previews: string[] = [];
+  for (const card of NARRATIVE_CARDS) {
+    if (card.category !== category || !card.drawable) continue;
+    const example = card.examples[0];
+    if (example) previews.push(example);
+    if (previews.length >= limit) break;
+  }
+  return previews;
+}

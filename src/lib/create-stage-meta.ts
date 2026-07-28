@@ -28,9 +28,9 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
   orientation: {
     phaseLabel: "Orientation",
     eyebrow: "The draw",
-    title: "Four cards will shape your future.",
+    title: "Five cards will shape your future.",
     subtitle:
-      "Each card carries a structural tension drawn from real conditions — not hypothetical scenarios. You will draw one from each register. Need inspiration? Browse Research Findings anytime via the link below.",
+      "Each card carries a structural tension mapped during a real research process — studying how AI is actually being used across today's innovation ecosystems. You'll draw one card from each register, plus the Environmental Impact card, which applies to every future by default. Your combination can generate a different future each time. Need inspiration? Browse Research Findings anytime via the link below.",
     accentColor: "#c8472a",
   },
   exploration: {
