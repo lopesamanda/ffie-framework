@@ -81,13 +81,18 @@ export type JourneyDraft = {
   artifactType: ArtifactTypeId | "";
   /** Problem or tension the artifact responds to (references embody fear). */
   artifactProblemTension: string;
-  /** Selected AI Power on Day to day step. */
+  /** Selected AI Power on Problem & capability step. */
   selectedAiPower: AiCapabilityPowerId | "";
+  /** Selected capability card id under the chosen Power. */
+  selectedAiCapability: string;
   /** Sub-step within Day to day (0 = main promise, 1 = reflective follow-up). */
   dayToDaySubStep: number;
   /** Reflective follow-up after the main day-to-day description. */
   dayToDayReflection: string;
+  /** Day-to-day description after choosing a capability. */
   publicPromise: string;
+  /** One-line impact pitch — what the artifact claims to deliver. */
+  artifactGoalPitch: string;
   hiddenFunction: string;
   /** Value chip selected as "pushed too far" on Hidden Function step. */
   hiddenFunctionExtremeValue: string;
@@ -224,7 +229,7 @@ export function buildNarrative(draft: JourneyDraft): string {
   const hiddenFunction =
     composeHiddenFunction(draft) || draft.hiddenFunction || "carries a tension the surface never names";
 
-  return `${who} is ${role} in ${where}, ${draft.futureYear}. ${artifact} promises ${draft.publicPromise || "something better"}, but ${hiddenFunction}. The cards drawn — ${draft.combinedTension || "multiple tensions"} — still echo in how this future holds together.`;
+  return `${who} is ${role} in ${where}, ${draft.futureYear}. ${artifact} promises ${draft.artifactGoalPitch || draft.publicPromise || "something better"}, but ${hiddenFunction}. The cards drawn — ${draft.combinedTension || "multiple tensions"} — still echo in how this future holds together.`;
 }
 
 export function buildReflectionQuestion(draft: JourneyDraft): string {
@@ -242,7 +247,11 @@ export function buildAiImagePrompt(draft: JourneyDraft): string {
   const characterFear = draft.fear.trim() || "[character fear]";
   const artifactName = draft.artifactName.trim() || "[artifact name]";
   const artifactPublicPromise =
-    draft.publicPromise.trim() || "[artifact public promise]";
+    draft.artifactGoalPitch.trim() ||
+    draft.publicPromise.trim() ||
+    "[artifact public promise]";
+  const artifactDayToDay =
+    draft.publicPromise.trim() || "[artifact day-to-day behavior]";
   const artifactHiddenFunction =
     composeHiddenFunction(draft) ||
     draft.hiddenFunction.trim() ||
@@ -262,7 +271,7 @@ export function buildAiImagePrompt(draft: JourneyDraft): string {
 
 Context: this artifact exists in a world shaped by ${benefitCardName}, ${riskCardName}, ${barrierCardName}, and ${trustCardName}, and by the material/ecological cost named by the Environmental Impact card. It belongs to ${characterName}, a ${characterRole}, whose deepest hope is ${characterDesire} and whose deepest fear is ${characterFear}.
 
-The artifact, ${artifactName}, is ${artifactType}. Publicly, it is presented as: ${artifactPublicPromise}. In reality, it also does this, quietly: ${artifactHiddenFunction}.
+The artifact, ${artifactName}, is ${artifactType}. Publicly, it is presented as: ${artifactPublicPromise}. Day to day, it ${artifactDayToDay}. In reality, it also does this, quietly: ${artifactHiddenFunction}.
 
 Your task: produce two visual moments of the same artifact, not one.
 1. THE PROMISE — how this artifact is advertised, marketed, or presented to ${characterName} and people like ${p.object}. This should look aspirational and polished, exactly how the institution behind it wants it seen.
@@ -307,9 +316,11 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     artifactType: "",
     artifactProblemTension: "",
     selectedAiPower: "",
+    selectedAiCapability: "",
     dayToDaySubStep: 0,
     dayToDayReflection: "",
     publicPromise: "",
+    artifactGoalPitch: "",
     hiddenFunction: "",
     hiddenFunctionExtremeValue: "",
     hiddenFunctionCompletion: "",
@@ -370,7 +381,9 @@ export function loadDraft(): JourneyDraft | null {
         ),
       tradeoffLoss: parsed.tradeoffLoss ?? "",
       selectedAiPower: parsed.selectedAiPower ?? "",
+      selectedAiCapability: parsed.selectedAiCapability ?? "",
       values: parsed.values ?? [],
+      artifactGoalPitch: parsed.artifactGoalPitch ?? "",
       futureYear: parsed.futureYear ?? getFutureHorizonYear(),
       drawSynthesis: parsed.drawSynthesis ?? "",
       hiddenFunctionExtremeValue: parsed.hiddenFunctionExtremeValue ?? "",

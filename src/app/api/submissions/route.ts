@@ -92,9 +92,9 @@ export async function POST(request: Request) {
   }
 
   const artifactValues = body.artifactValues ?? [];
-  if (artifactValues.length < 2 || artifactValues.length > 4) {
+  if (artifactValues.length < 2 || artifactValues.length > 3) {
     return NextResponse.json(
-      { error: "Select 2–4 embedded artifact values" },
+      { error: "Select 2–3 embedded artifact values" },
       { status: 400 },
     );
   }

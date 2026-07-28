@@ -107,14 +107,14 @@ export function FutureCardPreview({
         </>
       )}
 
-      {(draft.publicPromise || hiddenFunctionDisplay) && (
+      {(draft.publicPromise || draft.artifactGoalPitch || hiddenFunctionDisplay) && (
         <div className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}>
           <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
             <p className={ffieCardSectionLabel + " text-ffie-accent"}>
               Goal
             </p>
             <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-              {draft.publicPromise || "—"}
+              {draft.artifactGoalPitch || draft.publicPromise || "—"}
             </p>
           </div>
           <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">

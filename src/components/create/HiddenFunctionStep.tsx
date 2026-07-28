@@ -22,6 +22,7 @@ export function HiddenFunctionStep({
   const values = resolveArtifactValues(draft);
   const selectedValue = draft.hiddenFunctionExtremeValue;
   const artifactName = draft.artifactName.trim() || "this artifact";
+  const goalPitch = draft.artifactGoalPitch.trim() || "…";
 
   return (
     <div className="space-y-5">
@@ -33,8 +34,10 @@ export function HiddenFunctionStep({
 
       <div className="space-y-3">
         <p className="text-sm leading-relaxed text-ffie-ink">
-          Which of these values, pushed too far, might turn into something
-          else?
+          You said <strong>{artifactName}</strong> claims to{" "}
+          <strong>{goalPitch}</strong>. Which of these values, pushed too far,
+          reveals what it actually does instead, quietly, that it doesn&apos;t
+          advertise?
         </p>
         <div className="flex flex-wrap gap-2">
           {values.map((value) => {

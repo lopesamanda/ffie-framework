@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toPng } from "html-to-image";
@@ -29,10 +29,7 @@ import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
 import { CreateNarrativeScene } from "@/components/create/design/CreateNarrativeScene";
-import { NarrativeBlock, NarrativeTextarea } from "@/components/create/NarrativeBlank";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
-import { AiPowerSelector } from "@/components/create/AiPowerSelector";
-import { ArtifactImageUpload } from "@/components/create/ArtifactImageUpload";
 import {
   ShareableFutureCard,
   SHAREABLE_CARD_HEIGHT,
@@ -46,16 +43,13 @@ import {
   researchFindingsSeed,
 } from "@/data/research-findings-seed";
 import {
-  ARTIFACT_TYPE_OPTIONS,
-} from "@/lib/journey/character-options";
-import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
-import {
   ARTIFACT_VALUE_OPTIONS,
-  ARTIFACT_VALUE_OTHER,
   isArtifactValuesComplete,
   resolveArtifactValues,
 } from "@/lib/journey/artifact-options";
-import { pronounsForSelection } from "@/lib/journey/character-pronouns";
+import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
+import { ArtifactIdentityStep } from "@/components/create/ArtifactIdentityStep";
+import { ArtifactProblemPowerStep } from "@/components/create/ArtifactProblemPowerStep";
 import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
 import {
   composeHiddenFunction,
@@ -63,7 +57,6 @@ import {
 } from "@/lib/journey/hidden-function";
 import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
-import { copyToClipboard } from "@/lib/copy-to-clipboard";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
@@ -72,7 +65,6 @@ import {
   ffieCardTitle,
 } from "@/lib/card-layout";
 import {
-  buildAiImagePrompt,
   buildNarrative,
   buildReflectionQuestion,
   buildTitle,
@@ -92,14 +84,11 @@ import {
 
 const CREATION_STEPS = [
   "Embody the future",
-  "Provisional name",
-  "Type",
-  "Problem / tension",
-  "AI power",
-  "Day to day",
+  "Identity",
+  "Problem & capability",
+  "Goal pitch",
   "Embedded values",
   "Hidden function",
-  "Image (optional)",
 ];
 
 const FIELD =
@@ -113,10 +102,6 @@ export function CreateJourney() {
   const [oraclePhase, setOraclePhase] = useState<"fan" | "reflection">("fan");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [copyPromptStatus, setCopyPromptStatus] = useState<
-    "idle" | "copied" | "error"
-  >("idle");
-  const aiPromptTextareaRef = useRef<HTMLTextAreaElement>(null);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -155,11 +140,6 @@ export function CreateJourney() {
     saveDraft(next);
     setDraft(next);
   }, [resetOracleDraw]);
-
-  const aiPrompt = useMemo(
-    () => (draft ? buildAiImagePrompt(draft) : ""),
-    [draft],
-  );
 
   const handleDrawCards = () => {
     setRevealing(true);
@@ -275,7 +255,7 @@ export function CreateJourney() {
           fear: draft.fear,
           values: draft.values,
           artifactName: draft.artifactName,
-          publicPromise: draft.publicPromise,
+          publicPromise: draft.artifactGoalPitch || draft.publicPromise,
           hiddenFunction: composeHiddenFunction(draft) || draft.hiddenFunction,
           artifactValues: resolveArtifactValues(draft),
           tension: draft.combinedTension,
@@ -477,157 +457,64 @@ export function CreateJourney() {
                   )}
 
                   {draft.creationStep === 1 && (
-                    <div className="space-y-6">
-                      <label className="block space-y-2">
-                        <span className="text-sm font-medium leading-relaxed text-ffie-ink">
-                          This object or system has a provisional name. What is
-                          it?
-                        </span>
-                        <input
-                          value={draft.artifactName}
-                          onChange={(e) =>
-                            update({ artifactName: e.target.value })
-                          }
-                          className={FIELD}
-                        />
-                      </label>
-                    </div>
+                    <ArtifactIdentityStep draft={draft} onChange={update} />
                   )}
 
                   {draft.creationStep === 2 && (
-                    <div className="space-y-3 rounded-xl border border-dashed border-ffie-accent/25 bg-ffie-accent-soft/20 px-4 py-4">
-                      <p className="text-sm font-medium text-ffie-ink">
-                        What kind of artifact is it?
-                      </p>
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        {ARTIFACT_TYPE_OPTIONS.map((option) => {
-                          const selected = draft.artifactType === option.id;
-                          return (
-                            <button
-                              key={option.id}
-                              type="button"
-                              onClick={() =>
-                                update({ artifactType: option.id })
-                              }
-                              className={`rounded-xl border px-4 py-3 text-left transition ${
-                                selected
-                                  ? "border-ffie-ink bg-ffie-ink text-ffie-bg"
-                                  : "border-ffie-line bg-ffie-surface text-ffie-ink hover:border-ffie-accent/40"
-                              }`}
-                            >
-                              <span className="block text-sm font-semibold">
-                                {option.label}
-                              </span>
-                              <span
-                                className={`mt-1 block text-xs ${
-                                  selected
-                                    ? "text-ffie-bg/80"
-                                    : "text-ffie-muted"
-                                }`}
-                              >
-                                {option.description}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
+                    <ArtifactProblemPowerStep draft={draft} onChange={update} />
                   )}
 
                   {draft.creationStep === 3 && (
-                    <div className="space-y-4">
-                      {(() => {
-                        const p = pronounsForSelection(draft.characterPronoun);
-                        return (
-                          <>
-                            <p className="text-sm leading-relaxed text-ffie-ink">
-                              You said {p.subject} fears AI will{" "}
-                              <strong className="font-medium text-ffie-ink">
-                                {draft.fear.trim()}
-                              </strong>
-                              . What problem or tension does this artifact
-                              respond to — or make worse?
-                            </p>
-                            <textarea
-                              value={draft.artifactProblemTension}
-                              onChange={(e) =>
-                                update({
-                                  artifactProblemTension: e.target.value,
-                                })
-                              }
-                              rows={5}
-                              className={`${FIELD} resize-y`}
-                            />
-                          </>
-                        );
-                      })()}
-                    </div>
-                  )}
-
-                  {draft.creationStep === 4 && (
-                    <AiPowerSelector
-                      values={draft.values}
-                      artifactType={draft.artifactType}
-                      selectedPower={draft.selectedAiPower}
-                      onSelectPower={(selectedAiPower) =>
-                        update({ selectedAiPower })
-                      }
-                    />
-                  )}
-
-                  {draft.creationStep === 5 && (
                     <CreateNarrativeScene className="space-y-4">
-                      <NarrativeBlock className="border-0 bg-transparent p-0">
-                        <NarrativeTextarea
-                          before="Describe what it does, day to day, now that you've chosen its power."
-                          value={draft.publicPromise}
-                          onChange={(publicPromise) =>
-                            update({ publicPromise })
+                      <label className="block space-y-2">
+                        <span className="text-sm leading-relaxed text-ffie-ink">
+                          If{" "}
+                          <strong>
+                            {draft.artifactName.trim() || "this artifact"}
+                          </strong>{" "}
+                          had a pitch line — the one impact it claims to deliver
+                          — what would it be?
+                        </span>
+                        <textarea
+                          value={draft.artifactGoalPitch}
+                          onChange={(event) =>
+                            update({ artifactGoalPitch: event.target.value })
                           }
-                          rows={6}
+                          rows={4}
+                          className={`${FIELD} resize-y`}
+                          placeholder="One line — the promise on the label."
                         />
-                      </NarrativeBlock>
+                      </label>
                     </CreateNarrativeScene>
                   )}
 
-                  {draft.creationStep === 6 && (
+                  {draft.creationStep === 4 && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
-                        What values are embedded in it? Select 2–4 — comforting
+                        What values are embedded in it? Select 2–3 — comforting
                         and controlling values often coexist in the same
                         artifact.
                       </p>
                       <ChipField label="">
                         <ChipSelect
                           label=""
-                          options={[...ARTIFACT_VALUE_OPTIONS, ARTIFACT_VALUE_OTHER]}
+                          options={[...ARTIFACT_VALUE_OPTIONS]}
                           value={draft.artifactValues}
                           onChange={(artifactValues) =>
                             update({ artifactValues })
                           }
                           multi
-                          max={4}
+                          max={3}
                         />
-                        {draft.artifactValues.includes(ARTIFACT_VALUE_OTHER) && (
-                          <input
-                            type="text"
-                            value={draft.artifactValueOther}
-                            onChange={(e) =>
-                              update({ artifactValueOther: e.target.value })
-                            }
-                            placeholder="Describe another value"
-                            className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
-                          />
-                        )}
                         <p className="text-xs text-ffie-muted">
-                          {resolveArtifactValues(draft).length}/4 selected
+                          {resolveArtifactValues(draft).length}/3 selected
                           (minimum 2)
                         </p>
                       </ChipField>
                     </div>
                   )}
 
-                  {draft.creationStep === 7 && draft.cardHand && (
+                  {draft.creationStep === 5 && draft.cardHand && (
                     <HiddenFunctionStep
                       draft={draft}
                       onSelectExtremeValue={(hiddenFunctionExtremeValue) =>
@@ -651,53 +538,6 @@ export function CreateJourney() {
                     />
                   )}
 
-                  {draft.creationStep === 8 && (
-                    <div className="space-y-4">
-                      <div className="rounded-xl border border-ffie-line bg-ffie-bg/60 p-4">
-                        <p className="text-xs uppercase tracking-wide text-ffie-muted">
-                          AI image prompt — copy and run externally
-                        </p>
-                        <textarea
-                          ref={aiPromptTextareaRef}
-                          readOnly
-                          value={aiPrompt}
-                          rows={8}
-                          className="mt-2 w-full bg-transparent text-xs leading-relaxed text-ffie-ink"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            try {
-                              if (!aiPrompt.trim()) {
-                                throw new Error("Prompt is empty");
-                              }
-                              copyToClipboard(aiPrompt, aiPromptTextareaRef.current);
-                              setCopyPromptStatus("copied");
-                              window.setTimeout(
-                                () => setCopyPromptStatus("idle"),
-                                2000,
-                              );
-                            } catch (error) {
-                              console.error("Copy prompt failed:", error);
-                              setCopyPromptStatus("error");
-                            }
-                          }}
-                          className="mt-2 text-xs font-medium text-ffie-accent hover:underline"
-                        >
-                          {copyPromptStatus === "copied"
-                            ? "Copied!"
-                            : copyPromptStatus === "error"
-                              ? "Copy failed — select text manually"
-                              : "Copy prompt"}
-                        </button>
-                      </div>
-                      <ArtifactImageUpload
-                        value={draft.imageDataUrl}
-                        onChange={(imageDataUrl) => update({ imageDataUrl })}
-                      />
-                    </div>
-                  )}
-
                   {draft.creationStep !== 0 && (
                   <div className="mt-8 flex gap-3">
                     {draft.creationStep > 0 && (
@@ -719,16 +559,17 @@ export function CreateJourney() {
                     <FfieButton
                       disabled={
                         (draft.creationStep === 1 &&
-                          !draft.artifactName.trim()) ||
-                        (draft.creationStep === 2 && !draft.artifactType) ||
+                          (!draft.artifactName.trim() || !draft.artifactType)) ||
+                        (draft.creationStep === 2 &&
+                          (!draft.artifactProblemTension.trim() ||
+                            !draft.selectedAiPower ||
+                            !draft.selectedAiCapability ||
+                            !draft.publicPromise.trim())) ||
                         (draft.creationStep === 3 &&
-                          !draft.artifactProblemTension.trim()) ||
-                        (draft.creationStep === 4 && !draft.selectedAiPower) ||
-                        (draft.creationStep === 5 &&
-                          !draft.publicPromise.trim()) ||
-                        (draft.creationStep === 6 &&
+                          !draft.artifactGoalPitch.trim()) ||
+                        (draft.creationStep === 4 &&
                           !isArtifactValuesComplete(draft)) ||
-                        (draft.creationStep === 7 &&
+                        (draft.creationStep === 5 &&
                           !isHiddenFunctionComplete(draft) &&
                           !draft.hiddenFunction.trim())
                       }

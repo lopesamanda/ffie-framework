@@ -1,3 +1,4 @@
+/** Embedded artifact values — pick 2–3 on the Embedded Values step. */
 export const ARTIFACT_VALUE_OPTIONS = [
   "Efficiency",
   "Care",
@@ -6,13 +7,6 @@ export const ARTIFACT_VALUE_OPTIONS = [
   "Productivity",
   "Competition",
   "Cooperation",
-  "Surveillance",
-  "Security",
-  "Privacy",
-  "Protection",
-  "Autonomy",
-  "Compliance",
-  "Transparency",
 ] as const;
 
 export const ARTIFACT_VALUE_OTHER = "Other";
@@ -38,12 +32,5 @@ export function isArtifactValuesComplete(draft: {
   artifactValueOther: string;
 }): boolean {
   const resolved = resolveArtifactValues(draft);
-  if (resolved.length < 2 || resolved.length > 4) return false;
-  if (
-    draft.artifactValues.includes(ARTIFACT_VALUE_OTHER) &&
-    !draft.artifactValueOther.trim()
-  ) {
-    return false;
-  }
-  return true;
+  return resolved.length >= 2 && resolved.length <= 3;
 }
