@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { NarrativeCardFace } from "@/components/create/NarrativeCardFace";
+import { EnvironmentalImpactCard } from "@/components/create/design/EnvironmentalImpactBadge";
 import type { CardHand } from "@/lib/journey/types";
 import type { CardCategory, NarrativeCard } from "@/data/narrative-cards";
 import {
@@ -187,6 +187,11 @@ export function OracleFanRevealedCard({
   );
 }
 
+/** Environmental Impact reference card — description + transversal badge, no tension. */
+export function OracleFanTransversalCard({ card }: { card: NarrativeCard }) {
+  return <EnvironmentalImpactCard card={card} />;
+}
+
 function ReflectionPanel({
   card,
   isLast,
@@ -346,7 +351,7 @@ export function OracleDeckFan({
         </div>
       )}
 
-      <NarrativeCardFace card={hand.transversal} />
+      <EnvironmentalImpactCard card={hand.transversal} />
     </div>
   );
 }

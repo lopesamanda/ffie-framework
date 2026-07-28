@@ -13,6 +13,7 @@ import {
 } from "@/lib/journey/character-options";
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
 import type { AiCapabilityPowerId } from "@/lib/journey/ai-capability-clusters";
+import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { getFutureHorizonYear } from "@/lib/journey/future-horizon";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
@@ -88,6 +89,10 @@ export type JourneyDraft = {
   dayToDayReflection: string;
   publicPromise: string;
   hiddenFunction: string;
+  /** Value chip selected as "pushed too far" on Hidden Function step. */
+  hiddenFunctionExtremeValue: string;
+  /** Sentence completion after the extreme-value prompt. */
+  hiddenFunctionCompletion: string;
   artifactValues: string[];
   artifactValueOther: string;
   imageDataUrl: string | null;
@@ -108,6 +113,8 @@ export type JourneyDraft = {
   submittedId: string | null;
   title: string;
   narrative: string;
+  /** Optional ecosystem-level reflection on the final output card. */
+  ecosystemImpactReflection: string;
   /** Horizon year for storage (current year + 10); user-facing copy uses FUTURE_HORIZON_LABEL. */
   futureYear: number;
 };
@@ -214,8 +221,10 @@ export function buildNarrative(draft: JourneyDraft): string {
   const where = draft.location || "somewhere in the world";
   const role = draft.role || "a participant in an innovation ecosystem";
   const artifact = draft.artifactName || "an unnamed artifact";
+  const hiddenFunction =
+    composeHiddenFunction(draft) || draft.hiddenFunction || "carries a tension the surface never names";
 
-  return `${who} is ${role} in ${where}, ${draft.futureYear}. ${artifact} promises ${draft.publicPromise || "something better"}, but ${draft.hiddenFunction || "carries a tension the surface never names"}. The cards drawn — ${draft.combinedTension || "multiple tensions"} — still echo in how this future holds together.`;
+  return `${who} is ${role} in ${where}, ${draft.futureYear}. ${artifact} promises ${draft.publicPromise || "something better"}, but ${hiddenFunction}. The cards drawn — ${draft.combinedTension || "multiple tensions"} — still echo in how this future holds together.`;
 }
 
 export function buildReflectionQuestion(draft: JourneyDraft): string {
@@ -235,7 +244,9 @@ export function buildAiImagePrompt(draft: JourneyDraft): string {
   const artifactPublicPromise =
     draft.publicPromise.trim() || "[artifact public promise]";
   const artifactHiddenFunction =
-    draft.hiddenFunction.trim() || "[artifact hidden function]";
+    composeHiddenFunction(draft) ||
+    draft.hiddenFunction.trim() ||
+    "[artifact hidden function]";
   const artifactType = artifactTypePhrase(draft.artifactType);
   const p = pronounsForSelection(draft.characterPronoun);
 
@@ -300,6 +311,8 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     dayToDayReflection: "",
     publicPromise: "",
     hiddenFunction: "",
+    hiddenFunctionExtremeValue: "",
+    hiddenFunctionCompletion: "",
     artifactValues: [],
     artifactValueOther: "",
     imageDataUrl: null,
@@ -312,6 +325,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     submittedId: null,
     title: "",
     narrative: "",
+    ecosystemImpactReflection: "",
     futureYear: getFutureHorizonYear(),
   };
 }
@@ -359,6 +373,9 @@ export function loadDraft(): JourneyDraft | null {
       values: parsed.values ?? [],
       futureYear: parsed.futureYear ?? getFutureHorizonYear(),
       drawSynthesis: parsed.drawSynthesis ?? "",
+      hiddenFunctionExtremeValue: parsed.hiddenFunctionExtremeValue ?? "",
+      hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",
+      ecosystemImpactReflection: parsed.ecosystemImpactReflection ?? "",
     };
   } catch {
     return null;

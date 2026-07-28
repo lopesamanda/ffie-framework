@@ -13,7 +13,7 @@ import {
   EnvironmentalBanner,
 } from "@/components/create/design/CategoryRegisterTiles";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
-import { OracleDeckFan, OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
+import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import {
   MatrixArrivalScene,
 } from "@/components/create/design/MatrixArrivalScene";
@@ -56,6 +56,11 @@ import {
   resolveArtifactValues,
 } from "@/lib/journey/artifact-options";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
+import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
+import {
+  composeHiddenFunction,
+  isHiddenFunctionComplete,
+} from "@/lib/journey/hidden-function";
 import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import { copyToClipboard } from "@/lib/copy-to-clipboard";
@@ -271,7 +276,7 @@ export function CreateJourney() {
           values: draft.values,
           artifactName: draft.artifactName,
           publicPromise: draft.publicPromise,
-          hiddenFunction: draft.hiddenFunction,
+          hiddenFunction: composeHiddenFunction(draft) || draft.hiddenFunction,
           artifactValues: resolveArtifactValues(draft),
           tension: draft.combinedTension,
           quadrant,
@@ -288,7 +293,12 @@ export function CreateJourney() {
               ]
             : [],
           drawSynthesis: draft.drawSynthesis,
-          reflectionText: draft.reflectionText,
+          reflectionText: [
+            draft.reflectionText.trim(),
+            draft.ecosystemImpactReflection.trim(),
+          ]
+            .filter(Boolean)
+            .join("\n\n"),
           imageDataUrl: draft.imageDataUrl,
           submitToCommons: true,
         }),
@@ -618,59 +628,27 @@ export function CreateJourney() {
                   )}
 
                   {draft.creationStep === 7 && draft.cardHand && (
-                    <div className="space-y-4">
-                      <div className="space-y-3 rounded-xl border border-ffie-line bg-ffie-bg/60 p-4 text-sm">
-                        <div>
-                          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-                            Day to day
-                          </p>
-                          <p className="mt-1 text-ffie-ink">
-                            {draft.publicPromise || "—"}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-                            Embedded values
-                          </p>
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {resolveArtifactValues(draft).map((value) => (
-                              <span
-                                key={value}
-                                className="rounded-full border border-ffie-line bg-ffie-surface px-2.5 py-0.5 text-xs text-ffie-ink"
-                              >
-                                {value}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap gap-3">
-                        <OracleFanRevealedCard card={draft.cardHand.risk} />
-                        <OracleFanRevealedCard card={draft.cardHand.barrier} />
-                      </div>
-                      <NarrativeBlock>
-                        <p className="mb-3 text-sm leading-relaxed text-ffie-ink">
-                          Looking at the values you just named, and the risk of{" "}
-                          <strong>{draft.cardHand.risk.name}</strong> and the
-                          barrier of{" "}
-                          <strong>{draft.cardHand.barrier.name}</strong> —
-                          which of these values, pushed to its logical extreme,
-                          reveals what{" "}
-                          {draft.artifactName.trim() || "this artifact"}{" "}
-                          actually does, quietly, that it doesn&apos;t
-                          advertise?
-                        </p>
-                        <textarea
-                          value={draft.hiddenFunction}
-                          onChange={(e) =>
-                            update({ hiddenFunction: e.target.value })
-                          }
-                          rows={4}
-                          placeholder="Complete the sentence…"
-                          className={`${FIELD} resize-none`}
-                        />
-                      </NarrativeBlock>
-                    </div>
+                    <HiddenFunctionStep
+                      draft={draft}
+                      onSelectExtremeValue={(hiddenFunctionExtremeValue) =>
+                        update({
+                          hiddenFunctionExtremeValue,
+                          hiddenFunction: composeHiddenFunction({
+                            ...draft,
+                            hiddenFunctionExtremeValue,
+                          }),
+                        })
+                      }
+                      onCompletionChange={(hiddenFunctionCompletion) =>
+                        update({
+                          hiddenFunctionCompletion,
+                          hiddenFunction: composeHiddenFunction({
+                            ...draft,
+                            hiddenFunctionCompletion,
+                          }),
+                        })
+                      }
+                    />
                   )}
 
                   {draft.creationStep === 8 && (
@@ -751,6 +729,7 @@ export function CreateJourney() {
                         (draft.creationStep === 6 &&
                           !isArtifactValuesComplete(draft)) ||
                         (draft.creationStep === 7 &&
+                          !isHiddenFunctionComplete(draft) &&
                           !draft.hiddenFunction.trim())
                       }
                       onClick={() => {
@@ -841,6 +820,10 @@ export function CreateJourney() {
                       draft={draft}
                       id="future-output-card"
                       compact
+                      showEcosystemReflection
+                      onEcosystemReflectionChange={(ecosystemImpactReflection) =>
+                        update({ ecosystemImpactReflection })
+                      }
                     />
                     <div>
                       <p className="mb-4 text-sm leading-relaxed text-ffie-muted">
@@ -937,6 +920,7 @@ export function CreateJourney() {
               draft={draft}
               id="future-output-card"
               showDrawSynthesis={oracleDrawComplete}
+              showCardProvenance={oracleDrawComplete}
             />
           </aside>
         )}

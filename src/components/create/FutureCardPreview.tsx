@@ -10,6 +10,7 @@ import {
   ffieCardShell,
   ffieCardTitle,
 } from "@/lib/card-layout";
+import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
 import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -22,12 +23,20 @@ export function FutureCardPreview({
   id,
   compact = false,
   showDrawSynthesis = true,
+  showCardProvenance = true,
+  showEcosystemReflection = false,
+  onEcosystemReflectionChange,
 }: {
   draft: JourneyDraft;
   id?: string;
   compact?: boolean;
   /** Hide synthesis until all four Oracle cards are revealed. */
   showDrawSynthesis?: boolean;
+  /** Hide Card Provenance until the full Oracle reveal sequence is complete. */
+  showCardProvenance?: boolean;
+  /** Optional ecosystem-level reflection on the final output card. */
+  showEcosystemReflection?: boolean;
+  onEcosystemReflectionChange?: (value: string) => void;
 }) {
   const quadrant: FutureQuadrant = quadrantFromPosition(
     draft.position.x,
@@ -45,6 +54,11 @@ export function FutureCardPreview({
     ? draft.drawSynthesis ||
       (draft.cardHand ? buildOracleSynthesis(draft.cardHand) : "")
     : "";
+
+  const hiddenFunctionDisplay =
+    composeHiddenFunction(draft) || draft.hiddenFunction;
+
+  const personaName = draft.characterName.trim() || "your persona";
 
   return (
     <div
@@ -93,7 +107,7 @@ export function FutureCardPreview({
         </>
       )}
 
-      {(draft.publicPromise || draft.hiddenFunction) && (
+      {(draft.publicPromise || hiddenFunctionDisplay) && (
         <div className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}>
           <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
             <p className={ffieCardSectionLabel + " text-ffie-accent"}>
@@ -108,10 +122,29 @@ export function FutureCardPreview({
               Weakness
             </p>
             <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-              {draft.hiddenFunction || "—"}
+              {hiddenFunctionDisplay || "—"}
             </p>
           </div>
         </div>
+      )}
+
+      {showEcosystemReflection && onEcosystemReflectionChange && (
+        <label className="mt-4 block space-y-2">
+          <span className={`text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
+            Zoom out: beyond {personaName}, who else does this future touch —
+            and are they included, or left out?
+            <span className="ml-1 text-xs">(optional)</span>
+          </span>
+          <textarea
+            value={draft.ecosystemImpactReflection}
+            onChange={(event) =>
+              onEcosystemReflectionChange(event.target.value)
+            }
+            rows={3}
+            placeholder="A sentence or two — only if it feels useful."
+            className="w-full resize-none rounded-xl border border-ffie-line bg-ffie-bg/60 px-4 py-3 text-sm outline-none focus:border-ffie-accent/40"
+          />
+        </label>
       )}
 
       {resolveArtifactValues(draft).length > 0 && (
@@ -136,7 +169,9 @@ export function FutureCardPreview({
         />
       )}
 
-      {draft.cardHand && !compact && <CardProvenance hand={draft.cardHand} />}
+      {draft.cardHand && !compact && showCardProvenance && (
+        <CardProvenance hand={draft.cardHand} />
+      )}
     </div>
   );
 }

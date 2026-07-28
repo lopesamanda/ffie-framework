@@ -1,12 +1,11 @@
-import { ENVIRONMENTAL_IMPACT_CARD, registerExamplePreviews } from "@/data/narrative-cards";
+import { ENVIRONMENTAL_IMPACT_CARD } from "@/data/narrative-cards";
 import type { CardCategory } from "@/data/narrative-cards";
-import { NarrativeCardFace } from "@/components/create/NarrativeCardFace";
+import { TransversalBadge } from "@/components/create/design/TransversalBadge";
 import { CATEGORY_STYLES } from "@/lib/category-styles";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
   ffieCardDescription,
-  ffieCardSectionLabel,
   ffieCardTintedShell,
 } from "@/lib/card-layout";
 
@@ -37,32 +36,11 @@ const REGISTER: {
   },
 ];
 
-function RegisterExamplesPreview({ examples }: { examples: string[] }) {
-  if (examples.length === 0) return null;
-
-  return (
-    <>
-      <p className={`mt-3 ${ffieCardSectionLabel}`}>Examples</p>
-      <ul className="mt-2 space-y-1.5">
-        {examples.map((example) => (
-          <li
-            key={example}
-            className={`text-[12px] leading-relaxed text-[rgba(35,19,82,0.55)] before:mr-1.5 before:content-['·'] ${FFIE_CARD_TEXT}`}
-          >
-            {example}
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-}
-
 export function CategoryRegisterTiles() {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {REGISTER.map(({ category, title, description }) => {
         const style = CATEGORY_STYLES[category];
-        const examples = registerExamplePreviews(category);
 
         return (
           <div
@@ -79,7 +57,6 @@ export function CategoryRegisterTiles() {
             <p className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}>
               {description}
             </p>
-            <RegisterExamplesPreview examples={examples} />
           </div>
         );
       })}
@@ -88,9 +65,26 @@ export function CategoryRegisterTiles() {
 }
 
 export function EnvironmentalBanner() {
+  const card = ENVIRONMENTAL_IMPACT_CARD;
+  const style = CATEGORY_STYLES.transversal;
+
   return (
-    <div className="mt-4">
-      <NarrativeCardFace card={ENVIRONMENTAL_IMPACT_CARD} />
+    <div
+      className="mt-4 px-[18px] py-4"
+      style={ffieCardTintedShell(style.border, style.bg)}
+    >
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <p
+          className={`${ffieCardCategory} font-display font-bold`}
+          style={{ color: style.text }}
+        >
+          Environmental Impact
+        </p>
+        <TransversalBadge />
+      </div>
+      <p className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}>
+        {card.description}
+      </p>
     </div>
   );
 }
