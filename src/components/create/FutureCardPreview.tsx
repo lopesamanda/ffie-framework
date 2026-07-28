@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
+import { HighlightedWeaknessText } from "@/components/create/HighlightedWeaknessText";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import { CATEGORY_STYLES } from "@/lib/category-styles";
 import {
@@ -13,8 +15,9 @@ import {
 } from "@/lib/card-layout";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
-import { buildFutureCommonsNarrative, resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
+import { resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
 import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
+import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
@@ -139,6 +142,7 @@ export function FutureCardPreview({
   showCardTags = false,
   showCommonsNarrative = false,
   revealAnimated = false,
+  onClosingReflectionChange,
 }: {
   draft: JourneyDraft;
   id?: string;
@@ -149,12 +153,15 @@ export function FutureCardPreview({
   showCardProvenance?: boolean;
   /** Colored card-name tags below synthesis — final output only, not side preview. */
   showCardTags?: boolean;
-  /** Future Commons–style narrative paragraph instead of draw synthesis. */
+  /** Final revealed Future card — persona-first layout with problem/tension copy. */
   showCommonsNarrative?: boolean;
   /** Staggered reveal on the final Future output card. */
   revealAnimated?: boolean;
+  onClosingReflectionChange?: (value: string) => void;
 }) {
   const reduceMotion = useReducedMotion();
+  const [highlightedValue, setHighlightedValue] = useState<string | null>(null);
+  const isFinalCard = showCommonsNarrative;
   const quadrant: FutureQuadrant = quadrantFromPosition(
     draft.position.x,
     draft.position.y,
@@ -167,6 +174,16 @@ export function FutureCardPreview({
         ? `A future for ${draft.characterName}`
         : "Your future");
 
+  const personaName = draft.characterName.trim() || "Your future";
+  const roleLine = [
+    draft.characterAge ? `${draft.characterAge}` : null,
+    resolvedCharacterRole(draft.role, draft.roleCustom),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const problemText = draft.artifactProblemTension.trim();
+  const artifactHeading = draft.artifactName.trim();
+
   const synthesisLine = showDrawSynthesis && !showCommonsNarrative
     ? draft.drawSynthesis ||
       (draft.cardHand ? buildOracleSynthesis(draft.cardHand) : "")
@@ -178,9 +195,9 @@ export function FutureCardPreview({
         (draft.cardHand ? buildOracleSynthesisTensions(draft.cardHand) : "")
       : "";
 
-  const commonsNarrative = showCommonsNarrative
-    ? draft.narrative.trim() || buildFutureCommonsNarrative(draft)
-    : "";
+  const commonsNarrative = "";
+
+  const artifactValues = resolveArtifactValues(draft);
 
   const capabilityName = resolveCapabilityName(draft.selectedAiCapability);
 
@@ -190,10 +207,20 @@ export function FutureCardPreview({
   const revealSectionCount =
     1 +
     1 +
-    (commonsNarrative || synthesisLine ? 1 : 0) +
-    (synthesisTensionsLine ? 1 : 0) +
-    (showCardTags && draft.cardHand ? 1 : 0) +
-    (draft.publicPromise || hiddenFunctionDisplay || capabilityName ? 1 : 0) +
+    (isFinalCard
+      ? (problemText ? 1 : 0) +
+        (artifactHeading ||
+        draft.publicPromise ||
+        hiddenFunctionDisplay ||
+        capabilityName
+          ? 1
+          : 0) +
+        1 +
+        (artifactValues.length > 0 ? 1 : 0)
+      : (commonsNarrative || synthesisLine ? 1 : 0) +
+        (synthesisTensionsLine ? 1 : 0) +
+        (showCardTags && draft.cardHand ? 1 : 0) +
+        (draft.publicPromise || hiddenFunctionDisplay || capabilityName ? 1 : 0)) +
     (draft.imageDataUrl ? 1 : 0);
 
   const sealDelay = revealAnimated
@@ -239,24 +266,46 @@ export function FutureCardPreview({
         </Wrap>
 
         <Wrap {...(revealAnimated ? nextReveal() : {})}>
-          <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
-            {title}
-          </h3>
-
-          {(draft.characterName || draft.role) && (
-            <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
-              {[
-                draft.characterName,
-                draft.characterAge ? `${draft.characterAge}` : null,
-                draft.role,
-              ]
-                .filter(Boolean)
-                .join(" · ")}
-            </p>
+          {isFinalCard ? (
+            <>
+              <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
+                {personaName}
+              </h3>
+              {roleLine && (
+                <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                  {roleLine}
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
+                {title}
+              </h3>
+              {(draft.characterName || draft.role) && (
+                <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                  {[
+                    draft.characterName,
+                    draft.characterAge ? `${draft.characterAge}` : null,
+                    draft.role,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              )}
+            </>
           )}
         </Wrap>
 
-        {(commonsNarrative || synthesisLine) && (
+        {isFinalCard && problemText && (
+          <Wrap {...(revealAnimated ? nextReveal() : {})}>
+            <p className={`mt-3 text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
+              {problemText}
+            </p>
+          </Wrap>
+        )}
+
+        {!isFinalCard && (commonsNarrative || synthesisLine) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <p
               className={`mt-3 text-sm leading-relaxed ${
@@ -275,15 +324,25 @@ export function FutureCardPreview({
           </Wrap>
         )}
 
-        {showCardTags && draft.cardHand && (
+        {showCardTags && draft.cardHand && !isFinalCard && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <DrawnCardTags hand={draft.cardHand} />
           </Wrap>
         )}
 
-        {(draft.publicPromise || hiddenFunctionDisplay || capabilityName) && (
+        {(isFinalCard
+          ? artifactHeading ||
+            draft.publicPromise ||
+            hiddenFunctionDisplay ||
+            capabilityName
+          : draft.publicPromise || hiddenFunctionDisplay || capabilityName) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <div className="mt-4 space-y-3 text-sm">
+              {isFinalCard && artifactHeading && (
+                <h4 className={`text-base font-semibold text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                  {artifactHeading}
+                </h4>
+              )}
               {capabilityName && (
                 <div className="rounded-[12px] border border-ffie-line/80 bg-ffie-bg px-[18px] py-3">
                   <p className={ffieCardSectionLabel + " text-ffie-muted"}>
@@ -310,7 +369,11 @@ export function FutureCardPreview({
                     Artifact weakness
                   </p>
                   <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-                    {hiddenFunctionDisplay || "—"}
+                    <HighlightedWeaknessText
+                      text={hiddenFunctionDisplay || "—"}
+                      extremeValue={draft.hiddenFunctionExtremeValue}
+                      highlightedValue={highlightedValue}
+                    />
                   </p>
                 </div>
               </div>
@@ -318,16 +381,57 @@ export function FutureCardPreview({
           </Wrap>
         )}
 
-        {resolveArtifactValues(draft).length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {resolveArtifactValues(draft).map((value) => (
-              <span
-                key={value}
-                className="rounded-full border border-ffie-line bg-ffie-bg px-2.5 py-0.5 text-xs text-ffie-ink"
-              >
-                {value}
+        {isFinalCard && (
+          <Wrap {...(revealAnimated ? nextReveal() : {})}>
+            <label className="mt-4 block">
+              <span className={`text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                If{" "}
+                {artifactHeading || "this artifact"} could be redesigned starting
+                tomorrow, what&apos;s the first thing that should change?
               </span>
-            ))}
+              <textarea
+                value={draft.closingReflection}
+                onChange={(event) =>
+                  onClosingReflectionChange?.(event.target.value)
+                }
+                rows={2}
+                placeholder="Optional — not required to publish"
+                className="mt-2 w-full resize-y rounded-xl border border-ffie-line bg-ffie-bg px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
+              />
+            </label>
+          </Wrap>
+        )}
+
+        {artifactValues.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {artifactValues.map((value) => {
+              const isLinked =
+                value.toLowerCase() ===
+                draft.hiddenFunctionExtremeValue.trim().toLowerCase();
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onMouseEnter={() => isLinked && setHighlightedValue(value)}
+                  onMouseLeave={() => setHighlightedValue(null)}
+                  onClick={() =>
+                    isLinked &&
+                    setHighlightedValue((current) =>
+                      current === value ? null : value,
+                    )
+                  }
+                  onFocus={() => isLinked && setHighlightedValue(value)}
+                  onBlur={() => setHighlightedValue(null)}
+                  className={`rounded-full border px-2.5 py-0.5 text-xs transition ${
+                    highlightedValue === value
+                      ? "border-ffie-accent bg-ffie-accent-soft text-ffie-accent"
+                      : "border-ffie-line bg-ffie-bg text-ffie-ink"
+                  }`}
+                >
+                  {value}
+                </button>
+              );
+            })}
           </div>
         )}
 

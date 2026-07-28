@@ -16,6 +16,12 @@ import { DiscoveryConstellation } from "@/components/create/design/DiscoveryCons
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { TimeTravelTransition } from "@/components/create/design/TimeTravelTransition";
 import { FutureRevealStage } from "@/components/create/FutureRevealStage";
+import { FutureOutputNextSteps } from "@/components/create/FutureOutputNextSteps";
+import {
+  FutureSummaryExport,
+  FUTURE_SUMMARY_EXPORT_HEIGHT,
+  FUTURE_SUMMARY_EXPORT_WIDTH,
+} from "@/components/create/FutureSummaryExport";
 import { PhaseSweepOverlay } from "@/components/motion/PhaseSweepOverlay";
 import { ArtifactMaterializePanel } from "@/components/create/ArtifactMaterializePanel";
 import {
@@ -28,11 +34,6 @@ import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
-import {
-  ShareableFutureCard,
-  SHAREABLE_CARD_HEIGHT,
-  SHAREABLE_CARD_WIDTH,
-} from "@/components/create/ShareableFutureCard";
 import {
   buildCombinedTension,
   drawWorkshopHand,
@@ -99,6 +100,9 @@ export function CreateJourney() {
   const [oraclePhase, setOraclePhase] = useState<"fan" | "reflection">("fan");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showMaterialize, setShowMaterialize] = useState(false);
+  const [showPublish, setShowPublish] = useState(false);
+  const [downloadingSummary, setDownloadingSummary] = useState(false);
   const [phaseSweep, setPhaseSweep] = useState<{
     id: string;
     run: () => void;
@@ -193,52 +197,6 @@ export function CreateJourney() {
     }, 400);
   };
 
-  const captureShareImage = async () => {
-    const node = document.getElementById("shareable-future-card");
-    if (!node) return null;
-    return toPng(node, {
-      pixelRatio: 1,
-      width: SHAREABLE_CARD_WIDTH,
-      height: SHAREABLE_CARD_HEIGHT,
-    });
-  };
-
-  const handleDownloadShareImage = async () => {
-    if (!draft) return;
-    const dataUrl = await captureShareImage();
-    if (!dataUrl) return;
-    const link = document.createElement("a");
-    link.download = `${draft.title || "ffie-future"}.png`;
-    link.href = dataUrl;
-    link.click();
-  };
-
-  const handleShareImage = async () => {
-    if (!draft) return;
-    const dataUrl = await captureShareImage();
-    if (!dataUrl) return;
-
-    const blob = await (await fetch(dataUrl)).blob();
-    const file = new File([blob], `${draft.title || "ffie-future"}.png`, {
-      type: "image/png",
-    });
-
-    if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      try {
-        await navigator.share({
-          files: [file],
-          title: draft.title,
-          text: "A future imagined with FFIE",
-        });
-        return;
-      } catch {
-        /* fall through to download */
-      }
-    }
-
-    handleDownloadShareImage();
-  };
-
   const handleFinishOutput = async () => {
     if (!draft) return;
 
@@ -328,14 +286,25 @@ export function CreateJourney() {
     }
   };
 
-  const handleDownload = async () => {
-    const node = document.getElementById("future-output-card");
+  const handleDownloadSummary = async () => {
+    if (!draft) return;
+    const node = document.getElementById("future-summary-export");
     if (!node) return;
-    const dataUrl = await toPng(node, { pixelRatio: 2 });
-    const link = document.createElement("a");
-    link.download = `${draft?.title || "ffie-future"}.png`;
-    link.href = dataUrl;
-    link.click();
+
+    setDownloadingSummary(true);
+    try {
+      const dataUrl = await toPng(node, {
+        pixelRatio: 2,
+        width: FUTURE_SUMMARY_EXPORT_WIDTH,
+        height: FUTURE_SUMMARY_EXPORT_HEIGHT,
+      });
+      const link = document.createElement("a");
+      link.download = `${draft.characterName.trim() || draft.artifactName.trim() || "ffie-future"}-summary.png`;
+      link.href = dataUrl;
+      link.click();
+    } finally {
+      setDownloadingSummary(false);
+    }
   };
 
   if (!draft) {
@@ -661,51 +630,81 @@ export function CreateJourney() {
                     startYear={new Date().getFullYear()}
                     endYear={draft.futureYear}
                   >
-                  <FutureRevealStage draft={draft} cardId="future-output-card">
-                    <div className="space-y-8 pt-2">
-                      <ArtifactMaterializePanel
-                        draft={draft}
-                        onImageChange={(imageDataUrl) => update({ imageDataUrl })}
-                      />
-                      <label className="flex items-start gap-3 rounded-xl border border-ffie-line bg-ffie-surface p-4">
-                        <input
-                          type="checkbox"
-                          checked={draft.submitToCommons}
-                          onChange={(e) =>
-                            update({ submitToCommons: e.target.checked })
-                          }
-                          className="mt-1 accent-ffie-accent"
-                        />
-                        <span className="text-sm text-ffie-muted">
-                          Submit this diegetic prototype to the Future Commons for
-                          moderation. If approved, it will appear alongside Research
-                          Findings — always labeled as community-created. An image
-                          is optional.
-                        </span>
-                      </label>
-                      {submitError && (
-                        <p className="text-sm text-red-700">{submitError}</p>
-                      )}
-                      <div className="flex flex-wrap gap-3">
-                        <FfieButton onClick={handleShareImage}>Share image</FfieButton>
-                        <FfieButton variant="secondary" onClick={handleDownloadShareImage}>
-                          Download image
-                        </FfieButton>
-                        <FfieButton variant="secondary" onClick={handleDownload}>
-                          Download card
-                        </FfieButton>
-                        <FfieButton
-                          disabled={submitting || !draft.placementJustification.trim()}
-                          onClick={handleFinishOutput}
-                        >
-                          {submitting
-                            ? "Submitting…"
-                            : draft.submitToCommons
-                              ? "Submit & continue"
-                              : "Continue to Discovery"}
-                        </FfieButton>
-                      </div>
-                    </div>
+                  <FutureRevealStage
+                    draft={draft}
+                    cardId="future-output-card"
+                    onClosingReflectionChange={(closingReflection) =>
+                      update({ closingReflection })
+                    }
+                  >
+                    <FutureOutputNextSteps
+                      onBringToLife={() => setShowMaterialize((open) => !open)}
+                      onDownload={handleDownloadSummary}
+                      onPublish={() => setShowPublish((open) => !open)}
+                      bringToLifeActive={showMaterialize}
+                      downloading={downloadingSummary}
+                      submitting={submitting}
+                      materializePanel={
+                        showMaterialize ? (
+                          <ArtifactMaterializePanel
+                            draft={draft}
+                            onImageChange={(imageDataUrl) =>
+                              update({ imageDataUrl })
+                            }
+                          />
+                        ) : null
+                      }
+                      publishPanel={
+                        showPublish ? (
+                          <div className="space-y-4 rounded-xl border border-ffie-line bg-ffie-surface p-4">
+                            <label className="flex items-start gap-3">
+                              <input
+                                type="checkbox"
+                                checked={draft.submitToCommons}
+                                onChange={(e) =>
+                                  update({ submitToCommons: e.target.checked })
+                                }
+                                className="mt-1 accent-ffie-accent"
+                              />
+                              <span className="text-sm text-ffie-muted">
+                                Submit this diegetic prototype to the Future
+                                Commons for moderation. If approved, it will
+                                appear alongside Research Findings — always
+                                labeled as community-created. An image is
+                                optional.
+                              </span>
+                            </label>
+                            {submitError && (
+                              <p className="text-sm text-red-700">{submitError}</p>
+                            )}
+                            <FfieButton
+                              disabled={
+                                submitting ||
+                                !draft.placementJustification.trim() ||
+                                !draft.submitToCommons
+                              }
+                              onClick={handleFinishOutput}
+                            >
+                              {submitting
+                                ? "Submitting…"
+                                : "Submit for moderation"}
+                            </FfieButton>
+                          </div>
+                        ) : null
+                      }
+                    />
+                    <p className="text-center">
+                      <button
+                        type="button"
+                        className="text-sm text-ffie-muted underline-offset-2 hover:text-ffie-ink hover:underline"
+                        onClick={() => {
+                          update({ submitToCommons: false });
+                          void handleFinishOutput();
+                        }}
+                      >
+                        Continue without publishing →
+                      </button>
+                    </p>
                   </FutureRevealStage>
                   </TimeTravelTransition>
                   )}
@@ -769,13 +768,14 @@ export function CreateJourney() {
           className="pointer-events-none fixed left-[-9999px] top-0 overflow-hidden"
           aria-hidden
         >
-          <ShareableFutureCard
-            id="shareable-future-card"
-            title={draft.title}
-            characterName={draft.characterName}
-            artifactName={draft.artifactName}
-            position={draft.position}
-            cardHand={draft.cardHand}
+          <FutureSummaryExport
+            id="future-summary-export"
+            draft={draft}
+            commonsUrl={
+              draft.submittedId && typeof window !== "undefined"
+                ? `${window.location.origin}/explore/${draft.submittedId}`
+                : null
+            }
           />
         </div>
       )}

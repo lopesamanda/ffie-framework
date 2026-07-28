@@ -105,7 +105,8 @@ export type JourneyDraft = {
   hiddenFunctionCompletion: string;
   artifactValues: string[];
   artifactValueOther: string;
-  imageDataUrl: string | null;
+  /** Optional closing reflection on the final Future card. */
+  closingReflection: string;
   /** System Logic Likert (Q1) — Extracts ↔ Gives back */
   systemLogicScore: LikertScore | null;
   /** Power Organization Likert (Q2) — centralizada ↔ coletiva */
@@ -325,6 +326,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     artifactValues: [],
     artifactValueOther: "",
     imageDataUrl: null,
+    closingReflection: "",
     systemLogicScore: null,
     powerOrgScore: null,
     position: { x: 0, y: 0 },
@@ -384,6 +386,7 @@ export function loadDraft(): JourneyDraft | null {
       drawSynthesis: parsed.drawSynthesis ?? "",
       drawSynthesisTensions: parsed.drawSynthesisTensions ?? "",
       personaSector: parsed.personaSector ?? "",
+      closingReflection: parsed.closingReflection ?? "",
       hiddenFunctionExtremeValue: parsed.hiddenFunctionExtremeValue ?? "",
       hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",
       artifactGoalPitch: parsed.artifactGoalPitch ?? "",

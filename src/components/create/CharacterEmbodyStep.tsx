@@ -186,7 +186,7 @@ export function CharacterEmbodyStep({
                 <NarrativeBlock>
                   <NarrativeBlank
                     before={`${p.possessiveCap} name is `}
-                    after={` and, ${FUTURE_HORIZON_LABEL}, ${p.subject} is `}
+                    after={` and, ${FUTURE_HORIZON_LABEL}, ${p.subject} ${verbFor(p, "is", "are")} `}
                     value={draft.characterName}
                     onChange={(characterName) => onChange({ characterName })}
                   />
@@ -249,7 +249,7 @@ export function CharacterEmbodyStep({
       case 1:
         return (
           <div className="space-y-6">
-            <ChipField label={`In the innovation ecosystem, ${p.subject} is a…`}>
+            <ChipField label={`In the innovation ecosystem, ${p.subject} ${verbFor(p, "is", "are")} a…`}>
               <ChipSelect
                 label=""
                 options={[...ROLE_OPTIONS]}

@@ -13,10 +13,12 @@ export function FutureRevealStage({
   draft,
   cardId = "future-output-card",
   children,
+  onClosingReflectionChange,
 }: {
   draft: JourneyDraft;
   cardId?: string;
   children?: ReactNode;
+  onClosingReflectionChange?: (value: string) => void;
 }) {
   const reduceMotion = useReducedMotion();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -82,8 +84,8 @@ export function FutureRevealStage({
             id={cardId}
             compact
             revealAnimated={!reduceMotion}
-            showCardTags
             showCommonsNarrative
+            onClosingReflectionChange={onClosingReflectionChange}
           />
         </motion.div>
       )}

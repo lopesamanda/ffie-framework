@@ -1,7 +1,7 @@
 "use client";
 
 import { AiPowerSelector } from "@/components/create/AiPowerSelector";
-import { pronounsForSelection } from "@/lib/journey/character-pronouns";
+import { pronounsForSelection, verbFor } from "@/lib/journey/character-pronouns";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 const FIELD =
@@ -54,7 +54,7 @@ export function ArtifactProblemPowerStep({
 
       <section className="space-y-3">
         <p className="text-sm leading-relaxed text-ffie-ink">
-          You said {p.subject} fears Artificial Intelligence will{" "}
+          You said {p.subject} {verbFor(p, "fears", "fear")} Artificial Intelligence will{" "}
           <strong className="font-medium text-ffie-ink">{fearAnswer}</strong>.
           What problem or tension does this artifact respond to — or make worse?
         </p>

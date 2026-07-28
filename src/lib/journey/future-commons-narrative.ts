@@ -1,6 +1,6 @@
 import { AI_CAPABILITY_CARDS } from "@/data/ai-capability-cards";
 import { composeLocation } from "@/lib/journey/character-options";
-import { pronounsForSelection } from "@/lib/journey/character-pronouns";
+import { pronounsForSelection, verbFor } from "@/lib/journey/character-pronouns";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 
@@ -31,5 +31,5 @@ export function buildFutureCommonsNarrative(draft: JourneyDraft): string {
   ).replace(/[.!?…]+$/, "");
   const p = pronounsForSelection(draft.characterPronoun);
 
-  return `In ${location}, ${year}, ${name} is ${role}, living inside a future shaped by ${artifactName}. Every day, ${p.subject} turns to it — ${dayToDayText}.`;
+  return `In ${location}, ${year}, ${name} is ${role}, living inside a future shaped by ${artifactName}. Every day, ${p.subject} ${verbFor(p, "turns", "turn")} to it — ${dayToDayText}.`;
 }

@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { OracleFanRevealedCard } from "@/components/create/design/OracleDeckFan";
 import type { CardHand } from "@/lib/journey/types";
-import type { CharacterPronouns } from "@/lib/journey/character-pronouns";
+import { verbFor, type CharacterPronouns } from "@/lib/journey/character-pronouns";
 
 const REVEAL_PAUSE_MS = 700;
 
@@ -203,7 +203,7 @@ export function EmbodyTensionScreen({
           <NarrativeBlock className="border-0 bg-transparent p-0">
             <motion.div {...lineDrift(reduceMotion, 0.04)}>
               <NarrativeBlank
-                before={`In ${p.possessive} work as ${role}, ${p.subject} still holds on to the hope that `}
+                before={`In ${p.possessive} work as ${role}, ${p.subject} still ${verbFor(p, "holds", "hold")} on to the hope that `}
                 after="."
                 value={draft.desire}
                 onChange={(desire) => onChange({ desire })}
@@ -225,8 +225,8 @@ export function EmbodyTensionScreen({
             {...lineDrift(reduceMotion, 0)}
             className="text-sm leading-relaxed text-ffie-muted"
           >
-            You drew these two tensions. Let them shape what {p.subject}&apos;s
-            afraid of:
+            You drew these two tensions. Let them shape what {p.subject}{" "}
+            {verbFor(p, "is", "are")} afraid of:
           </motion.p>
           {cardHand && (
             <motion.div
@@ -240,7 +240,7 @@ export function EmbodyTensionScreen({
           <NarrativeBlock>
             <motion.div {...lineDrift(reduceMotion, 0.1)}>
               <NarrativeBlank
-                before={`As a ${role}, what ${p.subject} fears most — whether from the technology itself, or from the ecosystem around it — is that Artificial Intelligence will `}
+                before={`As a ${role}, what ${p.subject} ${verbFor(p, "fears", "fear")} most — whether from the technology itself, or from the ecosystem around it — is that Artificial Intelligence will `}
                 after="."
                 value={draft.fear}
                 onChange={(fear) => onChange({ fear })}
