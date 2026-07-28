@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { AiCapabilityCard } from "@/data/ai-capability-cards";
 import type { ArtifactTypeId } from "@/lib/journey/character-options";
 import {
@@ -15,6 +15,7 @@ import {
   ffieCardCategory,
   ffieCardDescription,
   ffieCardDivider,
+  ffieCardSectionLabel,
   ffieCardTitle,
 } from "@/lib/card-layout";
 
@@ -31,10 +32,9 @@ export function AiPowerSelector({
   selectedPower,
   onSelectPower,
 }: AiPowerSelectorProps) {
-  const [showInspiration, setShowInspiration] = useState(false);
   const valuesPhrase = formatPersonaValuesList(values);
 
-  const inspirationCards = useMemo(() => {
+  const powerCards = useMemo(() => {
     if (!selectedPower) return [] as AiCapabilityCard[];
     let cards = cardsForPower(selectedPower);
     if (artifactType) {
@@ -57,10 +57,7 @@ export function AiPowerSelector({
             <button
               key={power.id}
               type="button"
-              onClick={() => {
-                onSelectPower(power.id);
-                setShowInspiration(false);
-              }}
+              onClick={() => onSelectPower(power.id)}
               className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                 selected
                   ? "border-ffie-accent bg-ffie-accent-soft text-ffie-accent"
@@ -77,25 +74,11 @@ export function AiPowerSelector({
         })}
       </div>
 
-      {selectedPower && (
-        <div className="space-y-2">
-          <button
-            type="button"
-            onClick={() => setShowInspiration((open) => !open)}
-            className="text-xs font-medium text-ffie-accent transition hover:underline"
-          >
-            {showInspiration
-              ? "Hide capability examples ↑"
-              : "Need inspiration? See underlying capabilities ↓"}
-          </button>
-
-          {showInspiration && (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {inspirationCards.map((card) => (
-                <InspirationCapabilityCard key={card.id} card={card} />
-              ))}
-            </div>
-          )}
+      {selectedPower && powerCards.length > 0 && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {powerCards.map((card) => (
+            <InspirationCapabilityCard key={card.id} card={card} />
+          ))}
         </div>
       )}
     </div>
@@ -112,20 +95,44 @@ function InspirationCapabilityCard({ card }: { card: AiCapabilityCard }) {
       <h4 className={`mt-1 ${ffieCardTitle} text-sm ${FFIE_CARD_TEXT}`}>
         {card.name}
       </h4>
-      <div className={ffieCardDivider + " my-2"} />
-      <p className={`${ffieCardDescription} text-xs not-italic ${FFIE_CARD_TEXT}`}>
+
+      <p className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}>
+        {card.description}
+      </p>
+
+      <div className="mt-2.5 flex flex-wrap gap-1.5">
+        {card.tags.map((tag) => (
+          <span
+            key={tag}
+            className="rounded-full border border-ffie-line bg-ffie-accent-soft/60 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      <div className={`my-3 ${ffieCardDivider}`} />
+
+      <p className={ffieCardSectionLabel}>Example</p>
+      <p
+        className={`mt-2 text-sm italic leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
+      >
         {card.examples[0]}
       </p>
-      <ul className="mt-2 space-y-1">
-        {card.artifactGuidingQuestions.map((question) => (
-          <li
-            key={question}
-            className={`text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
-          >
-            · {question}
-          </li>
-        ))}
-      </ul>
+
+      <div className="mt-3">
+        <p className={`${ffieCardCategory} text-ffie-muted`}>Guiding questions</p>
+        <ul className="mt-2 space-y-1.5">
+          {card.artifactGuidingQuestions.map((question) => (
+            <li
+              key={question}
+              className={`text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
+            >
+              · {question}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

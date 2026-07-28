@@ -154,7 +154,6 @@ export function EmbodyTensionScreen({
           value={draft.aiFunction}
           onChange={(aiFunction) => onChange({ aiFunction })}
           onBlur={handleBenefitBlur}
-          placeholder="…"
         />
         <NarrativeBlank
           before=""
@@ -162,7 +161,6 @@ export function EmbodyTensionScreen({
           value={draft.tradeoffLoss}
           onChange={(tradeoffLoss) => onChange({ tradeoffLoss })}
           onBlur={handleBenefitBlur}
-          placeholder="…"
           className="mt-2"
         />
       </NarrativeBlock>
@@ -182,7 +180,6 @@ export function EmbodyTensionScreen({
               value={draft.desire}
               onChange={(desire) => onChange({ desire })}
               onBlur={handleDesireBlur}
-              placeholder="…"
             />
           </NarrativeBlock>
         </motion.div>
@@ -212,7 +209,6 @@ export function EmbodyTensionScreen({
               after="."
               value={draft.fear}
               onChange={(fear) => onChange({ fear })}
-              placeholder="…"
             />
           </NarrativeBlock>
         </motion.div>
