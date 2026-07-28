@@ -5,12 +5,13 @@ import { motion } from "framer-motion";
 import { FutureCommonsCard } from "@/components/FutureCommonsCard";
 import {
   COUNTRY_COLORS,
-  QUADRANT_LABELS,
   QUADRANT_MATRIX_LABELS,
   QUADRANT_COLORS,
   type FutureCountry,
   type FutureEntry,
+  type PersonaSector,
 } from "@/types/future";
+import { SECTOR_COLORS } from "@/lib/journey/persona-sectors";
 import { signedToUnit } from "@/lib/journey/types";
 
 const PLOT = {
@@ -43,7 +44,17 @@ type FutureMatrixProps = {
   onSelect?: (entry: FutureEntry | null) => void;
   linkToDetail?: boolean;
   highlightCountry?: FutureCountry | "all";
+  highlightSector?: PersonaSector | "all";
+  /** Dot colour: country (research) or sector (Future Commons). */
+  colorBy?: "country" | "sector";
 };
+
+function dotColor(entry: FutureEntry, colorBy: "country" | "sector"): string {
+  if (colorBy === "sector" && entry.character.sector) {
+    return SECTOR_COLORS[entry.character.sector];
+  }
+  return COUNTRY_COLORS[entry.country];
+}
 
 export function FutureMatrix({
   entries,
@@ -51,6 +62,8 @@ export function FutureMatrix({
   onSelect,
   linkToDetail = true,
   highlightCountry = "all",
+  highlightSector = "all",
+  colorBy = "country",
 }: FutureMatrixProps) {
   const router = useRouter();
   const midX = PLOT.width / 2;
@@ -212,8 +225,10 @@ export function FutureMatrix({
           const { cx, cy } = plotToSvg(unit.x, unit.y);
           const isSelected = selectedId === entry.id;
           const isDimmed =
-            highlightCountry !== "all" && entry.country !== highlightCountry;
-          const color = COUNTRY_COLORS[entry.country];
+            (highlightCountry !== "all" && entry.country !== highlightCountry) ||
+            (highlightSector !== "all" &&
+              entry.character.sector !== highlightSector);
+          const color = dotColor(entry, colorBy);
 
           const point = (
             <>
@@ -258,21 +273,37 @@ export function FutureMatrix({
         })}
       </svg>
 
-      <div className="mt-4 flex flex-wrap gap-4 text-xs text-ffie-muted">
-        <span className="inline-flex items-center gap-2">
-          <span
-            className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: COUNTRY_COLORS.Brazil }}
-          />
-          Brazil (Recife)
-        </span>
-        <span className="inline-flex items-center gap-2">
-          <span
-            className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: COUNTRY_COLORS.Portugal }}
-          />
-          Portugal (Lisbon)
-        </span>
+      <div className="mt-4 flex flex-wrap gap-3 text-xs text-ffie-muted">
+        {colorBy === "sector" ? (
+          (Object.entries(SECTOR_COLORS) as [PersonaSector, string][]).map(
+            ([sector, sectorColor]) => (
+              <span key={sector} className="inline-flex items-center gap-1.5">
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: sectorColor }}
+                />
+                {sector}
+              </span>
+            ),
+          )
+        ) : (
+          <>
+            <span className="inline-flex items-center gap-2">
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: COUNTRY_COLORS.Brazil }}
+              />
+              Brazil (Recife)
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: COUNTRY_COLORS.Portugal }}
+              />
+              Portugal (Lisbon)
+            </span>
+          </>
+        )}
       </div>
     </div>
   );

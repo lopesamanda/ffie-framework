@@ -53,7 +53,7 @@ import {
   composeHiddenFunction,
   isHiddenFunctionComplete,
 } from "@/lib/journey/hidden-function";
-import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
+import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import {
   FFIE_CARD_TEXT,
@@ -169,6 +169,7 @@ export function CreateJourney() {
         cardHand: hand,
         combinedTension: buildCombinedTension(hand),
         drawSynthesis: buildOracleSynthesis(hand),
+        drawSynthesisTensions: buildOracleSynthesisTensions(hand),
       });
       setRevealing(false);
     }, 900);
@@ -185,6 +186,7 @@ export function CreateJourney() {
         cardHand: hand,
         combinedTension: buildCombinedTension(hand),
         drawSynthesis: buildOracleSynthesis(hand),
+        drawSynthesisTensions: buildOracleSynthesisTensions(hand),
         reflectionText: "",
       });
       setRevealing(false);
@@ -270,6 +272,7 @@ export function CreateJourney() {
           characterGender: genderLabelForDraft(draft),
           characterRaceEthnicity: raceEthnicityForDraft(draft),
           role: resolvedCharacterRole(draft.role, draft.roleCustom),
+          personaSector: draft.personaSector || undefined,
           year: draft.futureYear,
           aiFunction: draft.aiFunction,
           desire: draft.desire,
@@ -294,6 +297,7 @@ export function CreateJourney() {
               ]
             : [],
           drawSynthesis: draft.drawSynthesis,
+          drawSynthesisTensions: draft.drawSynthesisTensions,
           reflectionText: draft.reflectionText.trim(),
           imageDataUrl: draft.imageDataUrl,
           submitToCommons: true,
@@ -657,48 +661,52 @@ export function CreateJourney() {
                     startYear={new Date().getFullYear()}
                     endYear={draft.futureYear}
                   >
-                  <FutureRevealStage draft={draft} cardId="future-output-card" />
-                  <ArtifactMaterializePanel
-                    draft={draft}
-                    onImageChange={(imageDataUrl) => update({ imageDataUrl })}
-                  />
-                  <label className="mt-8 flex items-start gap-3 rounded-xl border border-ffie-line bg-ffie-surface p-4">
-                    <input
-                      type="checkbox"
-                      checked={draft.submitToCommons}
-                      onChange={(e) =>
-                        update({ submitToCommons: e.target.checked })
-                      }
-                      className="mt-1 accent-ffie-accent"
-                    />
-                    <span className="text-sm text-ffie-muted">
-                      Submit this diegetic prototype to the Future Commons for
-                      moderation. If approved, it will appear alongside Research
-                      Findings — always labeled as community-created.
-                    </span>
-                  </label>
-                  {submitError && (
-                    <p className="mt-4 text-sm text-red-700">{submitError}</p>
-                  )}
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    <FfieButton onClick={handleShareImage}>Share image</FfieButton>
-                    <FfieButton variant="secondary" onClick={handleDownloadShareImage}>
-                      Download image
-                    </FfieButton>
-                    <FfieButton variant="secondary" onClick={handleDownload}>
-                      Download card
-                    </FfieButton>
-                    <FfieButton
-                      disabled={submitting || !draft.placementJustification.trim()}
-                      onClick={handleFinishOutput}
-                    >
-                      {submitting
-                        ? "Submitting…"
-                        : draft.submitToCommons
-                          ? "Submit & continue"
-                          : "Continue to Discovery"}
-                    </FfieButton>
-                  </div>
+                  <FutureRevealStage draft={draft} cardId="future-output-card">
+                    <div className="space-y-8 pt-2">
+                      <ArtifactMaterializePanel
+                        draft={draft}
+                        onImageChange={(imageDataUrl) => update({ imageDataUrl })}
+                      />
+                      <label className="flex items-start gap-3 rounded-xl border border-ffie-line bg-ffie-surface p-4">
+                        <input
+                          type="checkbox"
+                          checked={draft.submitToCommons}
+                          onChange={(e) =>
+                            update({ submitToCommons: e.target.checked })
+                          }
+                          className="mt-1 accent-ffie-accent"
+                        />
+                        <span className="text-sm text-ffie-muted">
+                          Submit this diegetic prototype to the Future Commons for
+                          moderation. If approved, it will appear alongside Research
+                          Findings — always labeled as community-created. An image
+                          is optional.
+                        </span>
+                      </label>
+                      {submitError && (
+                        <p className="text-sm text-red-700">{submitError}</p>
+                      )}
+                      <div className="flex flex-wrap gap-3">
+                        <FfieButton onClick={handleShareImage}>Share image</FfieButton>
+                        <FfieButton variant="secondary" onClick={handleDownloadShareImage}>
+                          Download image
+                        </FfieButton>
+                        <FfieButton variant="secondary" onClick={handleDownload}>
+                          Download card
+                        </FfieButton>
+                        <FfieButton
+                          disabled={submitting || !draft.placementJustification.trim()}
+                          onClick={handleFinishOutput}
+                        >
+                          {submitting
+                            ? "Submitting…"
+                            : draft.submitToCommons
+                              ? "Submit & continue"
+                              : "Continue to Discovery"}
+                        </FfieButton>
+                      </div>
+                    </div>
+                  </FutureRevealStage>
                   </TimeTravelTransition>
                   )}
                 </CreateStageShell>

@@ -6,6 +6,7 @@ import type {
 import { QUADRANT_LABELS } from "@/types/future";
 import type { NarrativeCard } from "@/data/narrative-cards";
 import type { CharacterGenderId, ArtifactTypeId } from "@/lib/journey/character-options";
+import type { PersonaSector } from "@/lib/journey/persona-sectors";
 import {
   artifactTypePhrase,
   composeLocation,
@@ -59,8 +60,10 @@ export type JourneyDraft = {
   embodySubStep: number;
   cardHand: CardHand | null;
   combinedTension: string;
-  /** Deterministic Oracle Draw synthesis sentence. */
+  /** Deterministic Oracle Draw synthesis — main sentence (card names). */
   drawSynthesis: string;
+  /** Secondary line listing card tensions. */
+  drawSynthesisTensions: string;
   reflectionText: string;
   characterName: string;
   characterAge: string;
@@ -73,6 +76,7 @@ export type JourneyDraft = {
   location: string;
   role: string;
   roleCustom: string;
+  personaSector: PersonaSector | "";
   aiFunction: string;
   tradeoffLoss: string;
   desire: string;
@@ -287,6 +291,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     cardHand: null,
     combinedTension: "",
     drawSynthesis: "",
+    drawSynthesisTensions: "",
     reflectionText: "",
     characterName: "",
     characterAge: "",
@@ -299,6 +304,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     location: "",
     role: "",
     roleCustom: "",
+    personaSector: "",
     aiFunction: "",
     tradeoffLoss: "",
     desire: "",
@@ -376,6 +382,8 @@ export function loadDraft(): JourneyDraft | null {
       values: parsed.values ?? [],
       futureYear: parsed.futureYear ?? getFutureHorizonYear(),
       drawSynthesis: parsed.drawSynthesis ?? "",
+      drawSynthesisTensions: parsed.drawSynthesisTensions ?? "",
+      personaSector: parsed.personaSector ?? "",
       hiddenFunctionExtremeValue: parsed.hiddenFunctionExtremeValue ?? "",
       hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",
       artifactGoalPitch: parsed.artifactGoalPitch ?? "",

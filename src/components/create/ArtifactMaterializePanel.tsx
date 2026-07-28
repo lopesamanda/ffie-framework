@@ -32,12 +32,12 @@ export function ArtifactMaterializePanel({
     <div className="mt-8 space-y-5 rounded-xl border border-ffie-line bg-ffie-surface/60 p-5">
       <div className="space-y-2">
         <p className="text-sm font-medium text-ffie-ink">
-          Materialize the artifact (optional)
+          Bring it to life (optional)
         </p>
         <p className="text-sm leading-relaxed text-ffie-muted">
-          Copy a ready-made image prompt into your AI tool — public promise
-          versus hidden function, grounded in your cards and location — then
-          upload the result here.
+          After your future is revealed, copy a ready-made image prompt into your
+          AI tool — then upload the result if you want. Publishing to Future
+          Commons works with or without an image.
         </p>
       </div>
 

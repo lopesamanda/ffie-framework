@@ -10,6 +10,17 @@ export type PowerPosition = "marginalized" | "hegemonic";
 
 export type FutureCountry = "Brazil" | "Portugal";
 
+export type PersonaSector =
+  | "Finances"
+  | "Health"
+  | "Education"
+  | "ESG"
+  | "Mobility"
+  | "Media"
+  | "Retail/Commerce"
+  | "Public Sector"
+  | "Other";
+
 export type FutureCollection = "research_findings" | "future_commons";
 
 export type FutureEntry = {
@@ -24,6 +35,7 @@ export type FutureEntry = {
     name: string;
     age: number;
     role: string;
+    sector?: PersonaSector;
     aiFunction: string;
     desire: string;
     fear: string;
@@ -41,8 +53,10 @@ export type FutureEntry = {
   position: { x: number; y: number };
   status: FutureStatus;
   imageUrl?: string;
-  /** Oracle Draw collective synthesis sentence. */
+  /** Oracle Draw synthesis — main sentence (card names). */
   drawSynthesis?: string;
+  /** Secondary line listing card tensions. */
+  drawSynthesisTensions?: string;
   /** ISO timestamp when published (Future Commons). */
   publishedAt?: string;
 };

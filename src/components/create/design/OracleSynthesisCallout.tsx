@@ -2,11 +2,15 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import type { CardHand } from "@/lib/journey/types";
-import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
+import {
+  buildOracleSynthesis,
+  buildOracleSynthesisTensions,
+} from "@/lib/journey/oracle-synthesis";
 import { FFIE_CARD_TEXT } from "@/lib/card-layout";
 
 export function OracleSynthesisCallout({ hand }: { hand: CardHand }) {
-  const sentence = buildOracleSynthesis(hand);
+  const main = buildOracleSynthesis(hand);
+  const tensions = buildOracleSynthesisTensions(hand);
   const reduceMotion = useReducedMotion();
 
   return (
@@ -37,7 +41,10 @@ export function OracleSynthesisCallout({ hand }: { hand: CardHand }) {
       <p
         className={`relative mt-2 text-base font-medium italic leading-relaxed text-ffie-accent ${FFIE_CARD_TEXT}`}
       >
-        {sentence}
+        {main}
+      </p>
+      <p className={`relative mt-2 text-sm leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
+        {tensions}
       </p>
     </motion.div>
   );

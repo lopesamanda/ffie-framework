@@ -1,15 +1,25 @@
 import Link from "next/link";
 import { HomeHero } from "@/components/home/HomeHero";
 import { MiniOracleDrawPreview } from "@/components/home/MiniOracleDrawPreview";
+import { SectorMatrixTeaser } from "@/components/home/SectorMatrixTeaser";
 import { ScrollRevealSection } from "@/components/motion/ScrollRevealSection";
+import { getPublishedSubmissions } from "@/lib/submissions";
 import { ffieCardShell } from "@/lib/card-layout";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const futureCommons = await getPublishedSubmissions();
+
   return (
     <>
       <HomeHero />
 
       <div className="relative mx-auto max-w-6xl px-6 pb-16 md:pb-24">
+        <ScrollRevealSection>
+          <SectorMatrixTeaser futureCommons={futureCommons} />
+        </ScrollRevealSection>
+
         <ScrollRevealSection className="mt-14 grid gap-6 md:grid-cols-2">
           <Link
             href="/explore"

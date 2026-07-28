@@ -26,6 +26,11 @@ export function FuturePreviewPanel({ entry }: { entry: FutureEntry }) {
         <span className="rounded-full bg-ffie-accent-soft px-2.5 py-1 text-xs font-medium text-ffie-accent">
           {QUADRANT_LABELS[entry.quadrant]}
         </span>
+        {entry.character.sector && (
+          <span className="rounded-full border border-ffie-line bg-ffie-bg px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-ffie-muted">
+            {entry.character.sector}
+          </span>
+        )}
         {justPublished && (
           <span className="rounded-full border border-ffie-accent/35 bg-ffie-accent-soft/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-ffie-accent">
             Just published

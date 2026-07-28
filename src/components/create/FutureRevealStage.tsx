@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { InteractiveMatrixReveal } from "@/components/create/InteractiveMatrixReveal";
@@ -12,9 +12,11 @@ type Anchor = { x: number; y: number };
 export function FutureRevealStage({
   draft,
   cardId = "future-output-card",
+  children,
 }: {
   draft: JourneyDraft;
   cardId?: string;
+  children?: ReactNode;
 }) {
   const reduceMotion = useReducedMotion();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -85,6 +87,8 @@ export function FutureRevealStage({
           />
         </motion.div>
       )}
+
+      {cardRevealed && children}
     </div>
   );
 }

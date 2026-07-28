@@ -10,6 +10,10 @@ import {
   ROLE_OPTIONS,
   type CharacterGenderId,
 } from "@/lib/journey/character-options";
+import {
+  PERSONA_SECTOR_OPTIONS,
+  type PersonaSector,
+} from "@/lib/journey/persona-sectors";
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
 import {
   EMBODY_SCREEN_COUNT,
@@ -35,6 +39,7 @@ export type CharacterEmbodyDraft = {
   raceSelfDescribe: string;
   role: string;
   roleCustom: string;
+  personaSector: PersonaSector | "";
   location: string;
   aiFunction: string;
   tradeoffLoss: string;
@@ -95,7 +100,11 @@ export function isEmbodyScreenComplete(
         raceResolved
       );
     case 1:
-      return draft.role.trim().length > 0 && draft.location.trim().length > 0;
+      return (
+        draft.role.trim().length > 0 &&
+        draft.personaSector !== "" &&
+        draft.location.trim().length > 0
+      );
     case 2:
       return draft.values.length === 3;
     case 3:
@@ -265,6 +274,17 @@ export function CharacterEmbodyStep({
                 }
                 placeholder="Or describe in your own words"
                 className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
+              />
+            </ChipField>
+
+            <ChipField label={`${p.possessiveCap} sector in this ecosystem is…`}>
+              <ChipSelect
+                label=""
+                options={[...PERSONA_SECTOR_OPTIONS]}
+                value={draft.personaSector || null}
+                onChange={(personaSector) =>
+                  onChange({ personaSector: personaSector as PersonaSector })
+                }
               />
             </ChipField>
 

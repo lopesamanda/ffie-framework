@@ -1,23 +1,47 @@
 import type { CardHand } from "@/lib/journey/types";
 
-/** Use tension tag as-is — connector language is tag-agnostic. */
 function tensionTag(tension: string): string {
   return tension.trim();
 }
 
+export type OracleSynthesisParts = {
+  main: string;
+  tensions: string;
+};
+
 /**
- * Three-sentence synthesis from each drawn card's Tension field.
- * Fixed connectors work regardless of whether tags are labels, "X vs. Y", or mini-sentences.
+ * Main synthesis line uses each card's Name (title).
+ * Tensions are shown separately below.
  */
+export function buildOracleSynthesisParts(
+  hand: Pick<CardHand, "benefit" | "barrier" | "risk" | "trust">,
+): OracleSynthesisParts {
+  const benefitName = hand.benefit.name.trim();
+  const riskName = hand.risk.name.trim();
+  const barrierName = hand.barrier.name.trim();
+  const trustName = hand.trust.name.trim();
+  const trustTension = tensionTag(hand.trust.tension);
+  const benefitTension = tensionTag(hand.benefit.tension);
+  const riskTension = tensionTag(hand.risk.tension);
+  const barrierTension = tensionTag(hand.barrier.tension);
+
+  return {
+    main: `Here, ${benefitName} — but underneath, ${riskName} meets ${barrierName}, and trust in it is ${trustName}: ${trustTension}.`,
+    tensions: `Tensions inside this ecosystem: ${benefitTension} · ${riskTension} · ${barrierTension}`,
+  };
+}
+
+/** Main synthesis sentence — stored on draft and submissions. */
 export function buildOracleSynthesis(
   hand: Pick<CardHand, "benefit" | "barrier" | "risk" | "trust">,
 ): string {
-  const riskTension = tensionTag(hand.risk.tension);
-  const barrierTension = tensionTag(hand.barrier.tension);
-  const benefitTension = tensionTag(hand.benefit.tension);
-  const trustTension = tensionTag(hand.trust.tension);
+  return buildOracleSynthesisParts(hand).main;
+}
 
-  return `This future's core tension: ${riskTension} meeting ${barrierTension}. What might hold it together: ${benefitTension}. But trust in AI here means ${trustTension}.`;
+export function buildOracleSynthesisTensions(
+  hand: Pick<CardHand, "benefit" | "barrier" | "risk" | "trust">,
+): string {
+  return buildOracleSynthesisParts(hand).tensions;
 }
 
 /** True once Benefit, Risk, Trust, and Barrier are all face-up in the Oracle row. */

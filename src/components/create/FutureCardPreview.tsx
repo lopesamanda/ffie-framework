@@ -14,7 +14,7 @@ import {
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
 import { buildFutureCommonsNarrative, resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
-import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
+import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
@@ -172,6 +172,12 @@ export function FutureCardPreview({
       (draft.cardHand ? buildOracleSynthesis(draft.cardHand) : "")
     : "";
 
+  const synthesisTensionsLine =
+    showDrawSynthesis && !showCommonsNarrative
+      ? draft.drawSynthesisTensions ||
+        (draft.cardHand ? buildOracleSynthesisTensions(draft.cardHand) : "")
+      : "";
+
   const commonsNarrative = showCommonsNarrative
     ? draft.narrative.trim() || buildFutureCommonsNarrative(draft)
     : "";
@@ -185,6 +191,7 @@ export function FutureCardPreview({
     1 +
     1 +
     (commonsNarrative || synthesisLine ? 1 : 0) +
+    (synthesisTensionsLine ? 1 : 0) +
     (showCardTags && draft.cardHand ? 1 : 0) +
     (draft.publicPromise || hiddenFunctionDisplay || capabilityName ? 1 : 0) +
     (draft.imageDataUrl ? 1 : 0);
@@ -218,6 +225,11 @@ export function FutureCardPreview({
               seal={revealAnimated}
               sealDelay={sealDelay}
             />
+            {draft.personaSector && (
+              <span className="rounded-full border border-ffie-line bg-ffie-bg px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-ffie-muted">
+                {draft.personaSector}
+              </span>
+            )}
             {draft.location && (
               <span className="text-xs text-ffie-muted">
                 {draft.location} · {FUTURE_HORIZON_LABEL}
@@ -255,6 +267,11 @@ export function FutureCardPreview({
             >
               {commonsNarrative || synthesisLine}
             </p>
+            {synthesisTensionsLine && !showCommonsNarrative && (
+              <p className={`mt-2 text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                {synthesisTensionsLine}
+              </p>
+            )}
           </Wrap>
         )}
 
