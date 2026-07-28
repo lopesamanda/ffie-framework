@@ -1,11 +1,12 @@
 "use client";
 
+import { motion, useReducedMotion } from "framer-motion";
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
+import { CATEGORY_STYLES } from "@/lib/category-styles";
 import {
   FFIE_CARD_TEXT,
-  ffieCardDivider,
   ffieCardSectionLabel,
   ffieCardShell,
   ffieCardTitle,
@@ -17,6 +18,51 @@ import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
 import type { CardHand } from "@/lib/journey/types";
 import type { FutureQuadrant } from "@/types/future";
+import type { NarrativeCard } from "@/data/narrative-cards";
+
+const REVEAL_STAGGER = 0.08;
+
+function revealItem(index: number, reduceMotion: boolean | null) {
+  if (reduceMotion) {
+    return { initial: false as const, animate: { opacity: 1, y: 0 } };
+  }
+  return {
+    initial: { opacity: 0, y: 10 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const, delay: index * REVEAL_STAGGER },
+  };
+}
+
+function DrawnCardTags({ hand }: { hand: CardHand }) {
+  const cards: NarrativeCard[] = [
+    hand.risk,
+    hand.benefit,
+    hand.trust,
+    hand.barrier,
+    hand.transversal,
+  ];
+
+  return (
+    <div className="mt-3 flex flex-wrap gap-1.5">
+      {cards.map((card) => {
+        const style = CATEGORY_STYLES[card.category];
+        return (
+          <span
+            key={card.id}
+            className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+            style={{
+              borderColor: style.border,
+              backgroundColor: style.bg,
+              color: style.text,
+            }}
+          >
+            {card.name}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 export function FutureCardPreview({
   draft,
@@ -24,8 +70,7 @@ export function FutureCardPreview({
   compact = false,
   showDrawSynthesis = true,
   showCardProvenance = true,
-  showEcosystemReflection = false,
-  onEcosystemReflectionChange,
+  revealAnimated = false,
 }: {
   draft: JourneyDraft;
   id?: string;
@@ -34,10 +79,10 @@ export function FutureCardPreview({
   showDrawSynthesis?: boolean;
   /** Hide Card Provenance until the full Oracle reveal sequence is complete. */
   showCardProvenance?: boolean;
-  /** Optional ecosystem-level reflection on the final output card. */
-  showEcosystemReflection?: boolean;
-  onEcosystemReflectionChange?: (value: string) => void;
+  /** Staggered reveal on the final Future output card. */
+  revealAnimated?: boolean;
 }) {
+  const reduceMotion = useReducedMotion();
   const quadrant: FutureQuadrant = quadrantFromPosition(
     draft.position.x,
     draft.position.y,
@@ -58,93 +103,85 @@ export function FutureCardPreview({
   const hiddenFunctionDisplay =
     composeHiddenFunction(draft) || draft.hiddenFunction;
 
-  const personaName = draft.characterName.trim() || "your persona";
+  const Wrap = revealAnimated ? motion.div : "div";
+  let revealIndex = 0;
+  const nextReveal = () => {
+    const current = revealIndex;
+    revealIndex += 1;
+    return revealItem(current, reduceMotion);
+  };
 
   return (
     <div
       id={id}
       className={`${ffieCardShell} bg-ffie-surface ${compact ? "p-5" : "p-6"}`}
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <QuadrantPill quadrant={quadrant} />
-        {draft.location && (
-          <span className="text-xs text-ffie-muted">
-            {draft.location} · {FUTURE_HORIZON_LABEL}
-          </span>
+      <Wrap {...(revealAnimated ? nextReveal() : {})}>
+        <div className="flex flex-wrap items-center gap-2">
+          <QuadrantPill quadrant={quadrant} />
+          {draft.location && (
+            <span className="text-xs text-ffie-muted">
+              {draft.location} · {FUTURE_HORIZON_LABEL}
+            </span>
+          )}
+        </div>
+      </Wrap>
+
+      <Wrap {...(revealAnimated ? nextReveal() : {})}>
+        <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
+          {title}
+        </h3>
+
+        {(draft.characterName || draft.role) && (
+          <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
+            {[
+              draft.characterName,
+              draft.characterAge ? `${draft.characterAge}` : null,
+              draft.role,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
         )}
-      </div>
-
-      <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
-        {title}
-      </h3>
-
-      {(draft.characterName || draft.role) && (
-        <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
-          {[
-            draft.characterName,
-            draft.characterAge ? `${draft.characterAge}` : null,
-            draft.role,
-          ]
-            .filter(Boolean)
-            .join(" · ")}
-        </p>
-      )}
+      </Wrap>
 
       {synthesisLine && (
-        <p
-          className={`mt-3 text-sm font-medium italic text-ffie-accent ${FFIE_CARD_TEXT}`}
-        >
-          {synthesisLine}
-        </p>
-      )}
-
-      {draft.narrative && (
-        <>
-          <div className={`my-4 ${ffieCardDivider}`} />
-          <p className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
-            {draft.narrative}
+        <Wrap {...(revealAnimated ? nextReveal() : {})}>
+          <p
+            className={`mt-3 text-sm font-medium italic text-ffie-accent ${FFIE_CARD_TEXT}`}
+          >
+            {synthesisLine}
           </p>
-        </>
+        </Wrap>
       )}
 
-      {(draft.publicPromise || draft.artifactGoalPitch || hiddenFunctionDisplay) && (
-        <div className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}>
-          <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
-            <p className={ffieCardSectionLabel + " text-ffie-accent"}>
-              Goal
-            </p>
-            <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-              {draft.artifactGoalPitch || draft.publicPromise || "—"}
-            </p>
-          </div>
-          <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
-            <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
-              Weakness
-            </p>
-            <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-              {hiddenFunctionDisplay || "—"}
-            </p>
-          </div>
-        </div>
+      {draft.cardHand && (
+        <Wrap {...(revealAnimated ? nextReveal() : {})}>
+          <DrawnCardTags hand={draft.cardHand} />
+        </Wrap>
       )}
 
-      {showEcosystemReflection && onEcosystemReflectionChange && (
-        <label className="mt-4 block space-y-2">
-          <span className={`text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
-            Zoom out: beyond {personaName}, who else does this future touch —
-            and are they included, or left out?
-            <span className="ml-1 text-xs">(optional)</span>
-          </span>
-          <textarea
-            value={draft.ecosystemImpactReflection}
-            onChange={(event) =>
-              onEcosystemReflectionChange(event.target.value)
-            }
-            rows={3}
-            placeholder="A sentence or two — only if it feels useful."
-            className="w-full resize-none rounded-xl border border-ffie-line bg-ffie-bg/60 px-4 py-3 text-sm outline-none focus:border-ffie-accent/40"
-          />
-        </label>
+      {(draft.publicPromise || hiddenFunctionDisplay) && (
+        <Wrap {...(revealAnimated ? nextReveal() : {})}>
+          <div className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}>
+            <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
+              <p className={ffieCardSectionLabel + " text-ffie-accent"}>
+                Goal
+              </p>
+              <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                {draft.publicPromise || "—"}
+              </p>
+            </div>
+            <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
+              <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
+                Weakness
+              </p>
+              <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                {hiddenFunctionDisplay || "—"}
+              </p>
+            </div>
+          </div>
+        </Wrap>
       )}
 
       {resolveArtifactValues(draft).length > 0 && (

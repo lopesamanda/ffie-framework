@@ -36,6 +36,24 @@ type AiPowerSelectorProps = {
   onGoalPitchChange: (value: string) => void;
 };
 
+function CheckIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
 export function AiPowerSelector({
   values,
   artifactType,
@@ -93,24 +111,29 @@ export function AiPowerSelector({
       </div>
 
       {selectedPower && powerCards.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {powerCards.map((card) => (
-            <SelectableCapabilityCard
-              key={card.id}
-              card={card}
-              selected={selectedCapabilityId === card.id}
-              dayToDayDescription={
-                selectedCapabilityId === card.id ? dayToDayDescription : ""
-              }
-              artifactGoalPitch={
-                selectedCapabilityId === card.id ? artifactGoalPitch : ""
-              }
-              artifactName={displayName}
-              onSelect={() => onSelectCapability(card.id)}
-              onDayToDayChange={onDayToDayChange}
-              onGoalPitchChange={onGoalPitchChange}
-            />
-          ))}
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-ffie-ink">
+            Choose one capability below to continue:
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {powerCards.map((card) => (
+              <SelectableCapabilityCard
+                key={card.id}
+                card={card}
+                selected={selectedCapabilityId === card.id}
+                dayToDayDescription={
+                  selectedCapabilityId === card.id ? dayToDayDescription : ""
+                }
+                artifactGoalPitch={
+                  selectedCapabilityId === card.id ? artifactGoalPitch : ""
+                }
+                artifactName={displayName}
+                onSelect={() => onSelectCapability(card.id)}
+                onDayToDayChange={onDayToDayChange}
+                onGoalPitchChange={onGoalPitchChange}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -138,10 +161,10 @@ function SelectableCapabilityCard({
 }) {
   return (
     <div
-      className={`rounded-xl border bg-ffie-bg/40 transition ${
+      className={`rounded-xl border-2 bg-ffie-bg/40 transition ${
         selected
-          ? "border-ffie-ink bg-ffie-surface shadow-[0_0_0_1px_rgba(35,19,82,0.08)]"
-          : "border-ffie-line/80 hover:border-ffie-accent/40"
+          ? "border-ffie-accent bg-[#f6f4ff] shadow-[0_0_0_3px_rgba(110,82,196,0.18)]"
+          : "border-ffie-line/80 hover:border-ffie-accent/35"
       }`}
       style={{ borderTopWidth: 3, borderTopColor: card.color }}
     >
@@ -151,60 +174,66 @@ function SelectableCapabilityCard({
         aria-pressed={selected}
         className="w-full px-4 py-3 text-left"
       >
-        <p className={`${ffieCardCategory} text-ffie-muted`}>Capability</p>
-        <h4 className={`mt-1 ${ffieCardTitle} text-sm ${FFIE_CARD_TEXT}`}>
-          {card.name}
-        </h4>
-        {!selected && (
-          <p className="mt-2 text-xs text-ffie-accent">Tap to select</p>
-        )}
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className={`${ffieCardCategory} text-ffie-muted`}>Capability</p>
+            <h4 className={`mt-1 ${ffieCardTitle} text-sm ${FFIE_CARD_TEXT}`}>
+              {card.name}
+            </h4>
+          </div>
+          {selected && (
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-ffie-accent text-white">
+              <CheckIcon />
+            </span>
+          )}
+        </div>
+
+        <p
+          className={`mt-2 ${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}
+        >
+          {card.description}
+        </p>
+
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          {card.tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-ffie-line bg-ffie-accent-soft/60 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        <div className={`my-3 ${ffieCardDivider}`} />
+
+        <p className={ffieCardSectionLabel}>Example</p>
+        <p
+          className={`mt-2 text-sm italic leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
+        >
+          {card.examples[0]}
+        </p>
+
+        <div className="mt-3">
+          <p className={`${ffieCardCategory} text-ffie-muted`}>
+            Guiding questions
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {card.artifactGuidingQuestions.map((question) => (
+              <li
+                key={question}
+                className={`text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
+              >
+                · {question}
+              </li>
+            ))}
+          </ul>
+        </div>
       </button>
 
       {selected && (
-        <div className="border-t border-ffie-line/60 px-4 pb-4 pt-3">
-          <p
-            className={`${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}
-          >
-            {card.description}
-          </p>
-
-          <div className="mt-2.5 flex flex-wrap gap-1.5">
-            {card.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full border border-ffie-line bg-ffie-accent-soft/60 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          <div className={`my-3 ${ffieCardDivider}`} />
-
-          <p className={ffieCardSectionLabel}>Example</p>
-          <p
-            className={`mt-2 text-sm italic leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
-          >
-            {card.examples[0]}
-          </p>
-
-          <div className="mt-3">
-            <p className={`${ffieCardCategory} text-ffie-muted`}>
-              Guiding questions
-            </p>
-            <ul className="mt-2 space-y-1.5">
-              {card.artifactGuidingQuestions.map((question) => (
-                <li
-                  key={question}
-                  className={`text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
-                >
-                  · {question}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <label className="mt-4 block space-y-2">
+        <div className="border-t border-ffie-accent/25 px-4 pb-4 pt-3">
+          <label className="block space-y-2">
             <span className="text-sm leading-relaxed text-ffie-ink">
               Describe what it does, day to day, now that you&apos;ve chosen its
               power.

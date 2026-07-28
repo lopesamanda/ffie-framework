@@ -14,9 +14,7 @@ import {
 } from "@/components/create/design/CategoryRegisterTiles";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
-import {
-  MatrixArrivalScene,
-} from "@/components/create/design/MatrixArrivalScene";
+import { TimeTravelTransition } from "@/components/create/design/TimeTravelTransition";
 import { MATRIX_FRAMEWORK_INTRO } from "@/lib/journey/matrix-copy";
 import {
   OracleDrawRecap,
@@ -255,7 +253,7 @@ export function CreateJourney() {
           fear: draft.fear,
           values: draft.values,
           artifactName: draft.artifactName,
-          publicPromise: draft.artifactGoalPitch || draft.publicPromise,
+          publicPromise: draft.publicPromise,
           hiddenFunction: composeHiddenFunction(draft) || draft.hiddenFunction,
           artifactValues: resolveArtifactValues(draft),
           tension: draft.combinedTension,
@@ -273,12 +271,7 @@ export function CreateJourney() {
               ]
             : [],
           drawSynthesis: draft.drawSynthesis,
-          reflectionText: [
-            draft.reflectionText.trim(),
-            draft.ecosystemImpactReflection.trim(),
-          ]
-            .filter(Boolean)
-            .join("\n\n"),
+          reflectionText: draft.reflectionText.trim(),
           imageDataUrl: draft.imageDataUrl,
           submitToCommons: true,
         }),
@@ -629,16 +622,16 @@ export function CreateJourney() {
                       </FfieButton>
                     </div>
                   ) : (
-                  <MatrixArrivalScene>
+                  <TimeTravelTransition
+                    startYear={new Date().getFullYear()}
+                    endYear={draft.futureYear}
+                  >
                   <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
                     <FutureCardPreview
                       draft={draft}
                       id="future-output-card"
                       compact
-                      showEcosystemReflection
-                      onEcosystemReflectionChange={(ecosystemImpactReflection) =>
-                        update({ ecosystemImpactReflection })
-                      }
+                      revealAnimated
                     />
                     <div>
                       <p className="mb-4 text-sm leading-relaxed text-ffie-muted">
@@ -684,7 +677,7 @@ export function CreateJourney() {
                           : "Continue to Discovery"}
                     </FfieButton>
                   </div>
-                  </MatrixArrivalScene>
+                  </TimeTravelTransition>
                   )}
                 </CreateStageShell>
               )}
