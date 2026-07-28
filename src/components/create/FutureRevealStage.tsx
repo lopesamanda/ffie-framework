@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
+import { FutureWorkWithPanel } from "@/components/create/FutureWorkWithPanel";
 import { InteractiveMatrixReveal } from "@/components/create/InteractiveMatrixReveal";
 import { MATRIX_FRAMEWORK_INTRO } from "@/lib/journey/matrix-copy";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -20,6 +21,7 @@ export function FutureRevealStage({
 }) {
   const reduceMotion = useReducedMotion();
   const stageRef = useRef<HTMLDivElement>(null);
+  const outputLayoutRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const [cardRevealed, setCardRevealed] = useState(false);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
@@ -75,28 +77,38 @@ export function FutureRevealStage({
       )}
 
       {cardRevealed && (
-        <motion.div
-          ref={cardRef}
-          className="mx-auto w-full max-w-md px-1 sm:px-0"
-          style={{ transformOrigin }}
-          initial={
-            reduceMotion ? false : { scale: 0.06, opacity: 0 }
-          }
-          animate={{ scale: 1, opacity: 1 }}
-          transition={
-            reduceMotion
-              ? { duration: 0 }
-              : { duration: 0.52, ease: [0.16, 1, 0.3, 1] }
-          }
+        <div
+          ref={outputLayoutRef}
+          className="relative mx-auto w-full max-w-4xl lg:flex lg:items-start lg:gap-6 xl:gap-8"
         >
-          <FutureCardPreview
-            draft={draft}
-            id={cardId}
-            compact
-            revealAnimated={!reduceMotion}
-            showCommonsNarrative
+          <motion.div
+            ref={cardRef}
+            className="mx-auto w-full max-w-md shrink-0 px-1 sm:px-0 lg:mx-0"
+            style={{ transformOrigin }}
+            initial={
+              reduceMotion ? false : { scale: 0.06, opacity: 0 }
+            }
+            animate={{ scale: 1, opacity: 1 }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { duration: 0.52, ease: [0.16, 1, 0.3, 1] }
+            }
+          >
+            <FutureCardPreview
+              draft={draft}
+              id={cardId}
+              compact
+              revealAnimated={!reduceMotion}
+              showCommonsNarrative
+            />
+          </motion.div>
+
+          <FutureWorkWithPanel
+            layoutRef={outputLayoutRef}
+            sourceRef={cardRef}
           />
-        </motion.div>
+        </div>
       )}
 
       {cardRevealed && children}
