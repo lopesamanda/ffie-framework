@@ -13,7 +13,8 @@ import {
 } from "@/lib/journey/character-options";
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
 import type { AiCapabilityPowerId } from "@/lib/journey/ai-capability-clusters";
-import { composeHiddenFunction, cleanClause } from "@/lib/journey/hidden-function";
+import { composeHiddenFunction } from "@/lib/journey/hidden-function";
+import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
 import { getFutureHorizonYear } from "@/lib/journey/future-horizon";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
@@ -91,7 +92,7 @@ export type JourneyDraft = {
   dayToDayReflection: string;
   /** Day-to-day description after choosing a capability. */
   publicPromise: string;
-  /** One-line impact pitch — what the artifact claims to deliver. */
+  /** Optional one-line pitch — what the artifact claims to deliver. */
   artifactGoalPitch: string;
   hiddenFunction: string;
   /** Value chip selected as "pushed too far" on Hidden Function step. */
@@ -118,8 +119,6 @@ export type JourneyDraft = {
   submittedId: string | null;
   title: string;
   narrative: string;
-  /** Optional ecosystem-level reflection on the final output card. */
-  ecosystemImpactReflection: string;
   /** Horizon year for storage (current year + 10); user-facing copy uses FUTURE_HORIZON_LABEL. */
   futureYear: number;
 };
@@ -222,18 +221,9 @@ export function buildTitle(artifactName: string, characterName: string): string 
 }
 
 export function buildNarrative(draft: JourneyDraft): string {
-  const who = draft.characterName || "Someone";
-  const where = draft.location || "somewhere in the world";
-  const role = draft.role || "a participant in an innovation ecosystem";
-  const artifact = draft.artifactName || "an unnamed artifact";
-  const hiddenFunction =
-    composeHiddenFunction(draft) || draft.hiddenFunction || "carries a tension the surface never names";
-  const goalPitch =
-    cleanClause(draft.artifactGoalPitch) ||
-    cleanClause(draft.publicPromise) ||
-    "something better";
-
-  return `${who} is ${role} in ${where}, ${draft.futureYear}. ${artifact} promises ${goalPitch}, but ${hiddenFunction}. The cards drawn — ${draft.combinedTension || "multiple tensions"} — still echo in how this future holds together.`;
+  if (draft.drawSynthesis.trim()) return draft.drawSynthesis.trim();
+  if (draft.cardHand) return buildOracleSynthesis(draft.cardHand);
+  return draft.title || "An unnamed future";
 }
 
 export function buildReflectionQuestion(draft: JourneyDraft): string {
@@ -340,7 +330,6 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     submittedId: null,
     title: "",
     narrative: "",
-    ecosystemImpactReflection: "",
     futureYear: getFutureHorizonYear(),
   };
 }
@@ -387,12 +376,11 @@ export function loadDraft(): JourneyDraft | null {
       selectedAiPower: parsed.selectedAiPower ?? "",
       selectedAiCapability: parsed.selectedAiCapability ?? "",
       values: parsed.values ?? [],
-      artifactGoalPitch: parsed.artifactGoalPitch ?? "",
       futureYear: parsed.futureYear ?? getFutureHorizonYear(),
       drawSynthesis: parsed.drawSynthesis ?? "",
       hiddenFunctionExtremeValue: parsed.hiddenFunctionExtremeValue ?? "",
       hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",
-      ecosystemImpactReflection: parsed.ecosystemImpactReflection ?? "",
+      artifactGoalPitch: parsed.artifactGoalPitch ?? "",
     };
   } catch {
     return null;

@@ -1,12 +1,12 @@
 "use client";
 
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
-import {
-  composeHiddenFunction,
-  hiddenFunctionPrompt,
-} from "@/lib/journey/hidden-function";
+import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import type { JourneyDraft } from "@/lib/journey/types";
-import { CollapsibleOracleReferenceCard } from "@/components/create/design/OracleDeckFan";
+import {
+  OracleFanRevealedCard,
+  OracleFanTransversalCard,
+} from "@/components/create/design/OracleDeckFan";
 import { NarrativeBlank } from "@/components/create/NarrativeBlank";
 
 export function HiddenFunctionStep({
@@ -26,14 +26,15 @@ export function HiddenFunctionStep({
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap gap-3">
-        <CollapsibleOracleReferenceCard card={hand.risk} />
-        <CollapsibleOracleReferenceCard card={hand.barrier} />
-        <CollapsibleOracleReferenceCard card={hand.transversal} />
+        <OracleFanRevealedCard card={hand.risk} />
+        <OracleFanRevealedCard card={hand.barrier} />
+        <OracleFanTransversalCard card={hand.transversal} />
       </div>
 
       <div className="space-y-3">
         <p className="text-sm leading-relaxed text-ffie-ink">
-          {hiddenFunctionPrompt(draft)}
+          Which of these values, pushed too far, might turn into something
+          else?
         </p>
         <div className="flex flex-wrap gap-2">
           {values.map((value) => {

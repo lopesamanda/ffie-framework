@@ -1,41 +1,23 @@
 import type { CardHand } from "@/lib/journey/types";
-import type { NarrativeCard } from "@/data/narrative-cards";
 
-const AFFIRMING_TRUST_IDS = new Set([
-  "instrumental-trust",
-  "conditional-trust",
-]);
-
-/** Primary tension clause — lowercase for mid-sentence use. */
-function tensionClause(tension: string): string {
-  const primary = tension.split(";")[0]?.trim() ?? tension;
-  if (!primary) return primary;
-  return primary.charAt(0).toLowerCase() + primary.slice(1);
-}
-
-function isAffirmingTrust(trust: NarrativeCard): boolean {
-  return AFFIRMING_TRUST_IDS.has(trust.id);
+/** Use tension tag as-is — connector language is tag-agnostic. */
+function tensionTag(tension: string): string {
+  return tension.trim();
 }
 
 /**
- * Two-sentence synthesis from each drawn card's Tension field.
- * Sentence 1: risk + barrier. Sentence 2: benefit + trust (affirming or skeptical).
+ * Three-sentence synthesis from each drawn card's Tension field.
+ * Fixed connectors work regardless of whether tags are labels, "X vs. Y", or mini-sentences.
  */
 export function buildOracleSynthesis(
   hand: Pick<CardHand, "benefit" | "barrier" | "risk" | "trust">,
 ): string {
-  const riskTension = tensionClause(hand.risk.tension);
-  const barrierTension = tensionClause(hand.barrier.tension);
-  const benefitTension = tensionClause(hand.benefit.tension);
-  const trustTension = tensionClause(hand.trust.tension);
+  const riskTension = tensionTag(hand.risk.tension);
+  const barrierTension = tensionTag(hand.barrier.tension);
+  const benefitTension = tensionTag(hand.benefit.tension);
+  const trustTension = tensionTag(hand.trust.tension);
 
-  const sentence1 = `In this future, ${riskTension} collides with ${barrierTension}.`;
-
-  const sentence2 = isAffirmingTrust(hand.trust)
-    ? `But ${benefitTension} still holds — because that's what trust in AI looks like here: ${trustTension}.`
-    : `Yet ${benefitTension} isn't enough — trust in AI still lingers as ${trustTension}.`;
-
-  return `${sentence1} ${sentence2}`;
+  return `This future's core tension: ${riskTension} meeting ${barrierTension}. What might hold it together: ${benefitTension}. But trust in AI here means ${trustTension}.`;
 }
 
 /** True once Benefit, Risk, Trust, and Barrier are all face-up in the Oracle row. */
