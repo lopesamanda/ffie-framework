@@ -15,15 +15,14 @@ import {
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { TimeTravelTransition } from "@/components/create/design/TimeTravelTransition";
+import { FutureRevealStage } from "@/components/create/FutureRevealStage";
 import { PhaseSweepOverlay } from "@/components/motion/PhaseSweepOverlay";
 import { ArtifactMaterializePanel } from "@/components/create/ArtifactMaterializePanel";
-import { MATRIX_FRAMEWORK_INTRO } from "@/lib/journey/matrix-copy";
 import {
   OracleDrawRecap,
   OracleDrawReflectionPrompt,
 } from "@/components/create/design/OracleDrawRecap";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
-import { MatrixReveal } from "@/components/create/MatrixReveal";
 import { LikertQuestion } from "@/components/create/LikertQuestion";
 import {
   CharacterEmbodyStep,
@@ -658,21 +657,7 @@ export function CreateJourney() {
                     startYear={new Date().getFullYear()}
                     endYear={draft.futureYear}
                   >
-                  <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-                    <FutureCardPreview
-                      draft={draft}
-                      id="future-output-card"
-                      compact
-                      revealAnimated
-                      showCardTags
-                    />
-                    <div>
-                      <p className="mb-4 text-sm leading-relaxed text-ffie-muted">
-                        {MATRIX_FRAMEWORK_INTRO}
-                      </p>
-                      <MatrixReveal position={draft.position} />
-                    </div>
-                  </div>
+                  <FutureRevealStage draft={draft} cardId="future-output-card" />
                   <ArtifactMaterializePanel
                     draft={draft}
                     onImageChange={(imageDataUrl) => update({ imageDataUrl })}

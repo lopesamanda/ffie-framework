@@ -1,0 +1,90 @@
+"use client";
+
+import { useLayoutEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { FutureCardPreview } from "@/components/create/FutureCardPreview";
+import { InteractiveMatrixReveal } from "@/components/create/InteractiveMatrixReveal";
+import { MATRIX_FRAMEWORK_INTRO } from "@/lib/journey/matrix-copy";
+import type { JourneyDraft } from "@/lib/journey/types";
+
+type Anchor = { x: number; y: number };
+
+export function FutureRevealStage({
+  draft,
+  cardId = "future-output-card",
+}: {
+  draft: JourneyDraft;
+  cardId?: string;
+}) {
+  const reduceMotion = useReducedMotion();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [cardRevealed, setCardRevealed] = useState(false);
+  const [anchor, setAnchor] = useState<Anchor | null>(null);
+  const [transformOrigin, setTransformOrigin] = useState<string>("center center");
+
+  const handleDotClick = (dotCenter: Anchor) => {
+    setAnchor(dotCenter);
+    setCardRevealed(true);
+  };
+
+  useLayoutEffect(() => {
+    if (!cardRevealed || !anchor || !stageRef.current || !cardRef.current) {
+      return;
+    }
+
+    const stageRect = stageRef.current.getBoundingClientRect();
+    const cardRect = cardRef.current.getBoundingClientRect();
+    const originX = anchor.x - (cardRect.left - stageRect.left);
+    const originY = anchor.y - (cardRect.top - stageRect.top);
+    setTransformOrigin(`${originX}px ${originY}px`);
+  }, [anchor, cardRevealed]);
+
+  return (
+    <div ref={stageRef} className="space-y-6">
+      <p className="max-w-3xl text-sm leading-relaxed text-ffie-muted">
+        {MATRIX_FRAMEWORK_INTRO}
+      </p>
+
+      <InteractiveMatrixReveal
+        position={draft.position}
+        interactive={!cardRevealed}
+        onDotClick={handleDotClick}
+        prominent
+        stageRef={stageRef}
+      />
+
+      {!cardRevealed && (
+        <p className="text-center text-sm text-ffie-muted">
+          Click the dot on the matrix to reveal your future.
+        </p>
+      )}
+
+      {cardRevealed && (
+        <motion.div
+          ref={cardRef}
+          className="mx-auto w-full max-w-xl"
+          style={{ transformOrigin }}
+          initial={
+            reduceMotion ? false : { scale: 0.06, opacity: 0 }
+          }
+          animate={{ scale: 1, opacity: 1 }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: 0.52, ease: [0.16, 1, 0.3, 1] }
+          }
+        >
+          <FutureCardPreview
+            draft={draft}
+            id={cardId}
+            compact
+            revealAnimated={!reduceMotion}
+            showCardTags
+            showCommonsNarrative
+          />
+        </motion.div>
+      )}
+    </div>
+  );
+}

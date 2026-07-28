@@ -13,6 +13,7 @@ import {
 } from "@/lib/card-layout";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
+import { buildFutureCommonsNarrative, resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
 import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
@@ -136,6 +137,7 @@ export function FutureCardPreview({
   showDrawSynthesis = true,
   showCardProvenance = true,
   showCardTags = false,
+  showCommonsNarrative = false,
   revealAnimated = false,
 }: {
   draft: JourneyDraft;
@@ -147,6 +149,8 @@ export function FutureCardPreview({
   showCardProvenance?: boolean;
   /** Colored card-name tags below synthesis — final output only, not side preview. */
   showCardTags?: boolean;
+  /** Future Commons–style narrative paragraph instead of draw synthesis. */
+  showCommonsNarrative?: boolean;
   /** Staggered reveal on the final Future output card. */
   revealAnimated?: boolean;
 }) {
@@ -163,10 +167,16 @@ export function FutureCardPreview({
         ? `A future for ${draft.characterName}`
         : "Your future");
 
-  const synthesisLine = showDrawSynthesis
+  const synthesisLine = showDrawSynthesis && !showCommonsNarrative
     ? draft.drawSynthesis ||
       (draft.cardHand ? buildOracleSynthesis(draft.cardHand) : "")
     : "";
+
+  const commonsNarrative = showCommonsNarrative
+    ? draft.narrative.trim() || buildFutureCommonsNarrative(draft)
+    : "";
+
+  const capabilityName = resolveCapabilityName(draft.selectedAiCapability);
 
   const hiddenFunctionDisplay =
     composeHiddenFunction(draft) || draft.hiddenFunction;
@@ -174,9 +184,9 @@ export function FutureCardPreview({
   const revealSectionCount =
     1 +
     1 +
-    (synthesisLine ? 1 : 0) +
+    (commonsNarrative || synthesisLine ? 1 : 0) +
     (showCardTags && draft.cardHand ? 1 : 0) +
-    (draft.publicPromise || hiddenFunctionDisplay ? 1 : 0) +
+    (draft.publicPromise || hiddenFunctionDisplay || capabilityName ? 1 : 0) +
     (draft.imageDataUrl ? 1 : 0);
 
   const sealDelay = revealAnimated
@@ -234,12 +244,16 @@ export function FutureCardPreview({
           )}
         </Wrap>
 
-        {synthesisLine && (
+        {(commonsNarrative || synthesisLine) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <p
-              className={`mt-3 text-sm font-medium italic text-ffie-accent ${FFIE_CARD_TEXT}`}
+              className={`mt-3 text-sm leading-relaxed ${
+                showCommonsNarrative
+                  ? "text-ffie-ink"
+                  : "font-medium italic text-ffie-accent"
+              } ${FFIE_CARD_TEXT}`}
             >
-              {synthesisLine}
+              {commonsNarrative || synthesisLine}
             </p>
           </Wrap>
         )}
@@ -250,26 +264,38 @@ export function FutureCardPreview({
           </Wrap>
         )}
 
-        {(draft.publicPromise || hiddenFunctionDisplay) && (
+        {(draft.publicPromise || hiddenFunctionDisplay || capabilityName) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <div
-              className={`mt-4 grid gap-3 text-sm ${compact ? "" : "md:grid-cols-2"}`}
-            >
-              <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
-                <p className={ffieCardSectionLabel + " text-ffie-accent"}>
-                  Goal
-                </p>
-                <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-                  {draft.publicPromise || "—"}
-                </p>
-              </div>
-              <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
-                <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
-                  Weakness
-                </p>
-                <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-                  {hiddenFunctionDisplay || "—"}
-                </p>
+            <div className="mt-4 space-y-3 text-sm">
+              {capabilityName && (
+                <div className="rounded-[12px] border border-ffie-line/80 bg-ffie-bg px-[18px] py-3">
+                  <p className={ffieCardSectionLabel + " text-ffie-muted"}>
+                    AI function
+                  </p>
+                  <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                    {capabilityName}
+                  </p>
+                </div>
+              )}
+              <div
+                className={`grid gap-3 ${compact ? "" : "md:grid-cols-2"}`}
+              >
+                <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
+                  <p className={ffieCardSectionLabel + " text-ffie-accent"}>
+                    Artifact goal
+                  </p>
+                  <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                    {draft.publicPromise || "—"}
+                  </p>
+                </div>
+                <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
+                  <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
+                    Artifact weakness
+                  </p>
+                  <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                    {hiddenFunctionDisplay || "—"}
+                  </p>
+                </div>
               </div>
             </div>
           </Wrap>

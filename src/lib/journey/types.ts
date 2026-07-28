@@ -14,7 +14,8 @@ import {
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
 import type { AiCapabilityPowerId } from "@/lib/journey/ai-capability-clusters";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
-import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
+import { buildFutureCommonsNarrative } from "@/lib/journey/future-commons-narrative";
+import { buildFutureCommonsNarrative } from "@/lib/journey/future-commons-narrative";
 import { getFutureHorizonYear } from "@/lib/journey/future-horizon";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
@@ -221,9 +222,7 @@ export function buildTitle(artifactName: string, characterName: string): string 
 }
 
 export function buildNarrative(draft: JourneyDraft): string {
-  if (draft.drawSynthesis.trim()) return draft.drawSynthesis.trim();
-  if (draft.cardHand) return buildOracleSynthesis(draft.cardHand);
-  return draft.title || "An unnamed future";
+  return buildFutureCommonsNarrative(draft);
 }
 
 export function buildReflectionQuestion(draft: JourneyDraft): string {
