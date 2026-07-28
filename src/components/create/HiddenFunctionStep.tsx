@@ -3,10 +3,6 @@
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import type { JourneyDraft } from "@/lib/journey/types";
-import {
-  OracleFanRevealedCard,
-  OracleFanTransversalCard,
-} from "@/components/create/design/OracleDeckFan";
 import { NarrativeBlank } from "@/components/create/NarrativeBlank";
 import { SettleButton } from "@/components/motion/SettleButton";
 
@@ -19,23 +15,16 @@ export function HiddenFunctionStep({
   onSelectExtremeValue: (value: string) => void;
   onCompletionChange: (completion: string) => void;
 }) {
-  const hand = draft.cardHand!;
   const values = resolveArtifactValues(draft);
   const selectedValue = draft.hiddenFunctionExtremeValue;
   const artifactName = draft.artifactName.trim() || "this artifact";
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap gap-3">
-        <OracleFanRevealedCard card={hand.risk} />
-        <OracleFanRevealedCard card={hand.barrier} />
-        <OracleFanTransversalCard card={hand.transversal} />
-      </div>
-
       <div className="space-y-3">
         <p className="text-sm leading-relaxed text-ffie-ink">
-          Which of these values, pushed too far, might turn into something
-          else?
+          Which of these values, if it went too far, would reveal this
+          artifact&apos;s shadow side?
         </p>
         <div className="flex flex-wrap gap-2">
           {values.map((value) => {
@@ -59,11 +48,11 @@ export function HiddenFunctionStep({
 
       {selectedValue && (
         <NarrativeBlank
-          layout="stacked"
-          before={`Pushed to its extreme, ${selectedValue} means ${artifactName} quietly`}
+          before={`Every value has a shadow side. If ${selectedValue} in ${artifactName} went too far, it would `}
+          after="."
           value={draft.hiddenFunctionCompletion}
           onChange={onCompletionChange}
-          placeholder="does something it never advertises"
+          placeholder="prioritize speed over safety"
         />
       )}
 

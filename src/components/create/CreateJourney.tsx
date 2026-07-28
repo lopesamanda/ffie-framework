@@ -43,6 +43,7 @@ import {
 } from "@/data/research-findings-seed";
 import {
   ARTIFACT_VALUE_OPTIONS,
+  ARTIFACT_VALUE_OTHER,
   isArtifactValuesComplete,
   resolveArtifactValues,
 } from "@/lib/journey/artifact-options";
@@ -472,14 +473,32 @@ export function CreateJourney() {
                       <ChipField label="">
                         <ChipSelect
                           label=""
-                          options={[...ARTIFACT_VALUE_OPTIONS]}
+                          options={[...ARTIFACT_VALUE_OPTIONS, ARTIFACT_VALUE_OTHER]}
                           value={draft.artifactValues}
                           onChange={(artifactValues) =>
-                            update({ artifactValues })
+                            update({
+                              artifactValues,
+                              artifactValueOther: artifactValues.includes(
+                                ARTIFACT_VALUE_OTHER,
+                              )
+                                ? draft.artifactValueOther
+                                : "",
+                            })
                           }
                           multi
                           max={3}
                         />
+                        {draft.artifactValues.includes(ARTIFACT_VALUE_OTHER) && (
+                          <input
+                            type="text"
+                            value={draft.artifactValueOther}
+                            onChange={(event) =>
+                              update({ artifactValueOther: event.target.value })
+                            }
+                            placeholder="Describe your value"
+                            className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
+                          />
+                        )}
                         <p className="text-xs text-ffie-muted">
                           {resolveArtifactValues(draft).length}/3 selected
                           (minimum 2)
@@ -488,7 +507,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 4 && draft.cardHand && (
+                  {draft.creationStep === 4 && (
                     <HiddenFunctionStep
                       draft={draft}
                       onSelectExtremeValue={(hiddenFunctionExtremeValue) =>

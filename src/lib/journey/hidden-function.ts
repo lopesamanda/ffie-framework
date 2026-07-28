@@ -11,7 +11,7 @@ export function composeHiddenFunction(
   if (!value || !completion) return completion;
 
   const artifact = draft.artifactName.trim() || "this artifact";
-  return `Pushed to its extreme, ${value} means ${artifact} quietly ${completion}.`;
+  return `Every value has a shadow side. If ${value} in ${artifact} went too far, it would ${completion}.`;
 }
 
 export function isHiddenFunctionComplete(
