@@ -1,6 +1,9 @@
 /** Card copy: docs/ffie_ai_capability_cards.md. Guiding questions are app-layer UX (embody vs artifact context). */
 export type AiCapabilityCard = {
   id: string;
+  /** Evocative picker headline */
+  hook: string;
+  /** Technical capability name (shown as subtitle in picker) */
   name: string;
   description: string;
   tags: string[];
@@ -18,6 +21,7 @@ export type AiCapabilityCard = {
 export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   {
     id: "personalization-recommendation",
+    hook: "Knows What You'll Want",
     name: "Personalization & Recommendation",
     description:
       "Learns patterns in what someone does, buys, or needs, and adapts what it shows next.",
@@ -42,6 +46,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "language-conversation",
+    hook: "Talks Like a Person",
     name: "Language & Conversation",
     description:
       "Understands and generates human language well enough to hold a conversation or write on someone's behalf.",
@@ -62,6 +67,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "image-video-generation",
+    hook: "Creates What Doesn't Exist Yet",
     name: "Image & Video Generation",
     description:
       "Creates or modifies visual content from a prompt or existing material.",
@@ -82,6 +88,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "biometric-body-data",
+    hook: "Reads Your Body",
     name: "Biometric & Body Data",
     description:
       "Reads physical signals from a body: face, voice, movement, vital signs.",
@@ -102,6 +109,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "predictive-scoring",
+    hook: "Scores You Before You Arrive",
     name: "Predictive Scoring & Risk Analysis",
     description:
       "Estimates the likelihood of a future outcome based on past data.",
@@ -122,6 +130,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "realtime-monitoring",
+    hook: "Never Stops Watching",
     name: "Real-Time Monitoring",
     description:
       "Continuously observes behavior, location, or activity as it happens.",
@@ -142,6 +151,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "task-automation",
+    hook: "Does It So You Don't Have To",
     name: "Automation & Task Delegation",
     description:
       "Performs a repetitive, well-defined task on someone's behalf without needing supervision each time.",
@@ -162,6 +172,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "identity-data-fusion",
+    hook: "Builds a File on You",
     name: "Data Aggregation & Identity Verification",
     description:
       "Combines many small, already-existing pieces of personal data into a single verified profile.",
@@ -186,6 +197,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "code-generation-automation",
+    hook: "Writes Its Own Instructions",
     name: "Code Generation & Automation",
     description:
       "Turns descriptions of what's needed into functional code, scripts, or automated tests.",
@@ -206,6 +218,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "data-classification-clustering",
+    hook: "Sorts You Into a Group",
     name: "Data Classification & Clustering",
     description:
       "Identifies patterns in information and sorts it into categories or groups.",
@@ -230,6 +243,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "autonomous-planning-execution",
+    hook: "Plans Without Asking",
     name: "Autonomous Planning & Execution",
     description:
       "Breaks a new, multi-step goal into its own plan and carries it out, adapting along the way — not just repeating a fixed task.",
@@ -255,6 +269,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "negotiation-transacting",
+    hook: "Deals on Your Behalf",
     name: "Negotiation & Transacting on Someone's Behalf",
     description:
       "Makes deals, agrees to terms, or exchanges money and data with other systems, without her present at the moment of decision.",
@@ -280,6 +295,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "persistent-memory-modeling",
+    hook: "Remembers Who You Are",
     name: "Persistent Memory & Behavioral Modeling",
     description:
       "Builds and keeps a long-term model of who someone is and what they want, refining it every time it acts for them.",
@@ -305,6 +321,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "content-moderation-filtering",
+    hook: "Decides What You're Allowed to See",
     name: "Content Moderation & Filtering",
     description:
       "Decides what content is visible, allowed, or removed, often at massive scale and speed.",
@@ -325,6 +342,7 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
   },
   {
     id: "generative-design",
+    hook: "Designs the Object Itself",
     name: "Generative Design",
     description:
       "Creates or proposes the physical form, structure, or blueprint of an object, building, or product.",
