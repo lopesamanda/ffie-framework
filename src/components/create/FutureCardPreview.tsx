@@ -144,7 +144,6 @@ export function FutureCardPreview({
   showCardTags = false,
   showCommonsNarrative = false,
   revealAnimated = false,
-  onClosingReflectionChange,
 }: {
   draft: JourneyDraft;
   id?: string;
@@ -159,7 +158,6 @@ export function FutureCardPreview({
   showCommonsNarrative?: boolean;
   /** Staggered reveal on the final Future output card. */
   revealAnimated?: boolean;
-  onClosingReflectionChange?: (value: string) => void;
 }) {
   const reduceMotion = useReducedMotion();
   const [highlightedValue, setHighlightedValue] = useState<string | null>(null);
@@ -190,16 +188,19 @@ export function FutureCardPreview({
   );
   const artifactHeading = draft.artifactName.trim();
 
-  const synthesisLine = showDrawSynthesis && !showCommonsNarrative
+  const showSynthesis = Boolean(
+    draft.cardHand && (isFinalCard || (showDrawSynthesis && !showCommonsNarrative)),
+  );
+
+  const synthesisLine = showSynthesis
     ? draft.drawSynthesis ||
       (draft.cardHand ? buildOracleSynthesis(draft.cardHand) : "")
     : "";
 
-  const synthesisTensionsLine =
-    showDrawSynthesis && !showCommonsNarrative
-      ? draft.drawSynthesisTensions ||
-        (draft.cardHand ? buildOracleSynthesisTensions(draft.cardHand) : "")
-      : "";
+  const synthesisTensionsLine = showSynthesis
+    ? draft.drawSynthesisTensions ||
+      (draft.cardHand ? buildOracleSynthesisTensions(draft.cardHand) : "")
+    : "";
 
   const commonsNarrative = "";
 
@@ -215,13 +216,14 @@ export function FutureCardPreview({
     1 +
     (isFinalCard
       ? (whyItExistsText ? 1 : 0) +
+        (synthesisLine ? 1 : 0) +
         (artifactHeading ||
         draft.publicPromise ||
+        draft.artifactGoalPitch ||
         hiddenFunctionDisplay ||
         capabilityName
           ? 1
           : 0) +
-        1 +
         (artifactValues.length > 0 ? 1 : 0)
       : (commonsNarrative || synthesisLine ? 1 : 0) +
         (synthesisTensionsLine ? 1 : 0) +
@@ -311,6 +313,21 @@ export function FutureCardPreview({
           </Wrap>
         )}
 
+        {isFinalCard && synthesisLine && (
+          <Wrap {...(revealAnimated ? nextReveal() : {})}>
+            <p
+              className={`mt-3 text-sm font-medium italic leading-relaxed text-ffie-accent ${FFIE_CARD_TEXT}`}
+            >
+              {synthesisLine}
+            </p>
+            {synthesisTensionsLine && (
+              <p className={`mt-2 text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                {synthesisTensionsLine}
+              </p>
+            )}
+          </Wrap>
+        )}
+
         {!isFinalCard && (commonsNarrative || synthesisLine) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <p
@@ -339,6 +356,7 @@ export function FutureCardPreview({
         {(isFinalCard
           ? artifactHeading ||
             draft.publicPromise ||
+            draft.artifactGoalPitch ||
             hiddenFunctionDisplay ||
             capabilityName
           : draft.publicPromise || hiddenFunctionDisplay || capabilityName) && (
@@ -369,6 +387,11 @@ export function FutureCardPreview({
                   <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
                     {draft.publicPromise || "—"}
                   </p>
+                  {draft.artifactGoalPitch.trim() && (
+                    <p className={`mt-2 text-xs italic leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                      {draft.artifactGoalPitch.trim()}
+                    </p>
+                  )}
                 </div>
                 <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
                   <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
@@ -384,27 +407,6 @@ export function FutureCardPreview({
                 </div>
               </div>
             </div>
-          </Wrap>
-        )}
-
-        {isFinalCard && (
-          <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <label className="mt-4 block">
-              <span className={`text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
-                If{" "}
-                {artifactHeading || "this artifact"} could be redesigned starting
-                tomorrow, what&apos;s the first thing that should change?
-              </span>
-              <textarea
-                value={draft.closingReflection}
-                onChange={(event) =>
-                  onClosingReflectionChange?.(event.target.value)
-                }
-                rows={2}
-                placeholder="Optional — not required to publish"
-                className="mt-2 w-full resize-y rounded-xl border border-ffie-line bg-ffie-bg px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
-              />
-            </label>
           </Wrap>
         )}
 

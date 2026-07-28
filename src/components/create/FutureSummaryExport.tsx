@@ -102,6 +102,11 @@ export function FutureSummaryExport({
                   <p className="mt-2 leading-relaxed">
                     {draft.publicPromise || "—"}
                   </p>
+                  {draft.artifactGoalPitch.trim() && (
+                    <p className="mt-2 text-sm italic leading-relaxed text-ffie-muted">
+                      {draft.artifactGoalPitch.trim()}
+                    </p>
+                  )}
                 </div>
                 <div className="rounded-xl bg-[#fdf1ee] p-5">
                   <p className="text-xs font-medium uppercase tracking-[0.12em] text-[#c8472a]">

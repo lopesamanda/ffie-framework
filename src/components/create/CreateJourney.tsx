@@ -633,13 +633,7 @@ export function CreateJourney() {
                     startYear={new Date().getFullYear()}
                     endYear={draft.futureYear}
                   >
-                  <FutureRevealStage
-                    draft={draft}
-                    cardId="future-output-card"
-                    onClosingReflectionChange={(closingReflection) =>
-                      update({ closingReflection })
-                    }
-                  >
+                  <FutureRevealStage draft={draft} cardId="future-output-card">
                     <FutureOutputNextSteps
                       onBringToLife={() => setShowMaterialize((open) => !open)}
                       onDownload={handleDownloadSummary}

@@ -84,10 +84,23 @@ export function InteractiveMatrixReveal({
       </p>
       <svg
         viewBox={`0 0 ${PLOT.width} ${PLOT.height}`}
-        className="mx-auto w-full rounded-2xl border border-ffie-line bg-ffie-surface shadow-[0_8px_32px_rgba(35,19,82,0.08)]"
+        className={`mx-auto w-full rounded-2xl border border-ffie-line bg-ffie-surface ${
+          interactive && prominent
+            ? "shadow-[0_8px_40px_rgba(110,82,196,0.28)]"
+            : "shadow-[0_8px_32px_rgba(35,19,82,0.08)]"
+        }`}
         role="img"
         aria-label={`Placed in ${formatQuadrantLabel(quadrant)}`}
       >
+        <defs>
+          <filter id="matrix-dot-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
         <rect
           x={PLOT.padding}
           y={PLOT.padding}
@@ -227,27 +240,43 @@ export function InteractiveMatrixReveal({
         {interactive && (
           <>
             {!reduceMotion && (
-              <motion.circle
-                cx={cx}
-                cy={cy}
-                r={22}
-                fill="none"
-                stroke="#6e52c4"
-                strokeWidth={2}
-                opacity={0.35}
-                animate={{ r: [18, 28, 18], opacity: [0.45, 0.08, 0.45] }}
-                transition={{
-                  duration: 2.4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
+              <>
+                <motion.circle
+                  cx={cx}
+                  cy={cy}
+                  r={32}
+                  fill="#6e52c4"
+                  opacity={0.12}
+                  animate={{ r: [24, 38, 24], opacity: [0.2, 0.06, 0.2] }}
+                  transition={{
+                    duration: 2.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+                <motion.circle
+                  cx={cx}
+                  cy={cy}
+                  r={22}
+                  fill="none"
+                  stroke="#6e52c4"
+                  strokeWidth={2.5}
+                  opacity={0.5}
+                  animate={{ r: [18, 30, 18], opacity: [0.55, 0.1, 0.55] }}
+                  transition={{
+                    duration: 2.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+              </>
             )}
             <motion.circle
-              r={14}
+              r={prominent ? 16 : 14}
               fill="#6e52c4"
               stroke="#fff"
               strokeWidth={2.5}
+              filter={prominent ? "url(#matrix-dot-glow)" : undefined}
               style={{ cursor: "pointer" }}
               initial={
                 reduceMotion

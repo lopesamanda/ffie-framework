@@ -13,12 +13,10 @@ export function FutureRevealStage({
   draft,
   cardId = "future-output-card",
   children,
-  onClosingReflectionChange,
 }: {
   draft: JourneyDraft;
   cardId?: string;
   children?: ReactNode;
-  onClosingReflectionChange?: (value: string) => void;
 }) {
   const reduceMotion = useReducedMotion();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -59,9 +57,21 @@ export function FutureRevealStage({
       />
 
       {!cardRevealed && (
-        <p className="text-center text-sm text-ffie-muted">
+        <motion.p
+          className="text-center text-base font-semibold text-ffie-accent md:text-lg"
+          animate={
+            reduceMotion
+              ? undefined
+              : { opacity: [0.65, 1, 0.65], scale: [0.98, 1, 0.98] }
+          }
+          transition={
+            reduceMotion
+              ? undefined
+              : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+          }
+        >
           Click the dot on the matrix to reveal your future.
-        </p>
+        </motion.p>
       )}
 
       {cardRevealed && (
@@ -85,7 +95,6 @@ export function FutureRevealStage({
             compact
             revealAnimated={!reduceMotion}
             showCommonsNarrative
-            onClosingReflectionChange={onClosingReflectionChange}
           />
         </motion.div>
       )}
