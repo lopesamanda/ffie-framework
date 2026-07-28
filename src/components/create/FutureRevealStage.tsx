@@ -77,7 +77,7 @@ export function FutureRevealStage({
       {cardRevealed && (
         <motion.div
           ref={cardRef}
-          className="mx-auto w-full max-w-xl"
+          className="mx-auto w-full max-w-md px-1 sm:px-0"
           style={{ transformOrigin }}
           initial={
             reduceMotion ? false : { scale: 0.06, opacity: 0 }

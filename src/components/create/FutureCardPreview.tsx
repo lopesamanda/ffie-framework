@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
@@ -15,7 +15,10 @@ import {
 } from "@/lib/card-layout";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
-import { resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
+import {
+  resolveCapabilityDescription,
+  resolveCapabilityName,
+} from "@/lib/journey/future-commons-narrative";
 import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
 import { buildWhyItExistsParagraph } from "@/lib/journey/future-card-copy";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
@@ -27,10 +30,75 @@ import type { FutureQuadrant } from "@/types/future";
 import {
   QUADRANT_AMBIENT_ACCENTS,
   QUADRANT_COLORS,
+  QUADRANT_TEXT_COLORS,
 } from "@/types/future";
 import type { NarrativeCard } from "@/data/narrative-cards";
 
 const REVEAL_STAGGER = 0.08;
+
+/** Shared inner panel for artifact detail boxes on the final Future card. */
+const ARTIFACT_PANEL =
+  "rounded-2xl border border-ffie-line/60 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]";
+
+function ArtifactDetailPanel({
+  label,
+  labelTone = "text-ffie-muted",
+  panelClassName,
+  children,
+}: {
+  label: string;
+  labelTone?: string;
+  panelClassName?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className={`${ARTIFACT_PANEL} ${panelClassName ?? "bg-ffie-surface/80"}`}>
+      <p className={`${ffieCardSectionLabel} ${labelTone}`}>{label}</p>
+      <div className="mt-2.5">{children}</div>
+    </div>
+  );
+}
+
+function FinalCardQuadrantFrame({
+  quadrant,
+  reduceMotion,
+}: {
+  quadrant: FutureQuadrant;
+  reduceMotion: boolean | null;
+}) {
+  const wash = QUADRANT_COLORS[quadrant];
+  const accent = QUADRANT_TEXT_COLORS[quadrant];
+
+  return (
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-1.5 rounded-t-[inherit]"
+        style={{ backgroundColor: accent }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 w-[3px] rounded-l-[inherit]"
+        style={{ backgroundColor: accent, opacity: 0.85 }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-28 rounded-t-[inherit]"
+        style={{
+          background: `linear-gradient(180deg, color-mix(in srgb, ${wash} 72%, transparent) 0%, transparent 100%)`,
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-16 rounded-b-[inherit]"
+        style={{
+          background: `linear-gradient(0deg, color-mix(in srgb, ${wash} 28%, transparent) 0%, transparent 100%)`,
+        }}
+      />
+      <QuadrantAmbientField quadrant={quadrant} reduceMotion={reduceMotion} />
+    </>
+  );
+}
 
 function revealItem(index: number, reduceMotion: boolean | null) {
   if (reduceMotion) {
@@ -207,6 +275,14 @@ export function FutureCardPreview({
   const artifactValues = resolveArtifactValues(draft);
 
   const capabilityName = resolveCapabilityName(draft.selectedAiCapability);
+  const capabilityDescription = resolveCapabilityDescription(
+    draft.selectedAiCapability,
+  );
+
+  const sectionGap = isFinalCard ? "mt-8" : "mt-3";
+  const finalCardShell = isFinalCard
+    ? "overflow-hidden rounded-[20px] border-2 border-ffie-line/80 bg-ffie-surface/95 p-7 shadow-[0_16px_48px_rgba(35,19,82,0.14),0_0_0_1px_rgba(255,255,255,0.5)_inset] ring-1 ring-ffie-accent/10 backdrop-blur-sm md:p-8"
+    : `${ffieCardShell} bg-ffie-surface/95 backdrop-blur-[1px] ${compact ? "p-5" : "p-6"}`;
 
   const hiddenFunctionDisplay =
     composeHiddenFunction(draft) || draft.hiddenFunction;
@@ -244,15 +320,20 @@ export function FutureCardPreview({
   };
 
   return (
-    <div className="relative">
-      {revealAnimated && (
+    <div className={`relative ${isFinalCard ? "mx-auto w-full max-w-[420px]" : ""}`}>
+      {revealAnimated && !isFinalCard && (
         <QuadrantAmbientField quadrant={quadrant} reduceMotion={reduceMotion} />
       )}
 
-      <div
-        id={id}
-        className={`relative ${ffieCardShell} bg-ffie-surface/95 backdrop-blur-[1px] ${compact ? "p-5" : "p-6"}`}
-      >
+      <div id={id} className={`relative ${finalCardShell}`}>
+        {isFinalCard && (
+          <FinalCardQuadrantFrame
+            quadrant={quadrant}
+            reduceMotion={reduceMotion}
+          />
+        )}
+
+        <div className="relative z-[1] flex flex-col">
         <Wrap {...(revealAnimated ? nextReveal() : {})}>
           <div className="flex flex-wrap items-center gap-2">
             <QuadrantPill
@@ -275,16 +356,24 @@ export function FutureCardPreview({
 
         <Wrap {...(revealAnimated ? nextReveal() : {})}>
           {isFinalCard ? (
-            <>
-              <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
+            <header className="mt-4 md:mt-5">
+              <h3
+                className={`font-display font-bold tracking-tight text-ffie-ink ${FFIE_CARD_TEXT} ${
+                  isFinalCard
+                    ? "text-[1.75rem] leading-[1.12] md:text-[2rem]"
+                    : `${ffieCardTitle} text-xl`
+                }`}
+              >
                 {personaName}
               </h3>
               {roleLine && (
-                <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                <p
+                  className={`mt-2 text-xs font-medium uppercase tracking-[0.08em] text-ffie-muted ${FFIE_CARD_TEXT}`}
+                >
                   {roleLine}
                 </p>
               )}
-            </>
+            </header>
           ) : (
             <>
               <h3 className={`mt-4 ${ffieCardTitle} text-xl ${FFIE_CARD_TEXT}`}>
@@ -307,7 +396,7 @@ export function FutureCardPreview({
 
         {isFinalCard && whyItExistsText && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <p className={`mt-3 text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
+            <p className={`${sectionGap} text-sm leading-relaxed text-ffie-ink/90 ${FFIE_CARD_TEXT}`}>
               {whyItExistsText}
             </p>
           </Wrap>
@@ -315,16 +404,20 @@ export function FutureCardPreview({
 
         {isFinalCard && synthesisLine && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <p
-              className={`mt-3 text-sm font-medium italic leading-relaxed text-ffie-accent ${FFIE_CARD_TEXT}`}
+            <div
+              className={`${sectionGap} rounded-2xl border border-ffie-accent/20 bg-ffie-accent-soft/35 px-5 py-4`}
             >
-              {synthesisLine}
-            </p>
-            {synthesisTensionsLine && (
-              <p className={`mt-2 text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
-                {synthesisTensionsLine}
+              <p
+                className={`text-sm font-medium italic leading-relaxed text-ffie-accent ${FFIE_CARD_TEXT}`}
+              >
+                {synthesisLine}
               </p>
-            )}
+              {synthesisTensionsLine && (
+                <p className={`mt-2.5 text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                  {synthesisTensionsLine}
+                </p>
+              )}
+            </div>
           </Wrap>
         )}
 
@@ -361,30 +454,38 @@ export function FutureCardPreview({
             capabilityName
           : draft.publicPromise || hiddenFunctionDisplay || capabilityName) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <div className="mt-4 space-y-3 text-sm">
+            <div className={`${isFinalCard ? sectionGap : "mt-4"} space-y-4 text-sm`}>
               {isFinalCard && artifactHeading && (
-                <h4 className={`text-base font-semibold text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                <h4
+                  className={`font-display text-lg font-semibold leading-snug text-ffie-ink/90 ${FFIE_CARD_TEXT}`}
+                >
                   {artifactHeading}
                 </h4>
               )}
               {capabilityName && (
-                <div className="rounded-[12px] border border-ffie-line/80 bg-ffie-bg px-[18px] py-3">
-                  <p className={ffieCardSectionLabel + " text-ffie-muted"}>
-                    AI function
+                <ArtifactDetailPanel label="AI function" panelClassName="bg-ffie-bg/70">
+                  <p className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                    <span className="font-semibold">{capabilityName}</span>
+                    {capabilityDescription && (
+                      <span className="text-ffie-muted">
+                        {" "}
+                        — {capabilityDescription}
+                      </span>
+                    )}
                   </p>
-                  <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
-                    {capabilityName}
-                  </p>
-                </div>
+                </ArtifactDetailPanel>
               )}
               <div
-                className={`grid gap-3 ${compact ? "" : "md:grid-cols-2"}`}
+                className={`grid gap-4 ${
+                  isFinalCard ? "grid-cols-1" : compact ? "" : "md:grid-cols-2"
+                }`}
               >
-                <div className="rounded-[12px] bg-[#f6f4ff] px-[18px] py-3">
-                  <p className={ffieCardSectionLabel + " text-ffie-accent"}>
-                    Artifact goal
-                  </p>
-                  <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                <ArtifactDetailPanel
+                  label="Artifact goal"
+                  labelTone="text-ffie-accent"
+                  panelClassName="bg-[#f6f4ff]/90"
+                >
+                  <p className={`text-sm text-ffie-ink ${FFIE_CARD_TEXT}`}>
                     {draft.publicPromise || "—"}
                   </p>
                   {draft.artifactGoalPitch.trim() && (
@@ -392,26 +493,27 @@ export function FutureCardPreview({
                       {draft.artifactGoalPitch.trim()}
                     </p>
                   )}
-                </div>
-                <div className="rounded-[12px] bg-[#fdf1ee] px-[18px] py-3">
-                  <p className={`${ffieCardSectionLabel} text-[#c8472a]`}>
-                    Artifact weakness
-                  </p>
-                  <p className={`mt-1 text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                </ArtifactDetailPanel>
+                <ArtifactDetailPanel
+                  label="Artifact weakness"
+                  labelTone="text-[#c8472a]"
+                  panelClassName="bg-[#fdf1ee]/90"
+                >
+                  <p className={`text-sm text-ffie-ink ${FFIE_CARD_TEXT}`}>
                     <HighlightedWeaknessText
                       text={hiddenFunctionDisplay || "—"}
                       extremeValue={draft.hiddenFunctionExtremeValue}
                       highlightedValue={highlightedValue}
                     />
                   </p>
-                </div>
+                </ArtifactDetailPanel>
               </div>
             </div>
           </Wrap>
         )}
 
         {artifactValues.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className={`${isFinalCard ? "mt-8" : "mt-3"} flex flex-wrap gap-2 pb-1`}>
             {artifactValues.map((value) => {
               const isLinked =
                 value.toLowerCase() ===
@@ -457,6 +559,7 @@ export function FutureCardPreview({
         {draft.cardHand && !compact && showCardProvenance && (
           <CardProvenance hand={draft.cardHand} />
         )}
+        </div>
       </div>
     </div>
   );

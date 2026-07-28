@@ -2,7 +2,7 @@ import { MatrixPositionDiagram } from "@/components/create/MatrixPositionDiagram
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { buildWhyItExistsParagraph } from "@/lib/journey/future-card-copy";
-import { resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
+import { resolveCapabilityDescription, resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import type { JourneyDraft } from "@/lib/journey/types";
 import { quadrantFromPosition } from "@/lib/journey/types";
@@ -32,6 +32,9 @@ export function FutureSummaryExport({
   const role = resolvedCharacterRole(draft.role, draft.roleCustom);
   const metaLine = [draft.characterAge, role].filter(Boolean).join(" · ");
   const capabilityName = resolveCapabilityName(draft.selectedAiCapability);
+  const capabilityDescription = resolveCapabilityDescription(
+    draft.selectedAiCapability,
+  );
   const hiddenFunction =
     composeHiddenFunction(draft) || draft.hiddenFunction.trim();
   const values = resolveArtifactValues(draft);
@@ -87,15 +90,23 @@ export function FutureSummaryExport({
 
             <div className="space-y-4 text-base">
               {capabilityName && (
-                <div className="rounded-xl border border-ffie-line bg-ffie-surface p-5">
+                <div className="rounded-2xl border border-ffie-line/60 bg-ffie-surface p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]">
                   <p className="text-xs font-medium uppercase tracking-[0.12em] text-ffie-muted">
                     AI function
                   </p>
-                  <p className="mt-2">{capabilityName}</p>
+                  <p className="mt-2.5 leading-relaxed">
+                    <span className="font-semibold">{capabilityName}</span>
+                    {capabilityDescription && (
+                      <span className="text-ffie-muted">
+                        {" "}
+                        — {capabilityDescription}
+                      </span>
+                    )}
+                  </p>
                 </div>
               )}
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl bg-[#f6f4ff] p-5">
+                <div className="rounded-2xl border border-ffie-line/60 bg-[#f6f4ff]/90 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]">
                   <p className="text-xs font-medium uppercase tracking-[0.12em] text-ffie-accent">
                     Artifact goal
                   </p>
@@ -108,7 +119,7 @@ export function FutureSummaryExport({
                     </p>
                   )}
                 </div>
-                <div className="rounded-xl bg-[#fdf1ee] p-5">
+                <div className="rounded-2xl border border-ffie-line/60 bg-[#fdf1ee]/90 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]">
                   <p className="text-xs font-medium uppercase tracking-[0.12em] text-[#c8472a]">
                     Artifact weakness
                   </p>

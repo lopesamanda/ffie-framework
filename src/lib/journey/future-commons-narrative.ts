@@ -12,6 +12,15 @@ export function resolveCapabilityName(capabilityId: string): string {
   );
 }
 
+/** Description copy for the selected capability card (final Future card AI function box). */
+export function resolveCapabilityDescription(capabilityId: string): string {
+  if (!capabilityId.trim()) return "";
+  return (
+    AI_CAPABILITY_CARDS.find((card) => card.id === capabilityId)?.description ??
+    ""
+  );
+}
+
 /**
  * Future Commons–style narrative paragraph for the final Future card.
  * Persona embedded in a day-to-day story beat — not tension/synthesis copy.
