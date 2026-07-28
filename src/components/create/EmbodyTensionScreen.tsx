@@ -9,6 +9,14 @@ import type { CharacterPronouns } from "@/lib/journey/character-pronouns";
 
 const REVEAL_PAUSE_MS = 700;
 
+const EMBODY_PLACEHOLDERS = {
+  benefit:
+    "e.g., see more clients than he could manage alone",
+  tradeoff: "e.g., double-checking his own numbers",
+  hope: "e.g., this becomes something everyone can access, not just him",
+  fear: "e.g., quietly replace his judgment with its own",
+} as const;
+
 const revealMotion = {
   initial: { opacity: 0, y: 14 },
   animate: { opacity: 1, y: 0 },
@@ -149,11 +157,12 @@ export function EmbodyTensionScreen({
 
       <NarrativeBlock>
         <NarrativeBlank
-          before={`As a ${role}, AI finally lets ${p.subject} `}
+          before={`As a ${role}, Artificial Intelligence (AI) finally lets ${p.object} `}
           after={` — but somewhere in that trade, ${p.subject} stopped `}
           value={draft.aiFunction}
           onChange={(aiFunction) => onChange({ aiFunction })}
           onBlur={handleBenefitBlur}
+          placeholder={EMBODY_PLACEHOLDERS.benefit}
         />
         <NarrativeBlank
           before=""
@@ -161,6 +170,7 @@ export function EmbodyTensionScreen({
           value={draft.tradeoffLoss}
           onChange={(tradeoffLoss) => onChange({ tradeoffLoss })}
           onBlur={handleBenefitBlur}
+          placeholder={EMBODY_PLACEHOLDERS.tradeoff}
           className="mt-2"
         />
       </NarrativeBlock>
@@ -180,6 +190,7 @@ export function EmbodyTensionScreen({
               value={draft.desire}
               onChange={(desire) => onChange({ desire })}
               onBlur={handleDesireBlur}
+              placeholder={EMBODY_PLACEHOLDERS.hope}
             />
           </NarrativeBlock>
         </motion.div>
@@ -205,10 +216,11 @@ export function EmbodyTensionScreen({
           )}
           <NarrativeBlock>
             <NarrativeBlank
-              before={`As a ${role}, what ${p.subject} fears most — whether from the technology itself, or from the ecosystem around it — is that AI will `}
+              before={`As a ${role}, what ${p.subject} fears most — whether from the technology itself, or from the ecosystem around it — is that Artificial Intelligence will `}
               after="."
               value={draft.fear}
               onChange={(fear) => onChange({ fear })}
+              placeholder={EMBODY_PLACEHOLDERS.fear}
             />
           </NarrativeBlock>
         </motion.div>

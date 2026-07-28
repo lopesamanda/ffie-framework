@@ -1,12 +1,12 @@
 "use client";
 
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
-import { composeHiddenFunction } from "@/lib/journey/hidden-function";
-import type { JourneyDraft } from "@/lib/journey/types";
 import {
-  OracleFanRevealedCard,
-  OracleFanTransversalCard,
-} from "@/components/create/design/OracleDeckFan";
+  composeHiddenFunction,
+  hiddenFunctionPrompt,
+} from "@/lib/journey/hidden-function";
+import type { JourneyDraft } from "@/lib/journey/types";
+import { CollapsibleOracleReferenceCard } from "@/components/create/design/OracleDeckFan";
 import { NarrativeBlank } from "@/components/create/NarrativeBlank";
 
 export function HiddenFunctionStep({
@@ -22,22 +22,18 @@ export function HiddenFunctionStep({
   const values = resolveArtifactValues(draft);
   const selectedValue = draft.hiddenFunctionExtremeValue;
   const artifactName = draft.artifactName.trim() || "this artifact";
-  const goalPitch = draft.artifactGoalPitch.trim() || "…";
 
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap gap-3">
-        <OracleFanRevealedCard card={hand.risk} />
-        <OracleFanRevealedCard card={hand.barrier} />
-        <OracleFanTransversalCard card={hand.transversal} />
+        <CollapsibleOracleReferenceCard card={hand.risk} />
+        <CollapsibleOracleReferenceCard card={hand.barrier} />
+        <CollapsibleOracleReferenceCard card={hand.transversal} />
       </div>
 
       <div className="space-y-3">
         <p className="text-sm leading-relaxed text-ffie-ink">
-          You said <strong>{artifactName}</strong> claims to{" "}
-          <strong>{goalPitch}</strong>. Which of these values, pushed too far,
-          reveals what it actually does instead, quietly, that it doesn&apos;t
-          advertise?
+          {hiddenFunctionPrompt(draft)}
         </p>
         <div className="flex flex-wrap gap-2">
           {values.map((value) => {
@@ -62,10 +58,11 @@ export function HiddenFunctionStep({
 
       {selectedValue && (
         <NarrativeBlank
+          layout="stacked"
           before={`Pushed to its extreme, ${selectedValue} means ${artifactName} quietly`}
           value={draft.hiddenFunctionCompletion}
           onChange={onCompletionChange}
-          placeholder="does something it never advertises…"
+          placeholder="does something it never advertises"
         />
       )}
 

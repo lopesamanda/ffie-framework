@@ -404,7 +404,7 @@ export const ORACLE_REVEAL_SEQUENCE: (keyof WorkshopHand)[] = [
   "transversal",
 ];
 
-export function drawWorkshopHand(): WorkshopHand {
+export function drawWorkshopHand(previous?: WorkshopHand | null): WorkshopHand {
   const pick = (category: CardCategory) => {
     const pool = NARRATIVE_CARDS.filter(
       (card) => card.category === category && card.drawable,
@@ -412,13 +412,26 @@ export function drawWorkshopHand(): WorkshopHand {
     return pool[Math.floor(Math.random() * pool.length)];
   };
 
-  return {
+  const build = (): WorkshopHand => ({
     risk: pick("risk"),
     benefit: pick("benefit"),
     trust: pick("trust"),
     barrier: pick("barrier"),
     transversal: ENVIRONMENTAL_IMPACT_CARD,
-  };
+  });
+
+  if (!previous) return build();
+
+  const signature = (hand: WorkshopHand) =>
+    [hand.risk.id, hand.benefit.id, hand.trust.id, hand.barrier.id].join("|");
+
+  const prior = signature(previous);
+  for (let attempt = 0; attempt < 24; attempt += 1) {
+    const next = build();
+    if (signature(next) !== prior) return next;
+  }
+
+  return build();
 }
 
 export function buildCombinedTension(hand: WorkshopHand): string {

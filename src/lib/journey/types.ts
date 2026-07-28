@@ -13,7 +13,7 @@ import {
 } from "@/lib/journey/character-options";
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
 import type { AiCapabilityPowerId } from "@/lib/journey/ai-capability-clusters";
-import { composeHiddenFunction } from "@/lib/journey/hidden-function";
+import { composeHiddenFunction, cleanClause } from "@/lib/journey/hidden-function";
 import { getFutureHorizonYear } from "@/lib/journey/future-horizon";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
@@ -228,8 +228,12 @@ export function buildNarrative(draft: JourneyDraft): string {
   const artifact = draft.artifactName || "an unnamed artifact";
   const hiddenFunction =
     composeHiddenFunction(draft) || draft.hiddenFunction || "carries a tension the surface never names";
+  const goalPitch =
+    cleanClause(draft.artifactGoalPitch) ||
+    cleanClause(draft.publicPromise) ||
+    "something better";
 
-  return `${who} is ${role} in ${where}, ${draft.futureYear}. ${artifact} promises ${draft.artifactGoalPitch || draft.publicPromise || "something better"}, but ${hiddenFunction}. The cards drawn — ${draft.combinedTension || "multiple tensions"} — still echo in how this future holds together.`;
+  return `${who} is ${role} in ${where}, ${draft.futureYear}. ${artifact} promises ${goalPitch}, but ${hiddenFunction}. The cards drawn — ${draft.combinedTension || "multiple tensions"} — still echo in how this future holds together.`;
 }
 
 export function buildReflectionQuestion(draft: JourneyDraft): string {

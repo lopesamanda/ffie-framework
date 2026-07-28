@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { EnvironmentalImpactCard } from "@/components/create/design/EnvironmentalImpactBadge";
+import { TransversalBadge } from "@/components/create/design/TransversalBadge";
 import type { CardHand } from "@/lib/journey/types";
 import type { CardCategory, NarrativeCard } from "@/data/narrative-cards";
 import {
@@ -190,6 +192,75 @@ export function OracleFanRevealedCard({
 /** Environmental Impact reference card — description + transversal badge, no tension. */
 export function OracleFanTransversalCard({ card }: { card: NarrativeCard }) {
   return <EnvironmentalImpactCard card={card} />;
+}
+
+/** Collapsed-by-default reference card for Hidden Function and similar recap rows. */
+export function CollapsibleOracleReferenceCard({
+  card,
+}: {
+  card: NarrativeCard;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const style = CATEGORY_STYLES[card.category];
+  const label = ORACLE_CATEGORY_LABELS[card.category].toUpperCase();
+  const isTransversal = card.category === "transversal";
+
+  return (
+    <div
+      className="w-[180px] shrink-0 rounded-[12px] border border-[rgba(35,19,82,0.07)] border-t-4 bg-white shadow-[0_3px_5px_rgba(35,19,82,0.12)]"
+      style={{ borderTopColor: style.text }}
+    >
+      <button
+        type="button"
+        onClick={() => setExpanded((open) => !open)}
+        aria-expanded={expanded}
+        className="flex w-full items-start justify-between gap-2 px-4 py-3 text-left"
+      >
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+            <span className={ffieCardCategory} style={{ color: style.text }}>
+              {label}
+            </span>
+            {isTransversal && <TransversalBadge />}
+          </div>
+          <h4 className={`mt-2 ${ffieCardTitle} text-[13px] ${FFIE_CARD_TEXT}`}>
+            {card.name}
+          </h4>
+        </div>
+        <span className="shrink-0 text-xs text-ffie-accent">
+          {expanded ? "Hide" : "Show"}
+        </span>
+      </button>
+
+      {expanded && (
+        <div className="border-t border-ffie-line/60 px-4 pb-3.5 pt-3">
+          {isTransversal ? (
+            <p
+              className={`text-[11px] italic leading-[1.6] text-ffie-muted ${FFIE_CARD_TEXT}`}
+            >
+              &ldquo;{card.description}&rdquo;
+            </p>
+          ) : (
+            <>
+              <p
+                className={`text-[11px] italic leading-[1.6] text-ffie-muted ${FFIE_CARD_TEXT}`}
+              >
+                &ldquo;{card.description}&rdquo;
+              </p>
+              <div className={`my-2.5 ${ffieCardDivider}`} />
+              <p className={ffieCardSectionLabel}>Tension</p>
+              <p
+                className={`mt-0.5 text-[10px] font-medium leading-snug ${FFIE_CARD_TEXT}`}
+                style={{ color: style.text }}
+              >
+                {card.tension}
+              </p>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function ReflectionPanel({
