@@ -25,7 +25,7 @@ export function FutureRevealStage({
 }: {
   draft: JourneyDraft;
   cardId?: string;
-  /** Functional action buttons — rendered in a footer bar beneath the Future card. */
+  /** Functional action buttons — rendered below the work-with panel in the right column. */
   actionFooter?: ReactNode;
   /** Expandable panels and secondary links below the reveal block. */
   children?: ReactNode;
@@ -134,13 +134,12 @@ export function FutureRevealStage({
                   showCommonsNarrative
                 />
               </motion.div>
-
-              {actionFooter}
             </div>
 
             <FutureWorkWithPanel
               layoutRef={outputLayoutRef}
               sourceRef={cardRef}
+              footer={actionFooter}
             />
           </div>
 

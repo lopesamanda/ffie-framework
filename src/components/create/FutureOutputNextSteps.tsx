@@ -12,7 +12,7 @@ type FutureOutputActionFooterProps = {
   submitting?: boolean;
 };
 
-/** Distinct footer bar for functional actions — sits beneath the Future card only. */
+/** Distinct footer bar for functional actions — sits below the work-with suggestions panel. */
 export function FutureOutputActionFooter({
   onBringToLife,
   onDownload,
@@ -20,13 +20,21 @@ export function FutureOutputActionFooter({
   bringToLifeActive = false,
   downloading = false,
   submitting = false,
-}: FutureOutputActionFooterProps) {
+  layout = "default",
+}: FutureOutputActionFooterProps & {
+  layout?: "default" | "sidebar";
+}) {
+  const buttonGrid =
+    layout === "sidebar"
+      ? "grid-cols-1 sm:grid-cols-3 lg:grid-cols-1"
+      : "grid-cols-1 sm:grid-cols-3";
+
   return (
-    <div className="mt-6 rounded-xl border border-ffie-line/80 bg-ffie-bg/70 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] sm:px-5">
+    <div className="mt-6 rounded-xl border border-ffie-line/80 bg-ffie-bg/70 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] sm:px-5 lg:max-w-sm">
       <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
         Next steps
       </p>
-      <div className="mt-3 grid gap-2.5 sm:grid-cols-3">
+      <div className={`mt-3 grid gap-2.5 ${buttonGrid}`}>
         <FfieButton
           variant={bringToLifeActive ? "primary" : "secondary"}
           onClick={onBringToLife}

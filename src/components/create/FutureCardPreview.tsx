@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
+import { MatrixPositionModal } from "@/components/create/MatrixPositionModal";
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
 import { HighlightedWeaknessText } from "@/components/create/HighlightedWeaknessText";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
@@ -229,6 +230,7 @@ export function FutureCardPreview({
 }) {
   const reduceMotion = useReducedMotion();
   const [highlightedValue, setHighlightedValue] = useState<string | null>(null);
+  const [matrixOpen, setMatrixOpen] = useState(false);
   const isFinalCard = showCommonsNarrative;
   const quadrant: FutureQuadrant = quadrantFromPosition(
     draft.position.x,
@@ -321,6 +323,13 @@ export function FutureCardPreview({
 
   return (
     <div className={`relative ${isFinalCard ? "mx-auto w-full max-w-[420px]" : ""}`}>
+      {isFinalCard && (
+        <MatrixPositionModal
+          open={matrixOpen}
+          onClose={() => setMatrixOpen(false)}
+          position={draft.position}
+        />
+      )}
       {revealAnimated && !isFinalCard && (
         <QuadrantAmbientField quadrant={quadrant} reduceMotion={reduceMotion} />
       )}
@@ -335,12 +344,26 @@ export function FutureCardPreview({
 
         <div className="relative z-[1] flex flex-col">
         <Wrap {...(revealAnimated ? nextReveal() : {})}>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
             <QuadrantPill
               quadrant={quadrant}
               seal={revealAnimated}
               sealDelay={sealDelay}
             />
+            {isFinalCard && (
+              <>
+                <span className="text-xs text-ffie-muted" aria-hidden>
+                  ·
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setMatrixOpen(true)}
+                  className="text-xs font-medium text-ffie-accent underline-offset-2 transition hover:text-ffie-ink hover:underline"
+                >
+                  View Matrix
+                </button>
+              </>
+            )}
             {sectorLabel && (
               <span className="rounded-full border border-ffie-line bg-ffie-bg px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-ffie-muted">
                 {sectorLabel}

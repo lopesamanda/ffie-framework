@@ -4,6 +4,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type ReactNode,
   type RefObject,
 } from "react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -190,9 +191,11 @@ function RadiatingLines({
 export function FutureWorkWithPanel({
   layoutRef,
   sourceRef,
+  footer,
 }: {
   layoutRef: RefObject<HTMLElement | null>;
   sourceRef: RefObject<HTMLElement | null>;
+  footer?: ReactNode;
 }) {
   const reduceMotion = useReducedMotion();
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -259,6 +262,8 @@ export function FutureWorkWithPanel({
             />
           ))}
         </div>
+
+        {footer}
       </motion.aside>
     </>
   );

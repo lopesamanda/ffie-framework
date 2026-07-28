@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { HomeHero } from "@/components/home/HomeHero";
-import { MiniOracleDrawPreview } from "@/components/home/MiniOracleDrawPreview";
+import { HomeOracleFanPreview } from "@/components/home/HomeOracleFanPreview";
 import { SectorMatrixPreview } from "@/components/home/SectorMatrixPreview";
 import { ScrollRevealSection } from "@/components/motion/ScrollRevealSection";
 import { getPublishedSubmissions } from "@/lib/submissions";
@@ -60,9 +60,12 @@ export default async function HomePage() {
                   A guided journey from narrative cards to a shareable future.
                   Embody a life, name an artifact, and place it on the matrix.
                 </p>
+                <p className="mt-4 text-sm font-semibold text-ffie-accent transition group-hover:underline">
+                  Start creating →
+                </p>
               </div>
               <div className="flex w-full items-center justify-center sm:w-[42%] sm:max-w-[220px] sm:self-center">
-                <MiniOracleDrawPreview className="h-[200px] w-[125px]" />
+                <HomeOracleFanPreview />
               </div>
             </Link>
           </div>
