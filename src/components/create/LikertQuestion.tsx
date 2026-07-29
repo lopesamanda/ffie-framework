@@ -2,6 +2,7 @@
 
 import type { LikertScore } from "@/lib/journey/types";
 import { FFIE_CARD_TEXT } from "@/lib/card-layout";
+import { SettleButton } from "@/components/motion/SettleButton";
 
 const SCORES: LikertScore[] = [1, 2, 3, 4, 5];
 
@@ -40,9 +41,8 @@ export function LikertQuestion({
         {SCORES.map((score) => {
           const selected = value === score;
           return (
-            <button
+            <SettleButton
               key={score}
-              type="button"
               role="radio"
               aria-checked={selected}
               onClick={() => onChange(score)}
@@ -53,7 +53,7 @@ export function LikertQuestion({
               }`}
             >
               {score}
-            </button>
+            </SettleButton>
           );
         })}
       </div>

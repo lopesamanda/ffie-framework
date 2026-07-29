@@ -1,11 +1,11 @@
 "use client";
 
 import { AiPowerSelector } from "@/components/create/AiPowerSelector";
-import { pronounsForSelection } from "@/lib/journey/character-pronouns";
+import { pronounsForSelection, verbFor } from "@/lib/journey/character-pronouns";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 const FIELD =
-  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
+  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40";
 
 function SubStepProgress({ completed }: { completed: boolean[] }) {
   return (
@@ -54,7 +54,7 @@ export function ArtifactProblemPowerStep({
 
       <section className="space-y-3">
         <p className="text-sm leading-relaxed text-ffie-ink">
-          You said {p.subject} fears Artificial Intelligence will{" "}
+          You said {p.subject} {verbFor(p, "fears", "fear")} Artificial Intelligence will{" "}
           <strong className="font-medium text-ffie-ink">{fearAnswer}</strong>.
           What problem or tension does this artifact respond to — or make worse?
         </p>
@@ -64,6 +64,7 @@ export function ArtifactProblemPowerStep({
             onChange({ artifactProblemTension: event.target.value })
           }
           rows={4}
+          placeholder="problem it solves or worsens"
           className={`${FIELD} resize-y`}
         />
       </section>

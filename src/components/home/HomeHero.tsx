@@ -145,7 +145,7 @@ export function HomeHero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[min(88vh,820px)] overflow-hidden"
+      className="relative overflow-hidden pb-4 md:pb-6"
     >
       <motion.div
         className="absolute inset-0"
@@ -155,7 +155,7 @@ export function HomeHero() {
       </motion.div>
 
       <motion.div
-        className="relative mx-auto max-w-6xl px-6 py-16 md:py-24"
+        className="relative mx-auto max-w-6xl px-6 py-10 md:py-14"
         style={foregroundMotionStyle}
       >
         <div className="max-w-prose">
@@ -163,15 +163,11 @@ export function HomeHero() {
             Feminist Foresight in Innovation Ecosystems
           </p>
           <KineticHeadline reduceMotion={!motionEnabled} />
-          <p className="mt-6 text-lg leading-relaxed text-ffie-muted">
-            FFIE is a research-validated foresight method for innovation
-            ecosystems. Its replicable unit is simple and powerful:{" "}
-            <strong className="font-medium text-ffie-ink">
-              persona + diegetic artifact, positioned on the Critical Feminist
-              2×2 Matrix
-            </strong>
-            . This is an instrument for engaging with feminist foresight
-            directly — not a site that explains a framework from the sidelines.
+          <p className="mt-5 text-lg leading-relaxed text-ffie-muted">
+            FFIE is a research-based method for exploring AI&apos;s impact on
+            innovation ecosystems. Build a persona, design an artifact they use,
+            and place it on the Critical Feminist Matrix to see what future it
+            creates. Try it yourself instead of just reading about it.
           </p>
         </div>
       </motion.div>

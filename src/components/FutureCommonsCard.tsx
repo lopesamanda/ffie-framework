@@ -39,6 +39,11 @@ export function FutureCommonsCard({
     >
       <div className="flex flex-wrap items-center gap-2">
         <QuadrantPill quadrant={entry.quadrant} />
+        {entry.character.sector && (
+          <span className="rounded-full border border-ffie-line bg-ffie-bg px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-ffie-muted">
+            {entry.character.sector}
+          </span>
+        )}
         {justPublished && (
           <span className="rounded-full border border-ffie-accent/35 bg-ffie-accent-soft/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-ffie-accent">
             Just published

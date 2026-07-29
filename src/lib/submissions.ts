@@ -4,6 +4,7 @@ import type {
   FutureEntry,
   FutureQuadrant,
   FutureStatus,
+  PersonaSector,
   PowerPosition,
 } from "@/types/future";
 
@@ -18,6 +19,7 @@ export type SubmissionRow = {
   character_name: string;
   character_age: number | null;
   character_role: string;
+  persona_sector: string | null;
   character_ai_function: string | null;
   character_desire: string;
   character_fear: string;
@@ -33,6 +35,7 @@ export type SubmissionRow = {
   position_y: number;
   image_url: string | null;
   draw_synthesis: string | null;
+  draw_synthesis_tensions: string | null;
   created_at: string;
 };
 
@@ -53,7 +56,7 @@ const ADMIN_LIST_SELECT =
   "id, status, title, narrative, character_name, artifact_name, quadrant, power_position, location, created_at";
 
 const PUBLIC_SELECT =
-  "id, status, title, narrative, reflection_question, location, year, character_name, character_age, character_role, character_ai_function, character_desire, character_fear, character_values, artifact_name, artifact_public_promise, artifact_hidden_function, artifact_values, tension, quadrant, power_position, position_x, position_y, image_url, draw_synthesis, created_at";
+  "id, status, title, narrative, reflection_question, location, year, character_name, character_age, character_role, persona_sector, character_ai_function, character_desire, character_fear, character_values, artifact_name, artifact_public_promise, artifact_hidden_function, artifact_values, tension, quadrant, power_position, position_x, position_y, image_url, draw_synthesis, draw_synthesis_tensions, created_at";
 
 /** Infer Brazil/Portugal from free-text location for matrix colouring. */
 export function inferCountry(location: string): FutureCountry {
@@ -88,6 +91,7 @@ export function mapSubmissionToFutureEntry(row: SubmissionRow): FutureEntry {
       name: row.character_name,
       age: row.character_age ?? 0,
       role: row.character_role,
+      sector: (row.persona_sector as PersonaSector | null) ?? undefined,
       aiFunction: row.character_ai_function ?? "",
       desire: row.character_desire,
       fear: row.character_fear,
@@ -106,6 +110,7 @@ export function mapSubmissionToFutureEntry(row: SubmissionRow): FutureEntry {
     status: row.status,
     imageUrl: row.image_url ?? undefined,
     drawSynthesis: row.draw_synthesis ?? undefined,
+    drawSynthesisTensions: row.draw_synthesis_tensions ?? undefined,
     publishedAt: row.created_at,
   };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toPng } from "html-to-image";
@@ -15,23 +15,25 @@ import {
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { TimeTravelTransition } from "@/components/create/design/TimeTravelTransition";
-import { MATRIX_FRAMEWORK_INTRO } from "@/lib/journey/matrix-copy";
+import { FutureRevealStage } from "@/components/create/FutureRevealStage";
+import { FutureOutputActionFooter } from "@/components/create/FutureOutputNextSteps";
+import {
+  FutureSummaryExport,
+  FUTURE_SUMMARY_EXPORT_HEIGHT,
+  FUTURE_SUMMARY_EXPORT_WIDTH,
+} from "@/components/create/FutureSummaryExport";
+import { PhaseSweepOverlay } from "@/components/motion/PhaseSweepOverlay";
+import { ArtifactMaterializePanel } from "@/components/create/ArtifactMaterializePanel";
 import {
   OracleDrawRecap,
   OracleDrawReflectionPrompt,
 } from "@/components/create/design/OracleDrawRecap";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
-import { MatrixReveal } from "@/components/create/MatrixReveal";
 import { LikertQuestion } from "@/components/create/LikertQuestion";
 import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
-import {
-  ShareableFutureCard,
-  SHAREABLE_CARD_HEIGHT,
-  SHAREABLE_CARD_WIDTH,
-} from "@/components/create/ShareableFutureCard";
 import {
   buildCombinedTension,
   drawWorkshopHand,
@@ -41,6 +43,7 @@ import {
 } from "@/data/research-findings-seed";
 import {
   ARTIFACT_VALUE_OPTIONS,
+  ARTIFACT_VALUE_OTHER,
   isArtifactValuesComplete,
   resolveArtifactValues,
 } from "@/lib/journey/artifact-options";
@@ -52,14 +55,13 @@ import {
   composeHiddenFunction,
   isHiddenFunctionComplete,
 } from "@/lib/journey/hidden-function";
-import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
+import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
+import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
-  ffieCardDivider,
   ffieCardShell,
-  ffieCardTitle,
 } from "@/lib/card-layout";
 import {
   buildNarrative,
@@ -98,6 +100,15 @@ export function CreateJourney() {
   const [oraclePhase, setOraclePhase] = useState<"fan" | "reflection">("fan");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showMaterialize, setShowMaterialize] = useState(false);
+  const [showPublish, setShowPublish] = useState(false);
+  const [downloadingSummary, setDownloadingSummary] = useState(false);
+  const [phaseSweep, setPhaseSweep] = useState<{
+    id: string;
+    run: () => void;
+  } | null>(null);
+  const phaseSweepRef = useRef(phaseSweep);
+  phaseSweepRef.current = phaseSweep;
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -121,6 +132,22 @@ export function CreateJourney() {
     },
     [update],
   );
+
+  const runPhaseSweep = useCallback(
+    (id: string, run: () => void) => {
+      if (reduceMotion) {
+        run();
+        return;
+      }
+      setPhaseSweep({ id, run });
+    },
+    [reduceMotion],
+  );
+
+  const completePhaseSweep = useCallback(() => {
+    phaseSweepRef.current?.run();
+    setPhaseSweep(null);
+  }, []);
 
   const resetOracleDraw = useCallback(() => {
     setOracleDrawIndex(0);
@@ -146,6 +173,7 @@ export function CreateJourney() {
         cardHand: hand,
         combinedTension: buildCombinedTension(hand),
         drawSynthesis: buildOracleSynthesis(hand),
+        drawSynthesisTensions: buildOracleSynthesisTensions(hand),
       });
       setRevealing(false);
     }, 900);
@@ -162,56 +190,11 @@ export function CreateJourney() {
         cardHand: hand,
         combinedTension: buildCombinedTension(hand),
         drawSynthesis: buildOracleSynthesis(hand),
+        drawSynthesisTensions: buildOracleSynthesisTensions(hand),
         reflectionText: "",
       });
       setRevealing(false);
     }, 400);
-  };
-
-  const captureShareImage = async () => {
-    const node = document.getElementById("shareable-future-card");
-    if (!node) return null;
-    return toPng(node, {
-      pixelRatio: 1,
-      width: SHAREABLE_CARD_WIDTH,
-      height: SHAREABLE_CARD_HEIGHT,
-    });
-  };
-
-  const handleDownloadShareImage = async () => {
-    if (!draft) return;
-    const dataUrl = await captureShareImage();
-    if (!dataUrl) return;
-    const link = document.createElement("a");
-    link.download = `${draft.title || "ffie-future"}.png`;
-    link.href = dataUrl;
-    link.click();
-  };
-
-  const handleShareImage = async () => {
-    if (!draft) return;
-    const dataUrl = await captureShareImage();
-    if (!dataUrl) return;
-
-    const blob = await (await fetch(dataUrl)).blob();
-    const file = new File([blob], `${draft.title || "ffie-future"}.png`, {
-      type: "image/png",
-    });
-
-    if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      try {
-        await navigator.share({
-          files: [file],
-          title: draft.title,
-          text: "A future imagined with FFIE",
-        });
-        return;
-      } catch {
-        /* fall through to download */
-      }
-    }
-
-    handleDownloadShareImage();
   };
 
   const handleFinishOutput = async () => {
@@ -247,6 +230,11 @@ export function CreateJourney() {
           characterGender: genderLabelForDraft(draft),
           characterRaceEthnicity: raceEthnicityForDraft(draft),
           role: resolvedCharacterRole(draft.role, draft.roleCustom),
+          personaSector:
+            resolvedPersonaSector(
+              draft.personaSector,
+              draft.personaSectorCustom,
+            ) || undefined,
           year: draft.futureYear,
           aiFunction: draft.aiFunction,
           desire: draft.desire,
@@ -271,6 +259,7 @@ export function CreateJourney() {
               ]
             : [],
           drawSynthesis: draft.drawSynthesis,
+          drawSynthesisTensions: draft.drawSynthesisTensions,
           reflectionText: draft.reflectionText.trim(),
           imageDataUrl: draft.imageDataUrl,
           submitToCommons: true,
@@ -301,14 +290,25 @@ export function CreateJourney() {
     }
   };
 
-  const handleDownload = async () => {
-    const node = document.getElementById("future-output-card");
+  const handleDownloadSummary = async () => {
+    if (!draft) return;
+    const node = document.getElementById("future-summary-export");
     if (!node) return;
-    const dataUrl = await toPng(node, { pixelRatio: 2 });
-    const link = document.createElement("a");
-    link.download = `${draft?.title || "ffie-future"}.png`;
-    link.href = dataUrl;
-    link.click();
+
+    setDownloadingSummary(true);
+    try {
+      const dataUrl = await toPng(node, {
+        pixelRatio: 2,
+        width: FUTURE_SUMMARY_EXPORT_WIDTH,
+        height: FUTURE_SUMMARY_EXPORT_HEIGHT,
+      });
+      const link = document.createElement("a");
+      link.download = `${draft.characterName.trim() || draft.artifactName.trim() || "ffie-future"}-summary.png`;
+      link.href = dataUrl;
+      link.click();
+    } finally {
+      setDownloadingSummary(false);
+    }
   };
 
   if (!draft) {
@@ -402,7 +402,11 @@ export function CreateJourney() {
 
                       <FfieButton
                         disabled={!draft.reflectionText.trim()}
-                        onClick={() => goTo("creation", { creationStep: 0 })}
+                        onClick={() =>
+                          runPhaseSweep("draw-embody", () =>
+                            goTo("creation", { creationStep: 0 }),
+                          )
+                        }
                       >
                         Build your future
                       </FfieButton>
@@ -444,7 +448,9 @@ export function CreateJourney() {
                         update({ embodySubStep })
                       }
                       onComplete={() =>
-                        update({ creationStep: 1, embodySubStep: 0 })
+                        runPhaseSweep("embody-artifact", () =>
+                          update({ creationStep: 1, embodySubStep: 0 }),
+                        )
                       }
                     />
                   )}
@@ -467,14 +473,32 @@ export function CreateJourney() {
                       <ChipField label="">
                         <ChipSelect
                           label=""
-                          options={[...ARTIFACT_VALUE_OPTIONS]}
+                          options={[...ARTIFACT_VALUE_OPTIONS, ARTIFACT_VALUE_OTHER]}
                           value={draft.artifactValues}
                           onChange={(artifactValues) =>
-                            update({ artifactValues })
+                            update({
+                              artifactValues,
+                              artifactValueOther: artifactValues.includes(
+                                ARTIFACT_VALUE_OTHER,
+                              )
+                                ? draft.artifactValueOther
+                                : "",
+                            })
                           }
                           multi
                           max={3}
                         />
+                        {draft.artifactValues.includes(ARTIFACT_VALUE_OTHER) && (
+                          <input
+                            type="text"
+                            value={draft.artifactValueOther}
+                            onChange={(event) =>
+                              update({ artifactValueOther: event.target.value })
+                            }
+                            placeholder="type your own"
+                            className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40"
+                          />
+                        )}
                         <p className="text-xs text-ffie-muted">
                           {resolveArtifactValues(draft).length}/3 selected
                           (minimum 2)
@@ -483,16 +507,14 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 4 && draft.cardHand && (
+                  {draft.creationStep === 4 && (
                     <HiddenFunctionStep
                       draft={draft}
                       onSelectExtremeValue={(hiddenFunctionExtremeValue) =>
                         update({
                           hiddenFunctionExtremeValue,
-                          hiddenFunction: composeHiddenFunction({
-                            ...draft,
-                            hiddenFunctionExtremeValue,
-                          }),
+                          hiddenFunctionCompletion: "",
+                          hiddenFunction: "",
                         })
                       }
                       onCompletionChange={(hiddenFunctionCompletion) =>
@@ -546,7 +568,9 @@ export function CreateJourney() {
                           return;
                         }
 
-                        goTo("output", { outputStep: 0 });
+                        runPhaseSweep("artifact-matrix", () =>
+                          goTo("output", { outputStep: 0 }),
+                        );
                       }}
                     >
                       {draft.creationStep < CREATION_STEPS.length - 1
@@ -626,57 +650,78 @@ export function CreateJourney() {
                     startYear={new Date().getFullYear()}
                     endYear={draft.futureYear}
                   >
-                  <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-                    <FutureCardPreview
-                      draft={draft}
-                      id="future-output-card"
-                      compact
-                      revealAnimated
-                    />
-                    <div>
-                      <p className="mb-4 text-sm leading-relaxed text-ffie-muted">
-                        {MATRIX_FRAMEWORK_INTRO}
-                      </p>
-                      <MatrixReveal position={draft.position} />
-                    </div>
-                  </div>
-                  <label className="mt-8 flex items-start gap-3 rounded-xl border border-ffie-line bg-ffie-surface p-4">
-                    <input
-                      type="checkbox"
-                      checked={draft.submitToCommons}
-                      onChange={(e) =>
-                        update({ submitToCommons: e.target.checked })
-                      }
-                      className="mt-1 accent-ffie-accent"
-                    />
-                    <span className="text-sm text-ffie-muted">
-                      Submit this diegetic prototype to the Future Commons for
-                      moderation. If approved, it will appear alongside Research
-                      Findings — always labeled as community-created.
-                    </span>
-                  </label>
-                  {submitError && (
-                    <p className="mt-4 text-sm text-red-700">{submitError}</p>
-                  )}
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    <FfieButton onClick={handleShareImage}>Share image</FfieButton>
-                    <FfieButton variant="secondary" onClick={handleDownloadShareImage}>
-                      Download image
-                    </FfieButton>
-                    <FfieButton variant="secondary" onClick={handleDownload}>
-                      Download card
-                    </FfieButton>
-                    <FfieButton
-                      disabled={submitting || !draft.placementJustification.trim()}
-                      onClick={handleFinishOutput}
-                    >
-                      {submitting
-                        ? "Submitting…"
-                        : draft.submitToCommons
-                          ? "Submit & continue"
-                          : "Continue to Discovery"}
-                    </FfieButton>
-                  </div>
+                  <FutureRevealStage
+                    draft={draft}
+                    cardId="future-output-card"
+                    actionFooter={
+                      <FutureOutputActionFooter
+                        onBringToLife={() => setShowMaterialize((open) => !open)}
+                        onDownload={handleDownloadSummary}
+                        onPublish={() => setShowPublish((open) => !open)}
+                        bringToLifeActive={showMaterialize}
+                        downloading={downloadingSummary}
+                        submitting={submitting}
+                        layout="sidebar"
+                      />
+                    }
+                  >
+                    {showMaterialize && (
+                      <ArtifactMaterializePanel
+                        draft={draft}
+                        onImageChange={(imageDataUrl) =>
+                          update({ imageDataUrl })
+                        }
+                      />
+                    )}
+                    {showPublish && (
+                      <div className="mx-auto max-w-md space-y-4 rounded-xl border border-ffie-line bg-ffie-surface p-4 lg:mx-0">
+                        <label className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={draft.submitToCommons}
+                            onChange={(e) =>
+                              update({ submitToCommons: e.target.checked })
+                            }
+                            className="mt-1 accent-ffie-accent"
+                          />
+                          <span className="text-sm text-ffie-muted">
+                            Submit this diegetic prototype to the Future
+                            Commons for moderation. If approved, it will
+                            appear alongside Research Findings — always
+                            labeled as community-created. An image is
+                            optional.
+                          </span>
+                        </label>
+                        {submitError && (
+                          <p className="text-sm text-red-700">{submitError}</p>
+                        )}
+                        <FfieButton
+                          disabled={
+                            submitting ||
+                            !draft.placementJustification.trim() ||
+                            !draft.submitToCommons
+                          }
+                          onClick={handleFinishOutput}
+                        >
+                          {submitting
+                            ? "Submitting…"
+                            : "Submit for moderation"}
+                        </FfieButton>
+                      </div>
+                    )}
+                    <p className="text-center">
+                      <button
+                        type="button"
+                        className="text-sm text-ffie-muted underline-offset-2 hover:text-ffie-ink hover:underline"
+                        onClick={() => {
+                          update({ submitToCommons: false });
+                          void handleFinishOutput();
+                        }}
+                      >
+                        Continue without publishing →
+                      </button>
+                    </p>
+                  </FutureRevealStage>
                   </TimeTravelTransition>
                   )}
                 </CreateStageShell>
@@ -739,16 +784,22 @@ export function CreateJourney() {
           className="pointer-events-none fixed left-[-9999px] top-0 overflow-hidden"
           aria-hidden
         >
-          <ShareableFutureCard
-            id="shareable-future-card"
-            title={draft.title}
-            characterName={draft.characterName}
-            artifactName={draft.artifactName}
-            position={draft.position}
-            cardHand={draft.cardHand}
+          <FutureSummaryExport
+            id="future-summary-export"
+            draft={draft}
+            commonsUrl={
+              draft.submittedId && typeof window !== "undefined"
+                ? `${window.location.origin}/explore/${draft.submittedId}`
+                : null
+            }
           />
         </div>
       )}
+
+      <PhaseSweepOverlay
+        active={Boolean(phaseSweep)}
+        onComplete={completePhaseSweep}
+      />
 
     </div>
   );

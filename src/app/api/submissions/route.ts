@@ -14,6 +14,7 @@ export type SubmissionPayload = {
   characterGender?: string;
   characterRaceEthnicity?: string;
   role: string;
+  personaSector?: string;
   aiFunction: string;
   desire: string;
   fear: string;
@@ -29,6 +30,7 @@ export type SubmissionPayload = {
   placementJustification: string;
   cardProvenance: string[];
   drawSynthesis?: string;
+  drawSynthesisTensions?: string;
   reflectionText: string;
   imageDataUrl?: string | null;
   submitToCommons: boolean;
@@ -115,13 +117,23 @@ export async function POST(request: Request) {
     }
 
     const [, mime, base64] = match;
-    const ext = mime.includes("png")
-      ? "png"
-      : mime.includes("webp")
-        ? "webp"
-        : "jpg";
-    const path = `${body.sessionId}/${Date.now()}.${ext}`;
+    if (mime !== "image/png" && mime !== "image/jpeg") {
+      return NextResponse.json(
+        { error: "Image must be PNG or JPG" },
+        { status: 400 },
+      );
+    }
+
     const buffer = Buffer.from(base64, "base64");
+    if (buffer.byteLength > 10 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Image must be 10 MB or smaller" },
+        { status: 400 },
+      );
+    }
+
+    const ext = mime.includes("png") ? "png" : "jpg";
+    const path = `${body.sessionId}/${Date.now()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from("submissions")
@@ -160,6 +172,7 @@ export async function POST(request: Request) {
       character_gender: body.characterGender || null,
       character_race_ethnicity: body.characterRaceEthnicity || null,
       character_role: body.role,
+      persona_sector: body.personaSector?.trim() || null,
       character_ai_function: body.aiFunction || null,
       character_desire: body.desire,
       character_fear: body.fear,
@@ -177,6 +190,7 @@ export async function POST(request: Request) {
       placement_justification: body.placementJustification,
       card_provenance: body.cardProvenance,
       draw_synthesis: body.drawSynthesis?.trim() || null,
+      draw_synthesis_tensions: body.drawSynthesisTensions?.trim() || null,
       reflection_text: body.reflectionText,
       image_url: imageUrl,
     })

@@ -6,6 +6,7 @@ import type {
 import { QUADRANT_LABELS } from "@/types/future";
 import type { NarrativeCard } from "@/data/narrative-cards";
 import type { CharacterGenderId, ArtifactTypeId } from "@/lib/journey/character-options";
+import type { PersonaSector } from "@/lib/journey/persona-sectors";
 import {
   artifactTypePhrase,
   composeLocation,
@@ -14,7 +15,7 @@ import {
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
 import type { AiCapabilityPowerId } from "@/lib/journey/ai-capability-clusters";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
-import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
+import { buildFutureCommonsNarrative } from "@/lib/journey/future-commons-narrative";
 import { getFutureHorizonYear } from "@/lib/journey/future-horizon";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
@@ -59,8 +60,10 @@ export type JourneyDraft = {
   embodySubStep: number;
   cardHand: CardHand | null;
   combinedTension: string;
-  /** Deterministic Oracle Draw synthesis sentence. */
+  /** Deterministic Oracle Draw synthesis — main sentence (card names). */
   drawSynthesis: string;
+  /** Secondary line listing card tensions. */
+  drawSynthesisTensions: string;
   reflectionText: string;
   characterName: string;
   characterAge: string;
@@ -73,6 +76,8 @@ export type JourneyDraft = {
   location: string;
   role: string;
   roleCustom: string;
+  personaSector: PersonaSector | "";
+  personaSectorCustom: string;
   aiFunction: string;
   tradeoffLoss: string;
   desire: string;
@@ -102,6 +107,8 @@ export type JourneyDraft = {
   artifactValues: string[];
   artifactValueOther: string;
   imageDataUrl: string | null;
+  /** Optional closing reflection on the final Future card. */
+  closingReflection: string;
   /** System Logic Likert (Q1) — Extracts ↔ Gives back */
   systemLogicScore: LikertScore | null;
   /** Power Organization Likert (Q2) — centralizada ↔ coletiva */
@@ -221,9 +228,7 @@ export function buildTitle(artifactName: string, characterName: string): string 
 }
 
 export function buildNarrative(draft: JourneyDraft): string {
-  if (draft.drawSynthesis.trim()) return draft.drawSynthesis.trim();
-  if (draft.cardHand) return buildOracleSynthesis(draft.cardHand);
-  return draft.title || "An unnamed future";
+  return buildFutureCommonsNarrative(draft);
 }
 
 export function buildReflectionQuestion(draft: JourneyDraft): string {
@@ -289,6 +294,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     cardHand: null,
     combinedTension: "",
     drawSynthesis: "",
+    drawSynthesisTensions: "",
     reflectionText: "",
     characterName: "",
     characterAge: "",
@@ -301,6 +307,8 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     location: "",
     role: "",
     roleCustom: "",
+    personaSector: "",
+    personaSectorCustom: "",
     aiFunction: "",
     tradeoffLoss: "",
     desire: "",
@@ -321,6 +329,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     artifactValues: [],
     artifactValueOther: "",
     imageDataUrl: null,
+    closingReflection: "",
     systemLogicScore: null,
     powerOrgScore: null,
     position: { x: 0, y: 0 },
@@ -378,6 +387,11 @@ export function loadDraft(): JourneyDraft | null {
       values: parsed.values ?? [],
       futureYear: parsed.futureYear ?? getFutureHorizonYear(),
       drawSynthesis: parsed.drawSynthesis ?? "",
+      drawSynthesisTensions: parsed.drawSynthesisTensions ?? "",
+      personaSector: parsed.personaSector ?? "",
+      personaSectorCustom: parsed.personaSectorCustom ?? "",
+      closingReflection: parsed.closingReflection ?? "",
+      imageDataUrl: parsed.imageDataUrl ?? null,
       hiddenFunctionExtremeValue: parsed.hiddenFunctionExtremeValue ?? "",
       hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",
       artifactGoalPitch: parsed.artifactGoalPitch ?? "",

@@ -1,5 +1,7 @@
 "use client";
 
+import { SettleButton } from "@/components/motion/SettleButton";
+
 type ChipOption = {
   id: string;
   label: string;
@@ -57,9 +59,8 @@ export function ChipSelect(
           {normalized.map((option) => {
             const selected = value.includes(option.id);
             return (
-              <button
+              <SettleButton
                 key={option.id}
-                type="button"
                 aria-pressed={selected}
                 disabled={!selected && value.length >= max}
                 onClick={() => {
@@ -72,7 +73,7 @@ export function ChipSelect(
                 className={chipClass(selected)}
               >
                 {option.label}
-              </button>
+              </SettleButton>
             );
           })}
         </div>
@@ -88,16 +89,15 @@ export function ChipSelect(
         {normalized.map((option) => {
           const selected = value === option.id;
           return (
-            <button
+            <SettleButton
               key={option.id}
-              type="button"
               role="radio"
               aria-checked={selected}
               onClick={() => onChange(option.id)}
               className={chipClass(selected)}
             >
               {option.label}
-            </button>
+            </SettleButton>
           );
         })}
       </div>

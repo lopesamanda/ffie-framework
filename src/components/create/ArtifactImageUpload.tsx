@@ -2,6 +2,9 @@
 
 import { useRef, useState } from "react";
 
+const MAX_BYTES = 10 * 1024 * 1024;
+const ACCEPTED_TYPES = new Set(["image/png", "image/jpeg"]);
+
 function UploadIcon() {
   return (
     <svg
@@ -34,11 +37,25 @@ export function ArtifactImageUpload({
 }: ArtifactImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFile = (file: File | undefined) => {
-    if (!file?.type.startsWith("image/")) return;
+    if (!file) return;
+    setError(null);
+
+    if (!ACCEPTED_TYPES.has(file.type)) {
+      setError("Please upload a PNG or JPG image.");
+      return;
+    }
+
+    if (file.size > MAX_BYTES) {
+      setError("Image must be 10 MB or smaller.");
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => onChange(reader.result as string);
+    reader.onerror = () => setError("Could not read that file. Try again.");
     reader.readAsDataURL(file);
   };
 
@@ -47,7 +64,7 @@ export function ArtifactImageUpload({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/png,image/jpeg"
         className="sr-only"
         onChange={(event) => handleFile(event.target.files?.[0])}
       />
@@ -76,17 +93,32 @@ export function ArtifactImageUpload({
           Click to upload an image
         </span>
         <span className="mt-1 text-xs text-ffie-muted">
-          or drop an image here · optional — you can skip this step
+          PNG or JPG · max 10 MB · optional — you can skip this
         </span>
       </button>
 
+      {error && <p className="text-xs text-red-700">{error}</p>}
+
       {value && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={value}
-          alt="Uploaded artifact preview"
-          className="max-h-56 w-full rounded-xl border border-ffie-line object-cover"
-        />
+        <div className="space-y-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={value}
+            alt="Uploaded artifact preview"
+            className="max-h-56 w-full rounded-xl border border-ffie-line object-cover"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setError(null);
+              onChange(null);
+              if (inputRef.current) inputRef.current.value = "";
+            }}
+            className="text-xs font-medium text-ffie-muted underline-offset-2 hover:text-ffie-ink hover:underline"
+          >
+            Remove image
+          </button>
+        </div>
       )}
     </div>
   );

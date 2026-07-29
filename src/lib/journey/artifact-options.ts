@@ -31,6 +31,12 @@ export function isArtifactValuesComplete(draft: {
   artifactValues: string[];
   artifactValueOther: string;
 }): boolean {
+  if (
+    draft.artifactValues.includes(ARTIFACT_VALUE_OTHER) &&
+    !draft.artifactValueOther.trim()
+  ) {
+    return false;
+  }
   const resolved = resolveArtifactValues(draft);
   return resolved.length >= 2 && resolved.length <= 3;
 }

@@ -15,6 +15,7 @@ create table if not exists submissions (
   character_gender text,
   character_race_ethnicity text,
   character_role text not null,
+  persona_sector text,
   character_ai_function text,
   character_desire text not null,
   character_fear text not null,
@@ -43,6 +44,7 @@ create table if not exists submissions (
   placement_justification text not null,
   card_provenance jsonb not null default '[]',
   draw_synthesis text,
+  draw_synthesis_tensions text,
   reflection_text text,
   image_url text,
   created_at timestamptz not null default now()

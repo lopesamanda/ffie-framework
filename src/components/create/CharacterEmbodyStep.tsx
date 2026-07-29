@@ -10,6 +10,10 @@ import {
   ROLE_OPTIONS,
   type CharacterGenderId,
 } from "@/lib/journey/character-options";
+import {
+  PERSONA_SECTOR_OPTIONS,
+  type PersonaSector,
+} from "@/lib/journey/persona-sectors";
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
 import {
   EMBODY_SCREEN_COUNT,
@@ -35,6 +39,8 @@ export type CharacterEmbodyDraft = {
   raceSelfDescribe: string;
   role: string;
   roleCustom: string;
+  personaSector: PersonaSector | "";
+  personaSectorCustom: string;
   location: string;
   aiFunction: string;
   tradeoffLoss: string;
@@ -95,7 +101,13 @@ export function isEmbodyScreenComplete(
         raceResolved
       );
     case 1:
-      return draft.role.trim().length > 0 && draft.location.trim().length > 0;
+      return (
+        draft.role.trim().length > 0 &&
+        draft.personaSector !== "" &&
+        (draft.personaSector !== "Other" ||
+          draft.personaSectorCustom.trim().length > 0) &&
+        draft.location.trim().length > 0
+      );
     case 2:
       return draft.values.length === 3;
     case 3:
@@ -177,7 +189,7 @@ export function CharacterEmbodyStep({
                 <NarrativeBlock>
                   <NarrativeBlank
                     before={`${p.possessiveCap} name is `}
-                    after={` and, ${FUTURE_HORIZON_LABEL}, ${p.subject} is `}
+                    after={` and, ${FUTURE_HORIZON_LABEL}, ${p.subject} ${verbFor(p, "is", "are")} `}
                     value={draft.characterName}
                     onChange={(characterName) => onChange({ characterName })}
                     placeholder="name"
@@ -187,8 +199,8 @@ export function CharacterEmbodyStep({
                     after=" years old."
                     value={draft.characterAge}
                     onChange={(characterAge) => onChange({ characterAge })}
-                    placeholder="age"
                     inputMode="numeric"
+                    placeholder="age"
                   />
                 </NarrativeBlock>
 
@@ -230,7 +242,6 @@ export function CharacterEmbodyStep({
                       onChange={(event) =>
                         onChange({ raceSelfDescribe: event.target.value })
                       }
-                      placeholder="Describe in your own words"
                       className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
                     />
                   )}
@@ -243,7 +254,7 @@ export function CharacterEmbodyStep({
       case 1:
         return (
           <div className="space-y-6">
-            <ChipField label={`In the innovation ecosystem, ${p.subject} is a…`}>
+            <ChipField label={`In the innovation ecosystem, ${p.subject} ${verbFor(p, "is", "are")} a…`}>
               <ChipSelect
                 label=""
                 options={[...ROLE_OPTIONS]}
@@ -266,9 +277,42 @@ export function CharacterEmbodyStep({
                     role: event.target.value,
                   })
                 }
-                placeholder="Or describe in your own words"
-                className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none focus:border-ffie-accent/40"
+                placeholder="type your own"
+                className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40"
               />
+            </ChipField>
+
+            <ChipField label={`${p.possessiveCap} sector in this ecosystem is…`}>
+              <ChipSelect
+                label=""
+                options={[...PERSONA_SECTOR_OPTIONS]}
+                value={
+                  draft.personaSector &&
+                  PERSONA_SECTOR_OPTIONS.includes(
+                    draft.personaSector as PersonaSector,
+                  )
+                    ? draft.personaSector
+                    : null
+                }
+                onChange={(personaSector) =>
+                  onChange({
+                    personaSector: personaSector as PersonaSector,
+                    personaSectorCustom:
+                      personaSector === "Other" ? draft.personaSectorCustom : "",
+                  })
+                }
+              />
+              {draft.personaSector === "Other" && (
+                <input
+                  type="text"
+                  value={draft.personaSectorCustom}
+                  onChange={(event) =>
+                    onChange({ personaSectorCustom: event.target.value })
+                  }
+                  placeholder="type your own"
+                  className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40"
+                />
+              )}
             </ChipField>
 
             <NarrativeBlock>

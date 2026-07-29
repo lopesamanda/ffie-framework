@@ -7,12 +7,15 @@ import { FutureConstellation } from "@/components/explore/FutureConstellation";
 import { FuturePreviewPanel } from "@/components/FuturePreviewPanel";
 import { FutureGrid, FutureMatrix } from "@/components/FutureMatrix";
 import { researchFindingsSeed } from "@/data/research-findings-seed";
+import { ROLE_OPTIONS } from "@/lib/journey/character-options";
+import { PERSONA_SECTOR_OPTIONS } from "@/lib/journey/persona-sectors";
 import {
   QUADRANT_LABELS,
   type FutureCollection,
   type FutureCountry,
   type FutureEntry,
   type FutureQuadrant,
+  type PersonaSector,
 } from "@/types/future";
 
 type BrowseLens = "matrix" | "constellation" | "grid";
@@ -74,6 +77,8 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
   const [lens, setLens] = useState<BrowseLens>("matrix");
   const [country, setCountry] = useState<FutureCountry | "all">("all");
   const [scenario, setScenario] = useState<FutureQuadrant | "all">("all");
+  const [sector, setSector] = useState<PersonaSector | "all">("all");
+  const [role, setRole] = useState<string | "all">("all");
   const [selected, setSelected] = useState<FutureEntry | null>(null);
 
   const baseEntries =
@@ -85,15 +90,27 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
     return baseEntries.filter((entry) => {
       if (country !== "all" && entry.country !== country) return false;
       if (scenario !== "all" && entry.quadrant !== scenario) return false;
+      if (sector !== "all" && entry.character.sector !== sector) return false;
+      if (role !== "all") {
+        const entryRole = entry.character.role.toLowerCase();
+        const filterRole = role.toLowerCase();
+        if (entryRole !== filterRole && !entryRole.includes(filterRole)) {
+          return false;
+        }
+      }
       return true;
     });
-  }, [baseEntries, country, scenario]);
+  }, [baseEntries, country, scenario, sector, role]);
 
-  const contentKey = `${collection}-${lens}-${country}-${scenario}`;
+  const contentKey = `${collection}-${lens}-${country}-${scenario}-${sector}-${role}`;
 
   const handleCollectionChange = (next: FutureCollection) => {
     setCollection(next);
     setSelected(null);
+    if (next === "research_findings") {
+      setSector("all");
+      setRole("all");
+    }
   };
 
   return (
@@ -177,6 +194,41 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
               ),
             )}
           </div>
+          {collection === "future_commons" && (
+            <div className="flex flex-wrap gap-2 pt-2">
+              <FilterChip
+                label="All sectors"
+                active={sector === "all"}
+                onClick={() => setSector("all")}
+              />
+              {PERSONA_SECTOR_OPTIONS.map((option) => (
+                <FilterChip
+                  key={option}
+                  label={option}
+                  active={sector === option}
+                  onClick={() =>
+                    setSector((current) => (current === option ? "all" : option))
+                  }
+                />
+              ))}
+              <span className="mx-1 hidden h-6 w-px self-center bg-ffie-line sm:inline" />
+              <FilterChip
+                label="All roles"
+                active={role === "all"}
+                onClick={() => setRole("all")}
+              />
+              {ROLE_OPTIONS.map((option) => (
+                <FilterChip
+                  key={option}
+                  label={option}
+                  active={role === option}
+                  onClick={() =>
+                    setRole((current) => (current === option ? "all" : option))
+                  }
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -197,6 +249,8 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
                 onSelect={setSelected}
                 linkToDetail={false}
                 highlightCountry={country}
+                highlightSector={sector}
+                colorBy={collection === "future_commons" ? "sector" : "country"}
               />
 
               <aside className="rounded-[12px] border border-ffie-line bg-ffie-surface p-6 shadow-[0_2px_8px_rgba(35,19,82,0.04)] lg:sticky lg:top-6">

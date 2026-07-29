@@ -1,10 +1,11 @@
 "use client";
 
 import { ARTIFACT_TYPE_OPTIONS } from "@/lib/journey/character-options";
+import { SettleButton } from "@/components/motion/SettleButton";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 const FIELD =
-  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
+  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40";
 
 export function ArtifactIdentityStep({
   draft,
@@ -22,6 +23,7 @@ export function ArtifactIdentityStep({
         <input
           value={draft.artifactName}
           onChange={(event) => onChange({ artifactName: event.target.value })}
+          placeholder="artifact name"
           className={FIELD}
         />
       </label>
@@ -34,9 +36,8 @@ export function ArtifactIdentityStep({
           {ARTIFACT_TYPE_OPTIONS.map((option) => {
             const selected = draft.artifactType === option.id;
             return (
-              <button
+              <SettleButton
                 key={option.id}
-                type="button"
                 onClick={() => onChange({ artifactType: option.id })}
                 className={`rounded-xl border px-4 py-3 text-left transition ${
                   selected
@@ -52,7 +53,7 @@ export function ArtifactIdentityStep({
                 >
                   {option.description}
                 </span>
-              </button>
+              </SettleButton>
             );
           })}
         </div>
