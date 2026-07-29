@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toPng } from "html-to-image";
 import { CreateStageShell } from "@/components/create/design/CreateStageShell";
 import { CreateEntryCover } from "@/components/create/design/CreateEntryCover";
+import { CreateUnderstandScreen } from "@/components/create/design/CreateUnderstandScreen";
 import { FfieButton } from "@/components/create/design/FfieButton";
 import {
   CategoryRegisterTiles,
@@ -52,6 +53,11 @@ import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
 import { ArtifactTypeStep } from "@/components/create/ArtifactTypeStep";
 import { ArtifactProgressiveStep } from "@/components/create/ArtifactProgressiveStep";
 import { visualDirectionPatchForType } from "@/lib/journey/visual-directions";
+import {
+  getCreatePhaseEyebrow,
+  getCreateFfiePhase,
+  type CreatePhaseContext,
+} from "@/lib/create-journey-phases";
 import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
 import {
   composeHiddenFunction,
@@ -341,12 +347,37 @@ export function CreateJourney() {
 
   const showLivePreview =
     draft.stage !== "entry" &&
+    draft.stage !== "understand" &&
     draft.stage !== "orientation" &&
     draft.stage !== "output" &&
     draft.stage !== "discovery";
 
   const oracleDrawComplete =
     draft.stage !== "reflection" || oracleDrawIndex >= 4;
+
+  const phaseContext: CreatePhaseContext = {
+    stage: draft.stage,
+    creationStep: draft.creationStep,
+    embodySubStep: draft.embodySubStep,
+    oracleDrawIndex,
+    outputStep: draft.outputStep,
+  };
+
+  const phaseEyebrow = getCreatePhaseEyebrow(getCreateFfiePhase(phaseContext));
+
+  const creationEyebrow =
+    draft.stage === "creation" && draft.creationStep > 0
+      ? "MATERIALIZE"
+      : undefined;
+
+  const creationTitle =
+    draft.stage === "creation"
+      ? draft.creationStep === 1
+        ? "Give it a body."
+        : draft.creationStep === 2
+          ? "Place it in the world."
+          : CREATION_STEPS[draft.creationStep]
+      : undefined;
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
@@ -372,12 +403,28 @@ export function CreateJourney() {
             >
               {draft.stage === "entry" && (
                 <CreateStageShell stage="entry" headerMode="entry" variant="cover">
-                  <CreateEntryCover onBegin={() => goTo("orientation")} />
+                  <CreateEntryCover onBegin={() => goTo("understand")} />
+                </CreateStageShell>
+              )}
+
+              {draft.stage === "understand" && (
+                <CreateStageShell
+                  stage="understand"
+                  eyebrow={phaseEyebrow}
+                  phaseContext={phaseContext}
+                >
+                  <CreateUnderstandScreen
+                    onBegin={() => goTo("orientation")}
+                  />
                 </CreateStageShell>
               )}
 
               {draft.stage === "orientation" && (
-                <CreateStageShell stage="orientation">
+                <CreateStageShell
+                  stage="orientation"
+                  eyebrow={phaseEyebrow}
+                  phaseContext={phaseContext}
+                >
                   <CategoryRegisterTiles />
                   <EnvironmentalBanner />
                   <div className="mt-8 flex flex-col items-start gap-4">
@@ -407,7 +454,11 @@ export function CreateJourney() {
               )}
 
               {draft.stage === "reflection" && (
-                <CreateStageShell stage="reflection">
+                <CreateStageShell
+                  stage="reflection"
+                  eyebrow={phaseEyebrow}
+                  phaseContext={phaseContext}
+                >
                   {!draft.cardHand ? (
                     <FfieButton disabled={revealing} onClick={handleDrawCards}>
                       {revealing ? "Drawing…" : "Reveal cards"}
@@ -470,13 +521,9 @@ export function CreateJourney() {
               {draft.stage === "creation" && (
                 <CreateStageShell
                   stage="creation"
-                  title={
-                    draft.creationStep === 1
-                      ? "Give it a body."
-                      : draft.creationStep === 2
-                        ? "Place it in the world."
-                        : CREATION_STEPS[draft.creationStep]
-                  }
+                  eyebrow={creationEyebrow ?? phaseEyebrow}
+                  title={creationTitle}
+                  phaseContext={phaseContext}
                   subtitle={`Step ${draft.creationStep + 1} of ${CREATION_STEPS.length} — ${CREATION_STEPS[draft.creationStep]}`}
                 >
                   {draft.creationStep === 0 && (
@@ -638,7 +685,12 @@ export function CreateJourney() {
               )}
 
               {draft.stage === "output" && (
-                <CreateStageShell stage="output" subtitle="">
+                <CreateStageShell
+                  stage="output"
+                  eyebrow={phaseEyebrow}
+                  phaseContext={phaseContext}
+                  subtitle=""
+                >
                   {draft.outputStep === 0 ? (
                     <div className="w-full min-w-0 space-y-5">
                       <p className="text-sm text-ffie-muted">
@@ -783,7 +835,11 @@ export function CreateJourney() {
               )}
 
               {draft.stage === "discovery" && (
-                <CreateStageShell stage="discovery">
+                <CreateStageShell
+                  stage="discovery"
+                  eyebrow={phaseEyebrow}
+                  phaseContext={phaseContext}
+                >
                   {draft.submittedId ? (
                     <p className="mb-6 text-sm text-ffie-muted">
                       Your prototype was submitted with status{" "}

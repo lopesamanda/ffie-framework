@@ -9,11 +9,11 @@ export type StageMeta = {
   accentColor: string;
 };
 
-/** Maps 7 journey stages → 5 compact timeline phases (Figma PhaseTimelineCompact). */
+/** Maps journey stages → legacy 5-segment index (Explore path only). */
 export function getPhaseIndex(stage: JourneyStage): number {
-  if (stage === "entry" || stage === "orientation") return 1;
+  if (stage === "entry" || stage === "understand") return 1;
+  if (stage === "orientation" || stage === "reflection") return 2;
   if (stage === "exploration") return 2;
-  if (stage === "reflection") return 3;
   if (stage === "creation") return 4;
   return 5;
 }
@@ -25,9 +25,15 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     title: "A future is taking shape.",
     accentColor: "#6e52c4",
   },
+  understand: {
+    phaseLabel: "Understand",
+    eyebrow: "UNDERSTAND",
+    title: "Before you begin.",
+    accentColor: "#6e52c4",
+  },
   orientation: {
-    phaseLabel: "Orientation",
-    eyebrow: "The draw",
+    phaseLabel: "Situate",
+    eyebrow: "SITUATE",
     title: "Five cards will shape your future.",
     subtitle:
       "Each card carries a structural tension mapped during a real research process — studying how AI is actually being used across today's innovation ecosystems. You'll draw one card from each register, plus the Environmental Impact card, which applies to every future by default. Your combination can generate a different future each time. Need inspiration? Browse Research Findings anytime via the link below.",
@@ -42,8 +48,8 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     accentColor: "#c48a1a",
   },
   reflection: {
-    phaseLabel: "Reflection",
-    eyebrow: "Oracle Draw",
+    phaseLabel: "Situate",
+    eyebrow: "SITUATE",
     title: "Your hand.",
     subtitle:
       "One card from each category, plus the Environmental Impact lens — always applied, never drawn.",
@@ -51,21 +57,21 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
   },
   creation: {
     phaseLabel: "Creation",
-    eyebrow: "Build the future",
+    eyebrow: "EMBODY",
     title: "Give it a body.",
     subtitle:
       "Character, machine, artifact — then two questions place it on the matrix.",
     accentColor: "#c22b7a",
   },
   output: {
-    phaseLabel: "Your Future",
-    eyebrow: "Your future",
+    phaseLabel: "Share",
+    eyebrow: "SHARE",
     title: "It exists now.",
     accentColor: "#6e52c4",
   },
   discovery: {
-    phaseLabel: "Discovery",
-    eyebrow: "Future Commons",
+    phaseLabel: "Share",
+    eyebrow: "SHARE",
     title: "Your future joins others.",
     subtitle:
       "These futures don't agree with each other. That's the point. Wander among them.",

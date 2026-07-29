@@ -61,28 +61,6 @@ type CharacterEmbodyStepProps = {
   onComplete: () => void;
 };
 
-function EmbodyDots({ current }: { current: number }) {
-  return (
-    <div
-      className="flex justify-center gap-1.5"
-      aria-label={`Embody step ${current + 1} of ${EMBODY_SCREEN_COUNT}`}
-    >
-      {Array.from({ length: EMBODY_SCREEN_COUNT }, (_, index) => (
-        <span
-          key={index}
-          className={`size-1.5 rounded-full transition ${
-            index === current
-              ? "bg-ffie-accent scale-125"
-              : index < current
-                ? "bg-ffie-ink/40"
-                : "bg-ffie-ink/15"
-          }`}
-        />
-      ))}
-    </div>
-  );
-}
-
 export function isEmbodyScreenComplete(
   draft: CharacterEmbodyDraft,
   screen: number,
@@ -389,8 +367,6 @@ export function CharacterEmbodyStep({
         Picture someone living {FUTURE_HORIZON_LABEL}. Who are you building this
         future for?
       </FfieHeading>
-
-      <EmbodyDots current={embodySubStep} />
 
       <AnimatePresence mode="wait">
         <motion.div

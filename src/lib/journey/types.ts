@@ -25,6 +25,7 @@ export type LikertScore = 1 | 2 | 3 | 4 | 5;
 
 export type JourneyStage =
   | "entry"
+  | "understand"
   | "orientation"
   | "exploration"
   | "reflection"
@@ -34,6 +35,7 @@ export type JourneyStage =
 
 export const JOURNEY_STAGES: { id: JourneyStage; label: string }[] = [
   { id: "entry", label: "Entry" },
+  { id: "understand", label: "Understand" },
   { id: "orientation", label: "Orientation" },
   { id: "exploration", label: "Exploration" },
   { id: "reflection", label: "Reflection" },

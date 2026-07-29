@@ -8,6 +8,7 @@ import {
   FfieLead,
 } from "@/components/create/design/FfieEyebrow";
 import { STAGE_META } from "@/lib/create-stage-meta";
+import type { CreatePhaseContext } from "@/lib/create-journey-phases";
 import type { JourneyStage } from "@/lib/journey/types";
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
   title?: string;
   subtitle?: string;
   showTimeline?: boolean;
+  phaseContext?: CreatePhaseContext;
   /** Entry uses timeline only — no duplicate title block (Figma Entry frame). */
   headerMode?: "default" | "entry";
   /** Full-bleed hero cover — no card chrome (Figma Screen0). */
@@ -29,6 +31,7 @@ export function CreateStageShell({
   title,
   subtitle,
   showTimeline = true,
+  phaseContext,
   headerMode = "default",
   variant = "default",
   children,
@@ -54,7 +57,17 @@ export function CreateStageShell({
       {showTimeline && !isCover && (
         <div className="border-b border-ffie-line/50 bg-ffie-surface px-6 py-3 sm:px-10">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <PhaseTimeline current={stage} />
+            <PhaseTimeline
+              context={
+                phaseContext ?? {
+                  stage,
+                  creationStep: 0,
+                  embodySubStep: 0,
+                  oracleDrawIndex: 0,
+                  outputStep: 0,
+                }
+              }
+            />
             <FfieEyebrow muted className="shrink-0">
               {meta.phaseLabel}
             </FfieEyebrow>
