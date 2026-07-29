@@ -16,7 +16,14 @@ function stripTrailingPunctuation(text: string): string {
 export function buildWhyItExistsParagraph(
   draft: Pick<
     JourneyDraft,
-    "characterName" | "fear" | "artifactName" | "artifactProblemTension"
+    | "characterName"
+    | "characterPronoun"
+    | "fear"
+    | "aiFunction"
+    | "tradeoffLoss"
+    | "desire"
+    | "artifactName"
+    | "artifactProblemTension"
   >,
 ): string {
   const beats = buildFinalCardNarrative(draft);

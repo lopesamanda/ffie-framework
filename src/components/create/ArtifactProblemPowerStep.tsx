@@ -86,9 +86,10 @@ export function ArtifactProblemPowerStep({
               artifactGoalPitch: "",
             })
           }
-          onSelectCapability={(selectedAiCapability) =>
+          onSelectCapability={(selectedAiCapability, powerId) =>
             onChange({
               selectedAiCapability,
+              selectedAiPower: powerId,
               publicPromise: "",
               artifactGoalPitch: "",
             })
