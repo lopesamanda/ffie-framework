@@ -15,7 +15,7 @@ import {
   ffieCardTitle,
 } from "@/lib/card-layout";
 
-const WORK_ACTIONS = [
+export const FUTURE_WORK_ACTIONS = [
   {
     title: "Backcast it",
     description:
@@ -37,6 +37,27 @@ const WORK_ACTIONS = [
       "Share it with a colleague and ask if any part of it feels familiar.",
   },
 ] as const;
+
+export function FutureWorkActionsGrid({
+  reduceMotion,
+}: {
+  reduceMotion: boolean | null;
+}) {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      {FUTURE_WORK_ACTIONS.map((action, index) => (
+        <WorkActionCard
+          key={action.title}
+          title={action.title}
+          description={action.description}
+          index={index}
+          reduceMotion={reduceMotion}
+          setCardRef={() => undefined}
+        />
+      ))}
+    </div>
+  );
+}
 
 type LineSegment = { x1: number; y1: number; x2: number; y2: number };
 
@@ -251,7 +272,7 @@ export function FutureWorkWithPanel({
         </motion.h3>
 
         <div className="relative mt-4 space-y-3 lg:max-w-sm">
-          {WORK_ACTIONS.map((action, index) => (
+          {FUTURE_WORK_ACTIONS.map((action, index) => (
             <WorkActionCard
               key={action.title}
               title={action.title}

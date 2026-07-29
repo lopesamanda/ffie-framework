@@ -1,4 +1,5 @@
 import type { ArtifactTypeId } from "@/lib/journey/character-options";
+import type { JourneyDraft } from "@/lib/journey/types";
 
 export const VISUAL_DIRECTION_IMAGES: {
   id: string;
@@ -56,4 +57,18 @@ export function defaultVisualDirectionForType(
     (entry) => entry.artifactType === artifactType,
   );
   return match?.path ?? VISUAL_DIRECTION_IMAGES[0]!.path;
+}
+
+export function ensureVisualDirection(
+  draft: Pick<JourneyDraft, "artifactType" | "visualDirection">,
+): string {
+  return (
+    draft.visualDirection || defaultVisualDirectionForType(draft.artifactType)
+  );
+}
+
+export function visualDirectionPatchForType(
+  artifactType: ArtifactTypeId | "",
+): Partial<Pick<JourneyDraft, "visualDirection">> {
+  return { visualDirection: defaultVisualDirectionForType(artifactType) };
 }

@@ -2,7 +2,7 @@ import { MatrixPositionDiagram } from "@/components/create/MatrixPositionDiagram
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { buildFinalCardNarrative } from "@/lib/journey/future-card-copy";
-import { ensureVisualDirection } from "@/components/create/VisualDirectionStep";
+import { ensureVisualDirection } from "@/lib/journey/visual-directions";
 import { resolveCapabilityDescription, resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -89,7 +89,7 @@ export function FutureSummaryExport({
               <img
                 src={visualDirectionSrc}
                 alt=""
-                className="max-h-48 w-full rounded-xl object-cover"
+                className="max-h-48 w-full rounded-xl object-contain"
               />
             )}
 

@@ -51,11 +51,7 @@ import {
 import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
 import { ArtifactTypeStep } from "@/components/create/ArtifactTypeStep";
 import { ArtifactProgressiveStep } from "@/components/create/ArtifactProgressiveStep";
-import {
-  VisualDirectionStep,
-  ensureVisualDirection,
-  visualDirectionPatchForType,
-} from "@/components/create/VisualDirectionStep";
+import { visualDirectionPatchForType } from "@/lib/journey/visual-directions";
 import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
 import {
   composeHiddenFunction,
@@ -92,7 +88,6 @@ const CREATION_STEPS = [
   "Embody the future",
   "Artifact type",
   "Name, problem & capability",
-  "Visual direction",
   "Embedded values",
   "Hidden function",
 ];
@@ -503,10 +498,6 @@ export function CreateJourney() {
                   )}
 
                   {draft.creationStep === 3 && (
-                    <VisualDirectionStep draft={draft} onChange={update} />
-                  )}
-
-                  {draft.creationStep === 4 && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
                         What values are embedded in it? Select 2–3 — comforting
@@ -550,7 +541,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 5 && (
+                  {draft.creationStep === 4 && (
                     <HiddenFunctionStep
                       draft={draft}
                       onSelectExtremeValue={(hiddenFunctionExtremeValue) =>
@@ -600,10 +591,8 @@ export function CreateJourney() {
                             !draft.selectedAiCapability ||
                             !draft.publicPromise.trim())) ||
                         (draft.creationStep === 3 &&
-                          !ensureVisualDirection(draft)) ||
-                        (draft.creationStep === 4 &&
                           !isArtifactValuesComplete(draft)) ||
-                        (draft.creationStep === 5 &&
+                        (draft.creationStep === 4 &&
                           !isHiddenFunctionComplete(draft) &&
                           !draft.hiddenFunction.trim())
                       }
@@ -614,7 +603,7 @@ export function CreateJourney() {
                             creationStep: nextStep,
                           };
                           if (
-                            nextStep === 3 &&
+                            nextStep === 2 &&
                             !draft.visualDirection &&
                             draft.artifactType
                           ) {
@@ -726,7 +715,7 @@ export function CreateJourney() {
                         bringToLifeActive={showMaterialize}
                         downloading={downloadingSummary}
                         submitting={submitting}
-                        layout="default"
+                        layout="inline"
                       />
                     }
                   >

@@ -109,6 +109,20 @@ export function ArtifactProgressiveStep({
         <p className="text-sm leading-relaxed text-ffie-ink">
           Give it a name. What is this artifact called?
         </p>
+        {(draft.artifactType || draft.artifactSubformat) && (
+          <div className="flex flex-wrap items-center gap-2">
+            {draft.artifactType && (
+              <span className="rounded-full border border-ffie-line bg-ffie-surface px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-ffie-muted">
+                {artifactTypeLabel(draft.artifactType)}
+              </span>
+            )}
+            {draft.artifactSubformat && (
+              <span className="rounded-full border border-ffie-accent/25 bg-ffie-accent-soft/40 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink">
+                {draft.artifactSubformat}
+              </span>
+            )}
+          </div>
+        )}
         <input
           value={draft.artifactName}
           onChange={(event) => onChange({ artifactName: event.target.value })}

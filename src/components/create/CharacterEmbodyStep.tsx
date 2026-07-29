@@ -29,6 +29,7 @@ import { FfieButton } from "@/components/create/design/FfieButton";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
+import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 
 export type CharacterEmbodyDraft = {
@@ -353,6 +354,12 @@ export function CharacterEmbodyStep({
           <EmbodyBuildStoryScreen
             draft={draft}
             role={resolvedCharacterRole(draft.role, draft.roleCustom)}
+            sector={
+              resolvedPersonaSector(
+                draft.personaSector,
+                draft.personaSectorCustom,
+              ) || "…"
+            }
             p={p}
             onChange={onChange}
           />

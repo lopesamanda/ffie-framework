@@ -61,6 +61,7 @@ type EmbodyBuildStoryScreenProps = {
     desire: string;
   };
   role: string;
+  sector: string;
   p: CharacterPronouns;
   onChange: (patch: {
     aiFunction?: string;
@@ -72,6 +73,7 @@ type EmbodyBuildStoryScreenProps = {
 export function EmbodyBuildStoryScreen({
   draft,
   role,
+  sector,
   p,
   onChange,
 }: EmbodyBuildStoryScreenProps) {
@@ -153,7 +155,7 @@ export function EmbodyBuildStoryScreen({
         <NarrativeBlock>
           <motion.div {...lineDrift(reduceMotion, 0)}>
             <NarrativeBlank
-              before={`Ten years from now, Artificial Intelligence (AI) changed the way ${p.subject} could `}
+              before={`Ten years from now, as a ${role} in the ${sector} sector, Artificial Intelligence (AI) changed the way ${p.subject} could `}
               after="."
               value={draft.aiFunction}
               onChange={(aiFunction) => onChange({ aiFunction })}

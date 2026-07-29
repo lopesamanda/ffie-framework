@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { SettleButton } from "@/components/motion/SettleButton";
 import { ChipSelect } from "@/components/create/ChipSelect";
 import {
@@ -7,6 +8,7 @@ import {
   ARTIFACT_TYPE_OPTIONS,
   type ArtifactTypeId,
 } from "@/lib/journey/character-options";
+import { defaultVisualDirectionForType } from "@/lib/journey/visual-directions";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 export function ArtifactTypeStep({
@@ -32,9 +34,10 @@ export function ArtifactTypeStep({
         </p>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         {ARTIFACT_TYPE_OPTIONS.map((option) => {
           const selected = draft.artifactType === option.id;
+          const imagePath = defaultVisualDirectionForType(option.id);
           return (
             <SettleButton
               key={option.id}
@@ -42,26 +45,42 @@ export function ArtifactTypeStep({
                 onChange({
                   artifactType: option.id,
                   artifactSubformat: "",
+                  visualDirection: defaultVisualDirectionForType(option.id),
                   selectedAiPower: "",
                   selectedAiCapability: "",
                   publicPromise: "",
                   artifactGoalPitch: "",
                 })
               }
-              className={`rounded-xl border px-4 py-3 text-left transition ${
+              className={`overflow-hidden rounded-xl border text-left transition ${
                 selected
-                  ? "border-ffie-ink bg-ffie-ink text-ffie-bg"
-                  : "border-ffie-line bg-ffie-surface text-ffie-ink hover:border-ffie-accent/40"
+                  ? "border-ffie-accent ring-2 ring-ffie-accent/25"
+                  : "border-ffie-line bg-ffie-surface hover:border-ffie-accent/40"
               }`}
             >
-              <span className="block text-sm font-semibold">{option.label}</span>
-              <span
-                className={`mt-1 block text-xs leading-relaxed ${
-                  selected ? "text-ffie-bg/80" : "text-ffie-muted"
+              <div className="relative aspect-[4/3] w-full bg-ffie-bg/60">
+                <Image
+                  src={imagePath}
+                  alt={option.label}
+                  fill
+                  className="object-contain p-2"
+                  sizes="(max-width: 640px) 100vw, 280px"
+                />
+              </div>
+              <div
+                className={`px-4 py-3 ${
+                  selected ? "bg-ffie-accent text-ffie-bg" : "text-ffie-ink"
                 }`}
               >
-                {option.description}
-              </span>
+                <span className="block text-sm font-semibold">{option.label}</span>
+                <span
+                  className={`mt-1 block text-xs leading-relaxed ${
+                    selected ? "text-ffie-bg/80" : "text-ffie-muted"
+                  }`}
+                >
+                  {option.description}
+                </span>
+              </div>
             </SettleButton>
           );
         })}
@@ -69,7 +88,10 @@ export function ArtifactTypeStep({
 
       {draft.artifactType && subformats.length > 0 && (
         <div className="space-y-3 rounded-xl border border-dashed border-ffie-accent/25 bg-ffie-accent-soft/20 px-4 py-4">
-          <p className="text-sm font-medium text-ffie-ink">Subformat (optional)</p>
+          <p className="text-sm font-medium text-ffie-ink">
+            Which subformat fits best?{" "}
+            <span className="font-normal text-ffie-muted">(optional)</span>
+          </p>
           <ChipSelect
             label=""
             options={subformats}

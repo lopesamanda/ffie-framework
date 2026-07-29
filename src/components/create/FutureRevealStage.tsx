@@ -3,7 +3,11 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
-import { FutureWorkWithPanel } from "@/components/create/FutureWorkWithPanel";
+import {
+  FUTURE_WORK_ACTIONS,
+  FutureWorkActionsGrid,
+} from "@/components/create/FutureWorkWithPanel";
+import { FfieButton } from "@/components/create/design/FfieButton";
 import { InteractiveMatrixReveal } from "@/components/create/InteractiveMatrixReveal";
 import {
   MATRIX_FRAMEWORK_INTRO,
@@ -30,9 +34,10 @@ export function FutureRevealStage({
 }) {
   const reduceMotion = useReducedMotion();
   const stageRef = useRef<HTMLDivElement>(null);
-  const outputLayoutRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const workWithRef = useRef<HTMLDivElement>(null);
   const [cardRevealed, setCardRevealed] = useState(false);
+  const [workWithOpen, setWorkWithOpen] = useState(false);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
   const [transformOrigin, setTransformOrigin] = useState<string>("center center");
 
@@ -41,6 +46,21 @@ export function FutureRevealStage({
   const handleDotClick = (dotCenter: Anchor) => {
     setAnchor(dotCenter);
     setCardRevealed(true);
+  };
+
+  const toggleWorkWith = () => {
+    setWorkWithOpen((open) => {
+      const next = !open;
+      if (next) {
+        window.setTimeout(() => {
+          workWithRef.current?.scrollIntoView({
+            behavior: reduceMotion ? "auto" : "smooth",
+            block: "nearest",
+          });
+        }, 120);
+      }
+      return next;
+    });
   };
 
   useLayoutEffect(() => {
@@ -104,22 +124,20 @@ export function FutureRevealStage({
       )}
 
       {cardRevealed && (
-        <div className="space-y-6">
-          <div
-            ref={outputLayoutRef}
-            className="relative mx-auto w-full max-w-6xl"
-          >
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)_minmax(0,0.9fr)] lg:items-start lg:gap-5 xl:gap-8">
-              <div className="mx-auto w-full max-w-[240px] lg:mx-0 lg:max-w-none lg:pt-2">
+        <div className="space-y-8">
+          <div className="relative mx-auto w-full max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.35fr)] lg:items-start lg:gap-10 xl:gap-12">
+              <div className="mx-auto w-full max-w-[320px] lg:mx-0 lg:max-w-none lg:pt-1">
                 <InteractiveMatrixReveal
                   position={draft.position}
                   hidePlacementCaption
                   hideQuadrantCopy
-                  className="w-full scale-[0.92] origin-top lg:scale-100"
+                  prominent
+                  className="w-full origin-top lg:scale-[1.08]"
                 />
               </div>
 
-              <div className="mx-auto w-full max-w-md shrink-0 lg:mx-0">
+              <div className="mx-auto w-full max-w-xl shrink-0 lg:mx-0 lg:max-w-none">
                 <motion.div
                   ref={cardRef}
                   className="px-1 sm:px-0"
@@ -144,17 +162,28 @@ export function FutureRevealStage({
                   />
                 </motion.div>
               </div>
-
-              <FutureWorkWithPanel
-                layoutRef={outputLayoutRef}
-                sourceRef={cardRef}
-              />
             </div>
           </div>
 
-          {actionFooter && (
-            <div className="mx-auto w-full max-w-6xl">{actionFooter}</div>
-          )}
+          <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
+            <div className="min-w-0 flex-1">
+              <FfieButton variant="secondary" onClick={toggleWorkWith}>
+                {workWithOpen
+                  ? "Hide workshop ideas"
+                  : "How can you work with this future?"}
+              </FfieButton>
+
+              {workWithOpen && (
+                <div ref={workWithRef} className="mt-4">
+                  <FutureWorkActionsGrid reduceMotion={reduceMotion} />
+                </div>
+              )}
+            </div>
+
+            {actionFooter && (
+              <div className="w-full shrink-0 lg:max-w-md">{actionFooter}</div>
+            )}
+          </div>
 
           {children}
         </div>

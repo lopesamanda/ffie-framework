@@ -23,7 +23,7 @@ import {
 import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
 import Image from "next/image";
 import { buildFinalCardNarrative } from "@/lib/journey/future-card-copy";
-import { ensureVisualDirection } from "@/components/create/VisualDirectionStep";
+import { ensureVisualDirection } from "@/lib/journey/visual-directions";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -329,7 +329,7 @@ export function FutureCardPreview({
   };
 
   return (
-    <div className={`relative ${isFinalCard ? "mx-auto w-full max-w-[420px]" : ""}`}>
+    <div className={`relative ${isFinalCard ? "mx-auto w-full max-w-none" : ""}`}>
       {isFinalCard && (
         <MatrixPositionModal
           open={matrixOpen}
@@ -386,13 +386,13 @@ export function FutureCardPreview({
 
         {isFinalCard && visualDirectionSrc && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <div className="mt-4 overflow-hidden rounded-2xl border border-ffie-line/60">
+            <div className="mt-4 overflow-hidden rounded-2xl border border-ffie-line/60 bg-ffie-bg/30">
               <Image
                 src={visualDirectionSrc}
                 alt="Visual direction for artifact"
                 width={840}
                 height={420}
-                className="h-40 w-full object-cover md:h-44"
+                className="h-auto max-h-52 w-full object-contain md:max-h-56"
               />
             </div>
           </Wrap>
