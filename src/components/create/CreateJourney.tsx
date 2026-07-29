@@ -37,6 +37,7 @@ import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import {
   buildCombinedTension,
   drawWorkshopHand,
+  workshopHandSignature,
 } from "@/data/narrative-cards";
 import {
   researchFindingsSeed,
@@ -81,6 +82,7 @@ import {
   quadrantFromPosition,
   raceEthnicityForDraft,
   saveDraft,
+  type CardHand,
   type JourneyDraft,
   type JourneyStage,
   type LikertScore,
@@ -171,34 +173,52 @@ export function CreateJourney() {
     setDraft(next);
   }, [resetOracleDraw]);
 
+  const beginOracleDraw = useCallback(
+    (options?: {
+      previousHand?: CardHand | null;
+      delayMs?: number;
+      goToReflection?: boolean;
+    }) => {
+      setRevealing(true);
+      resetOracleDraw();
+      const delayMs = options?.delayMs ?? 900;
+      window.setTimeout(() => {
+        const hand = drawWorkshopHand(options?.previousHand ?? null);
+        update({
+          ...(options?.goToReflection ? { stage: "reflection" as const } : {}),
+          cardHand: hand,
+          combinedTension: buildCombinedTension(hand),
+          drawSynthesis: buildOracleSynthesis(hand),
+          drawSynthesisTensions: buildOracleSynthesisTensions(hand),
+          ...(options?.previousHand ? { reflectionText: "" } : {}),
+        });
+        setRevealing(false);
+      }, delayMs);
+    },
+    [resetOracleDraw, update],
+  );
+
   const handleDrawCards = () => {
-    setRevealing(true);
-    resetOracleDraw();
-    setTimeout(() => {
-      const hand = drawWorkshopHand();
-      update({
-        cardHand: hand,
-        combinedTension: buildCombinedTension(hand),
-        drawSynthesis: buildOracleSynthesis(hand),
-        drawSynthesisTensions: buildOracleSynthesisTensions(hand),
-      });
-      setRevealing(false);
-    }, 900);
+    beginOracleDraw();
   };
 
   const handleShuffleCards = () => {
-    if (!draft?.cardHand) return;
-    const previousHand = draft.cardHand;
     setRevealing(true);
     resetOracleDraw();
-    setTimeout(() => {
-      const hand = drawWorkshopHand(previousHand);
-      update({
-        cardHand: hand,
-        combinedTension: buildCombinedTension(hand),
-        drawSynthesis: buildOracleSynthesis(hand),
-        drawSynthesisTensions: buildOracleSynthesisTensions(hand),
-        reflectionText: "",
+    window.setTimeout(() => {
+      setDraft((current) => {
+        if (!current?.cardHand) return current;
+        const hand = drawWorkshopHand(current.cardHand);
+        const next: JourneyDraft = {
+          ...current,
+          cardHand: hand,
+          combinedTension: buildCombinedTension(hand),
+          drawSynthesis: buildOracleSynthesis(hand),
+          drawSynthesisTensions: buildOracleSynthesisTensions(hand),
+          reflectionText: "",
+        };
+        saveDraft(next);
+        return next;
       });
       setRevealing(false);
     }, 400);
@@ -366,8 +386,11 @@ export function CreateJourney() {
                   <CategoryRegisterTiles />
                   <EnvironmentalBanner />
                   <div className="mt-8 flex flex-col items-start gap-4">
-                    <FfieButton onClick={() => goTo("reflection")}>
-                      Draw your cards
+                    <FfieButton
+                      disabled={revealing}
+                      onClick={() => beginOracleDraw({ goToReflection: true })}
+                    >
+                      {revealing ? "Drawing…" : "Draw your cards"}
                     </FfieButton>
                     <Link
                       href="/explore"
@@ -398,6 +421,14 @@ export function CreateJourney() {
                     <div className="space-y-6">
                       <OracleDrawRecap hand={draft.cardHand} />
 
+                      <FfieButton
+                        variant="secondary"
+                        disabled={revealing}
+                        onClick={handleShuffleCards}
+                      >
+                        {revealing ? "Shuffling…" : "Shuffle & redraw"}
+                      </FfieButton>
+
                       <OracleDrawReflectionPrompt
                         hand={draft.cardHand}
                         reflectionText={draft.reflectionText}
@@ -420,6 +451,7 @@ export function CreateJourney() {
                     </div>
                   ) : (
                     <OracleDeckFan
+                      key={workshopHandSignature(draft.cardHand)}
                       hand={draft.cardHand}
                       drawIndex={oracleDrawIndex}
                       phase={oraclePhase}

@@ -5,6 +5,7 @@ import type {
 } from "@/types/future";
 import { QUADRANT_LABELS } from "@/types/future";
 import type { NarrativeCard } from "@/data/narrative-cards";
+import { hydrateWorkshopHand } from "@/data/narrative-cards";
 import type { CharacterGenderId, ArtifactTypeId } from "@/lib/journey/character-options";
 import type { PersonaSector } from "@/lib/journey/persona-sectors";
 import {
@@ -358,7 +359,7 @@ export function loadDraft(): JourneyDraft | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<JourneyDraft>;
     if (!parsed.sessionId) return null;
-    return {
+    const draft = {
       ...createInitialDraft(parsed.sessionId),
       ...parsed,
       systemLogicScore: parsed.systemLogicScore ?? null,
@@ -404,6 +405,10 @@ export function loadDraft(): JourneyDraft | null {
       hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",
       artifactGoalPitch: parsed.artifactGoalPitch ?? "",
     };
+    draft.cardHand = hydrateWorkshopHand(
+      parsed.cardHand as CardHand | null | undefined,
+    );
+    return draft;
   } catch {
     return null;
   }

@@ -404,13 +404,83 @@ export const ORACLE_REVEAL_SEQUENCE: (keyof WorkshopHand)[] = [
   "transversal",
 ];
 
-export function drawWorkshopHand(previous?: WorkshopHand | null): WorkshopHand {
-  const pick = (category: CardCategory) => {
-    const pool = NARRATIVE_CARDS.filter(
-      (card) => card.category === category && card.drawable,
-    );
-    return pool[Math.floor(Math.random() * pool.length)];
+/** Expected drawable pool sizes — see docs/ffie_narrative_cards.md */
+export const DRAWABLE_POOL_SIZES: Record<
+  Exclude<CardCategory, "transversal">,
+  number
+> = {
+  risk: 5,
+  barrier: 5,
+  benefit: 4,
+  trust: 4,
+};
+
+const CARD_BY_ID = new Map(NARRATIVE_CARDS.map((card) => [card.id, card]));
+
+export function getDrawablePool(category: CardCategory): NarrativeCard[] {
+  return NARRATIVE_CARDS.filter(
+    (card) => card.category === category && card.drawable,
+  );
+}
+
+/** Unbiased-enough index for small pools; uses crypto in the browser. */
+function randomPoolIndex(poolSize: number): number {
+  if (poolSize <= 0) return 0;
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    const maxUint32 = 0x1_0000_0000;
+    const bucketCount = Math.floor(maxUint32 / poolSize) * poolSize;
+    const buffer = new Uint32Array(1);
+    let value = 0;
+    do {
+      crypto.getRandomValues(buffer);
+      value = buffer[0] ?? 0;
+    } while (value >= bucketCount);
+    return value % poolSize;
+  }
+  return Math.floor(Math.random() * poolSize);
+}
+
+function pickFromPool(pool: NarrativeCard[]): NarrativeCard {
+  if (pool.length === 0) {
+    throw new Error("Oracle draw pool is empty");
+  }
+  return pool[randomPoolIndex(pool.length)]!;
+}
+
+export function workshopHandSignature(
+  hand: Pick<WorkshopHand, "risk" | "benefit" | "trust" | "barrier">,
+): string {
+  return [hand.risk.id, hand.benefit.id, hand.trust.id, hand.barrier.id].join(
+    "|",
+  );
+}
+
+/** Re-resolve a persisted hand against the canonical deck (by card id). */
+export function hydrateWorkshopHand(
+  stored: WorkshopHand | null | undefined,
+): WorkshopHand | null {
+  if (!stored?.risk?.id) return null;
+
+  const resolve = (id: string | undefined, category: CardCategory) => {
+    const canonical = id ? CARD_BY_ID.get(id) : undefined;
+    if (canonical && canonical.category === category && canonical.drawable) {
+      return canonical;
+    }
+    return pickFromPool(getDrawablePool(category));
   };
+
+  return {
+    risk: resolve(stored.risk.id, "risk"),
+    benefit: resolve(stored.benefit.id, "benefit"),
+    trust: resolve(stored.trust.id, "trust"),
+    barrier: resolve(stored.barrier.id, "barrier"),
+    transversal: ENVIRONMENTAL_IMPACT_CARD,
+  };
+}
+
+export function drawWorkshopHand(previous?: WorkshopHand | null): WorkshopHand {
+  const pick = (category: CardCategory) =>
+    pickFromPool(getDrawablePool(category));
 
   const build = (): WorkshopHand => ({
     risk: pick("risk"),
@@ -422,13 +492,10 @@ export function drawWorkshopHand(previous?: WorkshopHand | null): WorkshopHand {
 
   if (!previous) return build();
 
-  const signature = (hand: WorkshopHand) =>
-    [hand.risk.id, hand.benefit.id, hand.trust.id, hand.barrier.id].join("|");
-
-  const prior = signature(previous);
-  for (let attempt = 0; attempt < 24; attempt += 1) {
+  const prior = workshopHandSignature(previous);
+  for (let attempt = 0; attempt < 48; attempt += 1) {
     const next = build();
-    if (signature(next) !== prior) return next;
+    if (workshopHandSignature(next) !== prior) return next;
   }
 
   return build();
