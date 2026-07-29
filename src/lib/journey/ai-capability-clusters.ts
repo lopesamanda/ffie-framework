@@ -43,6 +43,7 @@ export const AI_CAPABILITY_POWERS: AiCapabilityPower[] = [
       "code-generation-automation",
       "autonomous-planning-execution",
       "negotiation-transacting",
+      "algorithmic-management-oversight",
     ],
   },
   {

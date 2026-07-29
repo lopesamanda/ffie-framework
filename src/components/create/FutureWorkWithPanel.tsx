@@ -29,7 +29,7 @@ const WORK_ACTIONS = [
   {
     title: "Bring it to a workshop",
     description:
-      "Print or project the card and have your team debate what they'd change in the roadmap to avoid or achieve this future.",
+      "Print or project the card and have your team debate what they'd change or achieve in the roadmap.",
   },
   {
     title: "Start a conversation",

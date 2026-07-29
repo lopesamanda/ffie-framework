@@ -72,18 +72,20 @@ export const ARTIFACT_TYPE_OPTIONS: {
   {
     id: "object",
     label: "Object",
-    description: "Something they touch or wear",
+    description:
+      "Something they touch or wear, a physical or everyday thing",
   },
   {
     id: "app",
     label: "App/Platform",
-    description: "Something they use online, an interface they access",
+    description:
+      "Something they use online, a way people interact with a system",
   },
   {
     id: "agent",
     label: "Agent",
     description:
-      "Something that acts on her behalf, making decisions or taking actions in the world without her needing to ask each time.",
+      "Something that acts on their behalf, making decisions or taking actions in the world without them needing to ask each time",
   },
   {
     id: "service",
@@ -93,15 +95,30 @@ export const ARTIFACT_TYPE_OPTIONS: {
   {
     id: "policy",
     label: "Policy",
-    description: "Something that defines the rules affecting their life",
+    description: "A rule, law, or institutional mechanism",
   },
   {
     id: "narrative",
     label: "Narrative",
     description:
-      "Something that shapes the narrative about the ecosystem they're in",
+      "Something that shapes a story, a myth, or a public narrative about the future",
   },
 ];
+
+/** Cosmetic subformats per artifact type — do not affect capability defaults. */
+export const ARTIFACT_SUBFORMATS: Record<ArtifactTypeId, string[]> = {
+  object: ["Wearable", "Hardware"],
+  app: ["Platform", "Voice interface", "App interface", "Chatbot"],
+  agent: ["Digital assistant", "Autonomous agent", "Human-in-the-Loop"],
+  service: ["Physical space", "Community hub", "Event"],
+  policy: ["Official document", "Certification", "Public notice", "Contract"],
+  narrative: ["Campaign", "Social Media", "Ads", "Audiovisual piece"],
+};
+
+export function artifactTypeLabel(type: ArtifactTypeId | ""): string {
+  const match = ARTIFACT_TYPE_OPTIONS.find((option) => option.id === type);
+  return match?.label ?? "artifact";
+}
 
 export function artifactTypePhrase(type: ArtifactTypeId | ""): string {
   const match = ARTIFACT_TYPE_OPTIONS.find((option) => option.id === type);

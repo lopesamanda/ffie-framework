@@ -48,8 +48,13 @@ import {
   resolveArtifactValues,
 } from "@/lib/journey/artifact-options";
 import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
-import { ArtifactIdentityStep } from "@/components/create/ArtifactIdentityStep";
-import { ArtifactProblemPowerStep } from "@/components/create/ArtifactProblemPowerStep";
+import { ArtifactTypeStep } from "@/components/create/ArtifactTypeStep";
+import { ArtifactProgressiveStep } from "@/components/create/ArtifactProgressiveStep";
+import {
+  VisualDirectionStep,
+  ensureVisualDirection,
+  visualDirectionPatchForType,
+} from "@/components/create/VisualDirectionStep";
 import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
 import {
   composeHiddenFunction,
@@ -83,8 +88,9 @@ import {
 
 const CREATION_STEPS = [
   "Embody the future",
-  "Identity",
-  "Problem & capability",
+  "Artifact type",
+  "Name, problem & capability",
+  "Visual direction",
   "Embedded values",
   "Hidden function",
 ];
@@ -109,6 +115,7 @@ export function CreateJourney() {
   } | null>(null);
   const phaseSweepRef = useRef(phaseSweep);
   phaseSweepRef.current = phaseSweep;
+  const materializeRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -456,14 +463,18 @@ export function CreateJourney() {
                   )}
 
                   {draft.creationStep === 1 && (
-                    <ArtifactIdentityStep draft={draft} onChange={update} />
+                    <ArtifactTypeStep draft={draft} onChange={update} />
                   )}
 
                   {draft.creationStep === 2 && (
-                    <ArtifactProblemPowerStep draft={draft} onChange={update} />
+                    <ArtifactProgressiveStep draft={draft} onChange={update} />
                   )}
 
                   {draft.creationStep === 3 && (
+                    <VisualDirectionStep draft={draft} onChange={update} />
+                  )}
+
+                  {draft.creationStep === 4 && (
                     <div className="space-y-4">
                       <p className="text-sm leading-relaxed text-ffie-ink">
                         What values are embedded in it? Select 2–3 — comforting
@@ -507,7 +518,7 @@ export function CreateJourney() {
                     </div>
                   )}
 
-                  {draft.creationStep === 4 && (
+                  {draft.creationStep === 5 && (
                     <HiddenFunctionStep
                       draft={draft}
                       onSelectExtremeValue={(hiddenFunctionExtremeValue) =>
@@ -549,22 +560,38 @@ export function CreateJourney() {
                     )}
                     <FfieButton
                       disabled={
-                        (draft.creationStep === 1 &&
-                          (!draft.artifactName.trim() || !draft.artifactType)) ||
+                        (draft.creationStep === 1 && !draft.artifactType) ||
                         (draft.creationStep === 2 &&
-                          (!draft.artifactProblemTension.trim() ||
+                          (!draft.artifactName.trim() ||
+                            !draft.artifactProblemTension.trim() ||
                             !draft.selectedAiPower ||
                             !draft.selectedAiCapability ||
                             !draft.publicPromise.trim())) ||
                         (draft.creationStep === 3 &&
-                          !isArtifactValuesComplete(draft)) ||
+                          !ensureVisualDirection(draft)) ||
                         (draft.creationStep === 4 &&
+                          !isArtifactValuesComplete(draft)) ||
+                        (draft.creationStep === 5 &&
                           !isHiddenFunctionComplete(draft) &&
                           !draft.hiddenFunction.trim())
                       }
                       onClick={() => {
                         if (draft.creationStep < CREATION_STEPS.length - 1) {
-                          update({ creationStep: draft.creationStep + 1 });
+                          const nextStep = draft.creationStep + 1;
+                          const patch: Partial<JourneyDraft> = {
+                            creationStep: nextStep,
+                          };
+                          if (
+                            nextStep === 3 &&
+                            !draft.visualDirection &&
+                            draft.artifactType
+                          ) {
+                            Object.assign(
+                              patch,
+                              visualDirectionPatchForType(draft.artifactType),
+                            );
+                          }
+                          update(patch);
                           return;
                         }
 
@@ -655,24 +682,25 @@ export function CreateJourney() {
                     cardId="future-output-card"
                     actionFooter={
                       <FutureOutputActionFooter
-                        onBringToLife={() => setShowMaterialize((open) => !open)}
+                        onBringToLife={() => {
+                          setShowMaterialize(true);
+                          materializeRef.current?.scrollIntoView({
+                            behavior: reduceMotion ? "auto" : "smooth",
+                            block: "start",
+                          });
+                        }}
                         onDownload={handleDownloadSummary}
                         onPublish={() => setShowPublish((open) => !open)}
                         bringToLifeActive={showMaterialize}
                         downloading={downloadingSummary}
                         submitting={submitting}
-                        layout="sidebar"
+                        layout="default"
                       />
                     }
                   >
-                    {showMaterialize && (
-                      <ArtifactMaterializePanel
-                        draft={draft}
-                        onImageChange={(imageDataUrl) =>
-                          update({ imageDataUrl })
-                        }
-                      />
-                    )}
+                    <div ref={materializeRef}>
+                      <ArtifactMaterializePanel draft={draft} />
+                    </div>
                     {showPublish && (
                       <div className="mx-auto max-w-md space-y-4 rounded-xl border border-ffie-line bg-ffie-surface p-4 lg:mx-0">
                         <label className="flex items-start gap-3">
@@ -688,8 +716,7 @@ export function CreateJourney() {
                             Submit this diegetic prototype to the Future
                             Commons for moderation. If approved, it will
                             appear alongside Research Findings — always
-                            labeled as community-created. An image is
-                            optional.
+                            labeled as community-created.
                           </span>
                         </label>
                         {submitError && (

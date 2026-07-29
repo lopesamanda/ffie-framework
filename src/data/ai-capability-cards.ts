@@ -294,6 +294,32 @@ export const AI_CAPABILITY_CARDS: AiCapabilityCard[] = [
     agentOnly: true,
   },
   {
+    id: "algorithmic-management-oversight",
+    hook: "Directs the Work From Above",
+    name: "Algorithmic Management & Human Oversight",
+    description:
+      "Assigns, directs, scores, or corrects human work in real time — sometimes managing a person's labor, sometimes having a person quietly fix or approve what the AI produced.",
+    tags: [
+      "Algorithmic Management",
+      "Human-in-the-Loop",
+      "Labor Oversight",
+    ],
+    examples: [
+      "A delivery app that routes, times, and rates a courier's every stop, with no manager ever reviewing the score before it affects her pay",
+      "A content platform that pays workers by the post to label or 'clean up' what the AI got wrong, without crediting or naming them anywhere in the product",
+    ],
+    guidingQuestions: [
+      "Whose labor is being scored or redirected without a human manager in the loop?",
+      "Who cleans up or approves what the AI got wrong — and do they get credit?",
+    ],
+    artifactGuidingQuestions: [
+      "How does the artifact assign, score, or correct human work each day?",
+      "Who fixes what the AI produced — and who never sees their name in the product?",
+    ],
+    color: "#64748b",
+    agentOnly: true,
+  },
+  {
     id: "persistent-memory-modeling",
     hook: "Remembers Who You Are",
     name: "Persistent Memory & Behavioral Modeling",

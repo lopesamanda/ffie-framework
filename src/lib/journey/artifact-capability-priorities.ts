@@ -29,6 +29,7 @@ export const ARTIFACT_CAPABILITY_PRIORITY: Record<
     "predictive-scoring",
     "task-automation",
     "code-generation-automation",
+    "realtime-monitoring",
   ],
   policy: [
     "predictive-scoring",
@@ -42,6 +43,7 @@ export const ARTIFACT_CAPABILITY_PRIORITY: Record<
     "language-conversation",
     "personalization-recommendation",
     "content-moderation-filtering",
+    "data-classification-clustering",
   ],
   agent: [
     "task-automation",
@@ -52,6 +54,8 @@ export const ARTIFACT_CAPABILITY_PRIORITY: Record<
     "autonomous-planning-execution",
     "negotiation-transacting",
     "persistent-memory-modeling",
+    "realtime-monitoring",
+    "algorithmic-management-oversight",
   ],
 };
 

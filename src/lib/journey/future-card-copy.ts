@@ -1,4 +1,9 @@
 import type { JourneyDraft } from "@/lib/journey/types";
+import {
+  pronounsForSelection,
+  verbFor,
+  type CharacterPronouns,
+} from "@/lib/journey/character-pronouns";
 
 function stripTrailingPunctuation(text: string): string {
   return text.trim().replace(/[.!?…]+$/, "");
@@ -6,7 +11,7 @@ function stripTrailingPunctuation(text: string): string {
 
 /**
  * "Why it exists" line on the final Future card — fear + problem/tension only.
- * Distinct from Artifact Goal (publicPromise) and Artifact Weakness (hidden function).
+ * @deprecated Use buildFinalCardNarrative for the two-beat final card copy.
  */
 export function buildWhyItExistsParagraph(
   draft: Pick<
@@ -14,20 +19,82 @@ export function buildWhyItExistsParagraph(
     "characterName" | "fear" | "artifactName" | "artifactProblemTension"
   >,
 ): string {
+  const beats = buildFinalCardNarrative(draft);
+  return beats.join(" ");
+}
+
+/** Two short narrative beats for the final Future card. */
+export function buildFinalCardNarrative(
+  draft: Pick<
+    JourneyDraft,
+    | "characterName"
+    | "characterPronoun"
+    | "fear"
+    | "aiFunction"
+    | "tradeoffLoss"
+    | "desire"
+    | "artifactName"
+    | "artifactProblemTension"
+  >,
+): string[] {
   const name = draft.characterName.trim() || "Someone";
+  const p = pronounsForSelection(draft.characterPronoun);
   const fearAnswer = stripTrailingPunctuation(draft.fear);
+  const abilityImproved = stripTrailingPunctuation(draft.aiFunction);
+  const habitChanged = stripTrailingPunctuation(draft.tradeoffLoss);
+  const desireForFuture = stripTrailingPunctuation(draft.desire);
   const problemAnswer = stripTrailingPunctuation(draft.artifactProblemTension);
   const artifactName = draft.artifactName.trim() || "This artifact";
 
-  if (!fearAnswer && !problemAnswer) return "";
+  const beats: string[] = [];
 
-  if (!fearAnswer) {
-    return `${artifactName} exists to ${problemAnswer}.`;
+  if (fearAnswer || abilityImproved || habitChanged) {
+    let first = "";
+    if (fearAnswer) {
+      first = `${name} feared Artificial Intelligence would ${fearAnswer}.`;
+    }
+    if (abilityImproved || habitChanged) {
+      const changePart = [
+        abilityImproved
+          ? `it changed the way ${p.subject} could ${abilityImproved}`
+          : null,
+        habitChanged
+          ? `it also changed the way ${p.subject} ${habitChanged}`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" — but ");
+      first = first
+        ? `${first} Ten years on, ${changePart}.`
+        : `Ten years on, ${changePart}.`;
+    }
+    if (first) beats.push(first);
   }
 
-  if (!problemAnswer) {
-    return `${name} feared AI would ${fearAnswer}.`;
+  if (desireForFuture || problemAnswer) {
+    let second = "";
+    if (desireForFuture) {
+      second = `${p.subjectCap} still ${verbFor(p, "holds", "hold")} on to the hope that ${desireForFuture}.`;
+    }
+    if (problemAnswer) {
+      second = second
+        ? `${second} ${artifactName} exists to ${problemAnswer}.`
+        : `${artifactName} exists to ${problemAnswer}.`;
+    }
+    if (second) beats.push(second);
   }
 
-  return `${name} feared AI would ${fearAnswer}. ${artifactName} exists to ${problemAnswer}.`;
+  return beats;
+}
+
+export function possessiveStoryHeading(p: CharacterPronouns): string {
+  return `BUILD ${p.possessiveCap} STORY`;
+}
+
+export function gainSectionLabel(p: CharacterPronouns): string {
+  return p.verbForm === "plural" ? "WHAT THEY GAIN" : `WHAT ${p.subjectCap} GAINS`;
+}
+
+export function hopeSectionLabel(p: CharacterPronouns): string {
+  return p.verbForm === "plural" ? "WHAT THEY HOPE FOR" : `WHAT ${p.subjectCap} HOPES FOR`;
 }

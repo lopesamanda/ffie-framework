@@ -85,6 +85,10 @@ export type JourneyDraft = {
   values: string[];
   artifactName: string;
   artifactType: ArtifactTypeId | "";
+  /** Cosmetic subformat label — does not affect capability defaults. */
+  artifactSubformat: string;
+  /** Path to selected visual-direction image (public/). */
+  visualDirection: string;
   /** Problem or tension the artifact responds to (references embody fear). */
   artifactProblemTension: string;
   /** Selected AI Power on Problem & capability step. */
@@ -316,6 +320,8 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     values: [],
     artifactName: "",
     artifactType: "",
+    artifactSubformat: "",
+    visualDirection: "",
     artifactProblemTension: "",
     selectedAiPower: "",
     selectedAiCapability: "",
@@ -370,6 +376,8 @@ export function loadDraft(): JourneyDraft | null {
       characterCountry: parsed.characterCountry ?? "",
       roleCustom: parsed.roleCustom ?? "",
       artifactType: parsed.artifactType ?? "",
+      artifactSubformat: parsed.artifactSubformat ?? "",
+      visualDirection: parsed.visualDirection ?? "",
       artifactProblemTension: parsed.artifactProblemTension ?? "",
       dayToDaySubStep: parsed.dayToDaySubStep ?? 0,
       dayToDayReflection: parsed.dayToDayReflection ?? "",

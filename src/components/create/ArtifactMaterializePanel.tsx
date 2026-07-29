@@ -1,18 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ArtifactImageUpload } from "@/components/create/ArtifactImageUpload";
 import { FfieButton } from "@/components/create/design/FfieButton";
 import { copyToClipboard } from "@/lib/copy-to-clipboard";
 import { buildAiImagePrompt, type JourneyDraft } from "@/lib/journey/types";
 
-export function ArtifactMaterializePanel({
-  draft,
-  onImageChange,
-}: {
-  draft: JourneyDraft;
-  onImageChange: (imageDataUrl: string | null) => void;
-}) {
+export function ArtifactMaterializePanel({ draft }: { draft: JourneyDraft }) {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState<string | null>(null);
   const prompt = buildAiImagePrompt(draft);
@@ -29,15 +22,17 @@ export function ArtifactMaterializePanel({
   };
 
   return (
-    <div className="mt-8 space-y-5 rounded-xl border border-ffie-line bg-ffie-surface/60 p-5">
+    <div
+      id="bring-it-to-life"
+      className="mt-8 space-y-5 rounded-xl border border-ffie-line bg-ffie-surface/60 p-5"
+    >
       <div className="space-y-2">
         <p className="text-sm font-medium text-ffie-ink">
           Bring it to life (optional)
         </p>
         <p className="text-sm leading-relaxed text-ffie-muted">
-          After your future is revealed, copy a ready-made image prompt into your
-          AI tool — then upload the result if you want. Publishing to Future
-          Commons works with or without an image.
+          Copy a ready-made image prompt into your external AI tool — nothing
+          gets uploaded back into FFIE.
         </p>
       </div>
 
@@ -45,9 +40,7 @@ export function ArtifactMaterializePanel({
         <FfieButton variant="secondary" onClick={handleCopyPrompt}>
           {copied ? "Prompt copied" : "Copy prompt"}
         </FfieButton>
-        {copyError && (
-          <p className="text-xs text-red-700">{copyError}</p>
-        )}
+        {copyError && <p className="text-xs text-red-700">{copyError}</p>}
       </div>
 
       <details className="group">
@@ -58,11 +51,6 @@ export function ArtifactMaterializePanel({
           {prompt}
         </pre>
       </details>
-
-      <ArtifactImageUpload
-        value={draft.imageDataUrl}
-        onChange={onImageChange}
-      />
     </div>
   );
 }

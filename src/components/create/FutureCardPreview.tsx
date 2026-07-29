@@ -21,7 +21,9 @@ import {
   resolveCapabilityName,
 } from "@/lib/journey/future-commons-narrative";
 import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
-import { buildWhyItExistsParagraph } from "@/lib/journey/future-card-copy";
+import Image from "next/image";
+import { buildFinalCardNarrative } from "@/lib/journey/future-card-copy";
+import { ensureVisualDirection } from "@/components/create/VisualDirectionStep";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -173,14 +175,16 @@ function QuadrantAmbientField({
   );
 }
 
-function DrawnCardTags({ hand }: { hand: CardHand }) {
-  const cards: NarrativeCard[] = [
-    hand.risk,
-    hand.benefit,
-    hand.trust,
-    hand.barrier,
-    hand.transversal,
-  ];
+function DrawnCardTags({
+  hand,
+  finalOnly = false,
+}: {
+  hand: CardHand;
+  finalOnly?: boolean;
+}) {
+  const cards: NarrativeCard[] = finalOnly
+    ? [hand.benefit, hand.risk, hand.trust, hand.barrier]
+    : [hand.risk, hand.benefit, hand.trust, hand.barrier, hand.transversal];
 
   return (
     <div className="mt-3 flex flex-wrap gap-1.5">
@@ -245,17 +249,19 @@ export function FutureCardPreview({
         : "Your future");
 
   const personaName = draft.characterName.trim() || "Your future";
-  const roleLine = [
-    draft.characterAge ? `${draft.characterAge}` : null,
-    resolvedCharacterRole(draft.role, draft.roleCustom),
-  ]
-    .filter(Boolean)
-    .join(" · ");
-  const whyItExistsText = buildWhyItExistsParagraph(draft);
   const sectorLabel = resolvedPersonaSector(
     draft.personaSector,
     draft.personaSectorCustom,
   );
+  const roleLine = [
+    draft.characterAge ? `${draft.characterAge}` : null,
+    resolvedCharacterRole(draft.role, draft.roleCustom),
+    sectorLabel || null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  const narrativeBeats = buildFinalCardNarrative(draft);
+  const visualDirectionSrc = ensureVisualDirection(draft);
   const artifactHeading = draft.artifactName.trim();
 
   const showSynthesis = Boolean(
@@ -293,8 +299,10 @@ export function FutureCardPreview({
     1 +
     1 +
     (isFinalCard
-      ? (whyItExistsText ? 1 : 0) +
+      ? (visualDirectionSrc ? 1 : 0) +
+        (narrativeBeats.length > 0 ? 1 : 0) +
         (synthesisLine ? 1 : 0) +
+        (showCardTags && draft.cardHand ? 1 : 0) +
         (artifactHeading ||
         draft.publicPromise ||
         draft.artifactGoalPitch ||
@@ -306,8 +314,7 @@ export function FutureCardPreview({
       : (commonsNarrative || synthesisLine ? 1 : 0) +
         (synthesisTensionsLine ? 1 : 0) +
         (showCardTags && draft.cardHand ? 1 : 0) +
-        (draft.publicPromise || hiddenFunctionDisplay || capabilityName ? 1 : 0)) +
-    (draft.imageDataUrl ? 1 : 0);
+        (draft.publicPromise || hiddenFunctionDisplay || capabilityName ? 1 : 0));
 
   const sealDelay = revealAnimated
     ? (revealSectionCount - 1) * REVEAL_STAGGER + 0.35
@@ -377,6 +384,20 @@ export function FutureCardPreview({
           </div>
         </Wrap>
 
+        {isFinalCard && visualDirectionSrc && (
+          <Wrap {...(revealAnimated ? nextReveal() : {})}>
+            <div className="mt-4 overflow-hidden rounded-2xl border border-ffie-line/60">
+              <Image
+                src={visualDirectionSrc}
+                alt="Visual direction for artifact"
+                width={840}
+                height={420}
+                className="h-40 w-full object-cover md:h-44"
+              />
+            </div>
+          </Wrap>
+        )}
+
         <Wrap {...(revealAnimated ? nextReveal() : {})}>
           {isFinalCard ? (
             <header className="mt-4 md:mt-5">
@@ -417,11 +438,18 @@ export function FutureCardPreview({
           )}
         </Wrap>
 
-        {isFinalCard && whyItExistsText && (
+        {isFinalCard && narrativeBeats.length > 0 && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <p className={`${sectionGap} text-sm leading-relaxed text-ffie-ink/90 ${FFIE_CARD_TEXT}`}>
-              {whyItExistsText}
-            </p>
+            <div className={`${sectionGap} space-y-3`}>
+              {narrativeBeats.map((beat) => (
+                <p
+                  key={beat}
+                  className={`text-sm leading-relaxed text-ffie-ink/90 ${FFIE_CARD_TEXT}`}
+                >
+                  {beat}
+                </p>
+              ))}
+            </div>
           </Wrap>
         )}
 
@@ -463,9 +491,9 @@ export function FutureCardPreview({
           </Wrap>
         )}
 
-        {showCardTags && draft.cardHand && !isFinalCard && (
+        {showCardTags && draft.cardHand && isFinalCard && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <DrawnCardTags hand={draft.cardHand} />
+            <DrawnCardTags hand={draft.cardHand} finalOnly />
           </Wrap>
         )}
 
@@ -486,13 +514,12 @@ export function FutureCardPreview({
                 </h4>
               )}
               {capabilityName && (
-                <ArtifactDetailPanel label="AI function" panelClassName="bg-ffie-bg/70">
+                <ArtifactDetailPanel label="AI FUNCTION" panelClassName="bg-ffie-bg/70">
                   <p className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
                     <span className="font-semibold">{capabilityName}</span>
                     {capabilityDescription && (
-                      <span className="text-ffie-muted">
-                        {" "}
-                        — {capabilityDescription}
+                      <span className="mt-2 block font-normal text-ffie-muted">
+                        {capabilityDescription}
                       </span>
                     )}
                   </p>
@@ -504,7 +531,7 @@ export function FutureCardPreview({
                 }`}
               >
                 <ArtifactDetailPanel
-                  label="Artifact goal"
+                  label="ARTIFACT GOAL"
                   labelTone="text-ffie-accent"
                   panelClassName="bg-[#f6f4ff]/90"
                 >
@@ -518,7 +545,7 @@ export function FutureCardPreview({
                   )}
                 </ArtifactDetailPanel>
                 <ArtifactDetailPanel
-                  label="Artifact weakness"
+                  label="ARTIFACT WEAKNESS"
                   labelTone="text-[#c8472a]"
                   panelClassName="bg-[#fdf1ee]/90"
                 >
@@ -566,17 +593,6 @@ export function FutureCardPreview({
               );
             })}
           </div>
-        )}
-
-        {draft.imageDataUrl && (
-          <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={draft.imageDataUrl}
-              alt="Uploaded artifact"
-              className="mt-4 max-h-48 w-full rounded-[12px] object-cover"
-            />
-          </Wrap>
         )}
 
         {draft.cardHand && !compact && showCardProvenance && (

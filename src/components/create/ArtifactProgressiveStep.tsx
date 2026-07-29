@@ -1,0 +1,183 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { AiPowerSelector } from "@/components/create/AiPowerSelector";
+import { pronounsForSelection } from "@/lib/journey/character-pronouns";
+import {
+  artifactTypeLabel,
+  type ArtifactTypeId,
+} from "@/lib/journey/character-options";
+import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
+import type { JourneyDraft } from "@/lib/journey/types";
+
+const FIELD =
+  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40";
+
+const REVEAL_PAUSE_MS = 600;
+
+const sectionReveal = (reduceMotion: boolean | null) =>
+  reduceMotion
+    ? { initial: false as const, animate: { opacity: 1, y: 0 } }
+    : {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
+      };
+
+function useStickyReveal(initial: boolean) {
+  const [revealed, setRevealed] = useState(initial);
+  const sticky = useRef(initial);
+
+  const reveal = useCallback(() => {
+    if (!sticky.current) {
+      sticky.current = true;
+      setRevealed(true);
+    }
+  }, []);
+
+  return { revealed, reveal };
+}
+
+export function ArtifactProgressiveStep({
+  draft,
+  onChange,
+}: {
+  draft: JourneyDraft;
+  onChange: (patch: Partial<JourneyDraft>) => void;
+}) {
+  const reduceMotion = useReducedMotion();
+  const p = pronounsForSelection(draft.characterPronoun);
+  const fearAnswer = draft.fear.trim() || "…";
+  const artifactName = draft.artifactName.trim() || "this artifact";
+  const typeLabel = artifactTypeLabel(draft.artifactType).toLowerCase();
+  const sector =
+    resolvedPersonaSector(draft.personaSector, draft.personaSectorCustom) ||
+    "their";
+
+  const nameFilled = draft.artifactName.trim().length > 0;
+  const problemFilled = draft.artifactProblemTension.trim().length > 0;
+
+  const problemRef = useRef<HTMLDivElement>(null);
+  const powerRef = useRef<HTMLDivElement>(null);
+
+  const { revealed: showProblem, reveal: revealProblem } = useStickyReveal(
+    problemFilled || nameFilled,
+  );
+  const { revealed: showPower, reveal: revealPower } = useStickyReveal(
+    problemFilled,
+  );
+
+  useEffect(() => {
+    if (nameFilled) {
+      const timer = setTimeout(revealProblem, REVEAL_PAUSE_MS);
+      return () => clearTimeout(timer);
+    }
+  }, [nameFilled, revealProblem]);
+
+  useEffect(() => {
+    if (problemFilled) {
+      const timer = setTimeout(revealPower, REVEAL_PAUSE_MS);
+      return () => clearTimeout(timer);
+    }
+  }, [problemFilled, revealPower]);
+
+  useEffect(() => {
+    if (showProblem) {
+      problemRef.current?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "nearest",
+      });
+    }
+  }, [showProblem, reduceMotion]);
+
+  useEffect(() => {
+    if (showPower) {
+      powerRef.current?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "nearest",
+      });
+    }
+  }, [showPower, reduceMotion]);
+
+  return (
+    <div className="space-y-10">
+      <section className="space-y-3">
+        <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+          2a — Name
+        </p>
+        <p className="text-sm leading-relaxed text-ffie-ink">
+          Give it a name. What is this artifact called?
+        </p>
+        <input
+          value={draft.artifactName}
+          onChange={(event) => onChange({ artifactName: event.target.value })}
+          onBlur={() => {
+            if (nameFilled) revealProblem();
+          }}
+          placeholder="artifact name"
+          className={FIELD}
+        />
+      </section>
+
+      {showProblem && (
+        <motion.section
+          ref={problemRef}
+          {...sectionReveal(reduceMotion)}
+          className="space-y-3"
+        >
+          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+            2b — Place it in the world
+          </p>
+          <p className="text-sm leading-relaxed text-ffie-ink">
+            You said {p.subject} fears Artificial Intelligence will{" "}
+            <strong className="font-medium">{fearAnswer}</strong>. {artifactName},{" "}
+            {p.possessive} {typeLabel} in the {sector} sector — what problem or
+            tension does it respond to, or make worse?
+          </p>
+          <textarea
+            value={draft.artifactProblemTension}
+            onChange={(event) =>
+              onChange({ artifactProblemTension: event.target.value })
+            }
+            onBlur={() => {
+              if (problemFilled) revealPower();
+            }}
+            rows={4}
+            placeholder="problem it solves or worsens"
+            className={`${FIELD} resize-y`}
+          />
+        </motion.section>
+      )}
+
+      {showPower && (
+        <motion.section ref={powerRef} {...sectionReveal(reduceMotion)}>
+          <p className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+            2c — Power + Capability
+          </p>
+          <AiPowerSelector
+            values={draft.values}
+            artifactType={draft.artifactType as ArtifactTypeId | ""}
+            artifactName={draft.artifactName}
+            selectedPower={draft.selectedAiPower}
+            selectedCapabilityId={draft.selectedAiCapability}
+            dayToDayDescription={draft.publicPromise}
+            artifactGoalPitch={draft.artifactGoalPitch}
+            onSelectCapability={(selectedAiCapability, powerId) =>
+              onChange({
+                selectedAiCapability,
+                selectedAiPower: powerId,
+                publicPromise: "",
+                artifactGoalPitch: "",
+              })
+            }
+            onDayToDayChange={(publicPromise) => onChange({ publicPromise })}
+            onGoalPitchChange={(artifactGoalPitch) =>
+              onChange({ artifactGoalPitch })
+            }
+          />
+        </motion.section>
+      )}
+    </div>
+  );
+}

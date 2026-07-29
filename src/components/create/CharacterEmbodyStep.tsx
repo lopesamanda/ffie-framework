@@ -23,7 +23,8 @@ import {
   pronounsForSelection,
   verbFor,
 } from "@/lib/journey/character-pronouns";
-import { EmbodyTensionScreen } from "@/components/create/EmbodyTensionScreen";
+import { EmbodyBuildStoryScreen } from "@/components/create/EmbodyBuildStoryScreen";
+import { EmbodyFearScreen } from "@/components/create/EmbodyTensionScreen";
 import { FfieButton } from "@/components/create/design/FfieButton";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
@@ -114,9 +115,10 @@ export function isEmbodyScreenComplete(
       return (
         draft.aiFunction.trim().length > 0 &&
         draft.tradeoffLoss.trim().length > 0 &&
-        draft.desire.trim().length > 0 &&
-        draft.fear.trim().length > 0
+        draft.desire.trim().length > 0
       );
+    case 4:
+      return draft.fear.trim().length > 0;
     default:
       return false;
   }
@@ -348,7 +350,17 @@ export function CharacterEmbodyStep({
 
       case 3:
         return (
-          <EmbodyTensionScreen
+          <EmbodyBuildStoryScreen
+            draft={draft}
+            role={resolvedCharacterRole(draft.role, draft.roleCustom)}
+            p={p}
+            onChange={onChange}
+          />
+        );
+
+      case 4:
+        return (
+          <EmbodyFearScreen
             draft={draft}
             role={resolvedCharacterRole(draft.role, draft.roleCustom)}
             cardHand={cardHand}

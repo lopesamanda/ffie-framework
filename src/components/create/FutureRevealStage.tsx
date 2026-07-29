@@ -25,9 +25,7 @@ export function FutureRevealStage({
 }: {
   draft: JourneyDraft;
   cardId?: string;
-  /** Functional action buttons — rendered below the work-with panel in the right column. */
   actionFooter?: ReactNode;
-  /** Expandable panels and secondary links below the reveal block. */
   children?: ReactNode;
 }) {
   const reduceMotion = useReducedMotion();
@@ -109,39 +107,54 @@ export function FutureRevealStage({
         <div className="space-y-6">
           <div
             ref={outputLayoutRef}
-            className="relative mx-auto w-full max-w-5xl lg:flex lg:items-start lg:gap-6 xl:gap-8"
+            className="relative mx-auto w-full max-w-6xl"
           >
-            <div className="mx-auto w-full max-w-md shrink-0 lg:mx-0">
-              <motion.div
-                ref={cardRef}
-                className="px-1 sm:px-0"
-                style={{ transformOrigin }}
-                initial={
-                  reduceMotion ? false : { scale: 0.06, opacity: 0 }
-                }
-                animate={{ scale: 1, opacity: 1 }}
-                transition={
-                  reduceMotion
-                    ? { duration: 0 }
-                    : { duration: 0.52, ease: [0.16, 1, 0.3, 1] }
-                }
-              >
-                <FutureCardPreview
-                  draft={draft}
-                  id={cardId}
-                  compact
-                  revealAnimated={!reduceMotion}
-                  showCommonsNarrative
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)_minmax(0,0.9fr)] lg:items-start lg:gap-5 xl:gap-8">
+              <div className="mx-auto w-full max-w-[240px] lg:mx-0 lg:max-w-none lg:pt-2">
+                <InteractiveMatrixReveal
+                  position={draft.position}
+                  hidePlacementCaption
+                  hideQuadrantCopy
+                  className="w-full scale-[0.92] origin-top lg:scale-100"
                 />
-              </motion.div>
-            </div>
+              </div>
 
-            <FutureWorkWithPanel
-              layoutRef={outputLayoutRef}
-              sourceRef={cardRef}
-              footer={actionFooter}
-            />
+              <div className="mx-auto w-full max-w-md shrink-0 lg:mx-0">
+                <motion.div
+                  ref={cardRef}
+                  className="px-1 sm:px-0"
+                  style={{ transformOrigin }}
+                  initial={
+                    reduceMotion ? false : { scale: 0.06, opacity: 0 }
+                  }
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : { duration: 0.52, ease: [0.16, 1, 0.3, 1] }
+                  }
+                >
+                  <FutureCardPreview
+                    draft={draft}
+                    id={cardId}
+                    compact
+                    revealAnimated={!reduceMotion}
+                    showCommonsNarrative
+                    showCardTags
+                  />
+                </motion.div>
+              </div>
+
+              <FutureWorkWithPanel
+                layoutRef={outputLayoutRef}
+                sourceRef={cardRef}
+              />
+            </div>
           </div>
+
+          {actionFooter && (
+            <div className="mx-auto w-full max-w-6xl">{actionFooter}</div>
+          )}
 
           {children}
         </div>

@@ -1,7 +1,8 @@
 import { MatrixPositionDiagram } from "@/components/create/MatrixPositionDiagram";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
 import { composeHiddenFunction } from "@/lib/journey/hidden-function";
-import { buildWhyItExistsParagraph } from "@/lib/journey/future-card-copy";
+import { buildFinalCardNarrative } from "@/lib/journey/future-card-copy";
+import { ensureVisualDirection } from "@/components/create/VisualDirectionStep";
 import { resolveCapabilityDescription, resolveCapabilityName } from "@/lib/journey/future-commons-narrative";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -38,7 +39,8 @@ export function FutureSummaryExport({
   const hiddenFunction =
     composeHiddenFunction(draft) || draft.hiddenFunction.trim();
   const values = resolveArtifactValues(draft);
-  const whyItExistsText = buildWhyItExistsParagraph(draft);
+  const narrativeBeats = buildFinalCardNarrative(draft);
+  const visualDirectionSrc = ensureVisualDirection(draft);
 
   return (
     <div
@@ -76,10 +78,19 @@ export function FutureSummaryExport({
 
         <div className="mt-10 grid grid-cols-[1fr_280px] gap-10">
           <div className="space-y-6">
-            {whyItExistsText && (
-              <p className="text-lg leading-relaxed text-ffie-ink">
-                {whyItExistsText}
+            {narrativeBeats.map((beat) => (
+              <p key={beat} className="text-lg leading-relaxed text-ffie-ink">
+                {beat}
               </p>
+            ))}
+
+            {visualDirectionSrc && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={visualDirectionSrc}
+                alt=""
+                className="max-h-48 w-full rounded-xl object-cover"
+              />
             )}
 
             {draft.artifactName.trim() && (
