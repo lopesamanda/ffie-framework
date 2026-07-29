@@ -470,6 +470,13 @@ export function CreateJourney() {
               {draft.stage === "creation" && (
                 <CreateStageShell
                   stage="creation"
+                  title={
+                    draft.creationStep === 1
+                      ? "Give it a body."
+                      : draft.creationStep === 2
+                        ? "Place it in the world."
+                        : CREATION_STEPS[draft.creationStep]
+                  }
                   subtitle={`Step ${draft.creationStep + 1} of ${CREATION_STEPS.length} — ${CREATION_STEPS[draft.creationStep]}`}
                 >
                   {draft.creationStep === 0 && (

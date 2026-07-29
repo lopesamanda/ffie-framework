@@ -3,11 +3,7 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
-import {
-  FUTURE_WORK_ACTIONS,
-  FutureWorkActionsGrid,
-} from "@/components/create/FutureWorkWithPanel";
-import { FfieButton } from "@/components/create/design/FfieButton";
+import { FutureWorkActionsGrid } from "@/components/create/FutureWorkWithPanel";
 import { InteractiveMatrixReveal } from "@/components/create/InteractiveMatrixReveal";
 import {
   MATRIX_FRAMEWORK_INTRO,
@@ -35,9 +31,7 @@ export function FutureRevealStage({
   const reduceMotion = useReducedMotion();
   const stageRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const workWithRef = useRef<HTMLDivElement>(null);
   const [cardRevealed, setCardRevealed] = useState(false);
-  const [workWithOpen, setWorkWithOpen] = useState(false);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
   const [transformOrigin, setTransformOrigin] = useState<string>("center center");
 
@@ -46,21 +40,6 @@ export function FutureRevealStage({
   const handleDotClick = (dotCenter: Anchor) => {
     setAnchor(dotCenter);
     setCardRevealed(true);
-  };
-
-  const toggleWorkWith = () => {
-    setWorkWithOpen((open) => {
-      const next = !open;
-      if (next) {
-        window.setTimeout(() => {
-          workWithRef.current?.scrollIntoView({
-            behavior: reduceMotion ? "auto" : "smooth",
-            block: "nearest",
-          });
-        }, 120);
-      }
-      return next;
-    });
   };
 
   useLayoutEffect(() => {
@@ -167,17 +146,12 @@ export function FutureRevealStage({
 
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
             <div className="min-w-0 flex-1">
-              <FfieButton variant="secondary" onClick={toggleWorkWith}>
-                {workWithOpen
-                  ? "Hide workshop ideas"
-                  : "How can you work with this future?"}
-              </FfieButton>
-
-              {workWithOpen && (
-                <div ref={workWithRef} className="mt-4">
-                  <FutureWorkActionsGrid reduceMotion={reduceMotion} />
-                </div>
-              )}
+              <h3 className="font-display text-base font-semibold text-ffie-ink">
+                How can you work with this future?
+              </h3>
+              <div className="mt-4">
+                <FutureWorkActionsGrid reduceMotion={reduceMotion} />
+              </div>
             </div>
 
             {actionFooter && (

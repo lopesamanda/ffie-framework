@@ -13,11 +13,15 @@ import {
   orderCapabilityCardsForArtifact,
 } from "@/lib/journey/artifact-capability-priorities";
 import { PowerGlyph } from "@/components/create/design/PowerGlyph";
-import { SettleButton } from "@/components/motion/SettleButton";
-import { FFIE_CARD_TEXT, ffieCardCategory } from "@/lib/card-layout";
+import {
+  FFIE_CARD_TEXT,
+  ffieCardCategory,
+  ffieCardDescription,
+  ffieCardSectionLabel,
+} from "@/lib/card-layout";
 
 const FIELD =
-  "w-full resize-y rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
+  "w-full min-w-0 resize-y rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
 
 const REFLECTION_PANEL =
   "rounded-xl border border-ffie-accent/20 bg-ffie-accent-soft/35 px-4 py-4";
@@ -54,18 +58,126 @@ function findCardById(
   return null;
 }
 
+function CapabilityClusterCard({
+  card,
+  highlighted,
+  pinned,
+  expanded,
+  onToggleExpand,
+  onSelect,
+}: {
+  card: AiCapabilityCard;
+  highlighted: boolean;
+  pinned: boolean;
+  expanded: boolean;
+  onToggleExpand: () => void;
+  onSelect: () => void;
+}) {
+  return (
+    <div
+      className={`rounded-xl border-2 bg-ffie-bg/40 transition ${
+        pinned
+          ? "border-ffie-accent/50 opacity-60"
+          : expanded
+            ? "border-ffie-accent bg-[#f6f4ff] shadow-[0_0_0_3px_rgba(110,82,196,0.12)]"
+            : highlighted
+              ? "border-ffie-accent/35 ring-1 ring-ffie-accent/20 hover:border-ffie-accent/50"
+              : "border-ffie-line/80 hover:border-ffie-accent/35"
+      }`}
+      style={{ borderTopWidth: 3, borderTopColor: card.color }}
+    >
+      <button
+        type="button"
+        onClick={onToggleExpand}
+        aria-expanded={expanded}
+        className="w-full px-4 py-3 text-left"
+      >
+        <p className={`${ffieCardCategory} text-ffie-muted`}>Capability</p>
+        <h4
+          className={`mt-1 font-display text-sm font-bold leading-snug text-ffie-ink ${FFIE_CARD_TEXT}`}
+        >
+          {card.hook}
+        </h4>
+        <p className={`mt-0.5 text-xs text-ffie-muted ${FFIE_CARD_TEXT}`}>
+          {card.name}
+        </p>
+        {!expanded && card.tags[0] && (
+          <span className="mt-2 inline-block rounded-full border border-ffie-line bg-ffie-accent-soft/60 px-2 py-0.5 text-[10px] font-semibold text-ffie-ink">
+            {card.tags[0]}
+          </span>
+        )}
+      </button>
+
+      {expanded && (
+        <div className="border-t border-ffie-accent/25 px-4 pb-4 pt-3">
+          <p
+            className={`${ffieCardDescription} not-italic ${FFIE_CARD_TEXT}`}
+          >
+            {card.description}
+          </p>
+
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {card.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-ffie-line bg-ffie-accent-soft/60 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <p className={`${ffieCardCategory} text-ffie-muted`}>
+              Use these to shape your answer
+            </p>
+            <ul className="space-y-1.5">
+              {card.artifactGuidingQuestions.map((question) => (
+                <li
+                  key={question}
+                  className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
+                >
+                  · {question}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-3 rounded-lg border border-ffie-line/70 bg-white/70 px-3 py-3">
+            <p className={ffieCardSectionLabel}>Example</p>
+            <p
+              className={`mt-1.5 text-sm italic leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
+            >
+              {card.examples[0]}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={onSelect}
+            className="mt-4 w-full rounded-lg bg-ffie-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+          >
+            {pinned ? "Selected" : "Select this capability"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function AiPowerSelector({
   artifactType,
   artifactName,
   selectedCapabilityId,
   dayToDayDescription,
-  artifactGoalPitch,
   onSelectCapability,
   onDayToDayChange,
-  onGoalPitchChange,
 }: AiPowerSelectorProps) {
   const [openPower, setOpenPower] = useState<AiCapabilityPowerId | null>(() =>
     selectedCapabilityId ? findPowerForCard(selectedCapabilityId) : null,
+  );
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(
+    selectedCapabilityId || null,
   );
   const [showAll, setShowAll] = useState(false);
   const displayName = artifactName.trim() || "this artifact";
@@ -97,6 +209,7 @@ export function AiPowerSelector({
   const handleSelectCapability = (card: AiCapabilityCard) => {
     const powerId = findPowerForCard(card.id);
     setOpenPower(powerId);
+    setExpandedCardId(card.id);
     onSelectCapability(card.id, powerId);
   };
 
@@ -115,8 +228,6 @@ export function AiPowerSelector({
           if (visibleCount === 0) return null;
 
           const isOpen = openPower === group.id;
-          const isSelectedPower =
-            selectedCard && findPowerForCard(selectedCard.id) === group.id;
 
           return (
             <button
@@ -124,7 +235,7 @@ export function AiPowerSelector({
               type="button"
               onClick={() => handlePowerTagClick(group.id)}
               className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
-                isOpen || isSelectedPower
+                isOpen
                   ? "border-ffie-accent bg-ffie-accent text-white"
                   : "border-ffie-line bg-ffie-surface text-ffie-ink hover:border-ffie-accent/40"
               }`}
@@ -136,7 +247,7 @@ export function AiPowerSelector({
         })}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-start">
+      {openPower && (
         <div className="space-y-4">
           {powerGroups.map((group) => {
             if (openPower !== group.id) return null;
@@ -148,42 +259,22 @@ export function AiPowerSelector({
 
             return (
               <div key={group.id} className="space-y-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ffie-muted">
-                  {group.label}
-                </p>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {cards.map((card) => {
-                    const selected = selectedCapabilityId === card.id;
-                    return (
-                      <SettleButton
-                        key={card.id}
-                        onClick={() => handleSelectCapability(card)}
-                        aria-pressed={selected}
-                        className={`rounded-xl border-2 px-4 py-3 text-left transition ${
-                          selected
-                            ? "border-ffie-accent bg-[#f6f4ff] shadow-[0_0_0_3px_rgba(110,82,196,0.18)]"
-                            : prioritizedIds.has(card.id)
-                              ? "border-ffie-accent/35 ring-1 ring-ffie-accent/20 hover:border-ffie-accent/50"
-                              : "border-ffie-line/80 hover:border-ffie-accent/35"
-                        }`}
-                        style={{ borderTopWidth: 3, borderTopColor: card.color }}
-                      >
-                        <p className={`${ffieCardCategory} text-ffie-muted`}>
-                          Capability
-                        </p>
-                        <h4
-                          className={`mt-1 font-display text-sm font-bold leading-snug text-ffie-ink ${FFIE_CARD_TEXT}`}
-                        >
-                          {card.hook}
-                        </h4>
-                        <p
-                          className={`mt-0.5 line-clamp-2 text-xs text-ffie-muted ${FFIE_CARD_TEXT}`}
-                        >
-                          {card.description}
-                        </p>
-                      </SettleButton>
-                    );
-                  })}
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {cards.map((card) => (
+                    <CapabilityClusterCard
+                      key={card.id}
+                      card={card}
+                      highlighted={prioritizedIds.has(card.id)}
+                      pinned={selectedCapabilityId === card.id}
+                      expanded={expandedCardId === card.id}
+                      onToggleExpand={() =>
+                        setExpandedCardId((current) =>
+                          current === card.id ? null : card.id,
+                        )
+                      }
+                      onSelect={() => handleSelectCapability(card)}
+                    />
+                  ))}
                 </div>
               </div>
             );
@@ -199,57 +290,42 @@ export function AiPowerSelector({
             </button>
           )}
         </div>
+      )}
 
-        {selectedCard && (
-          <div className="space-y-4 lg:sticky lg:top-4">
-            <div className="flex flex-col gap-4 lg:flex-row-reverse">
-              <div className="shrink-0 rounded-xl border border-ffie-line/80 bg-ffie-surface px-4 py-3 lg:w-[220px]">
-                <p className={`${ffieCardCategory} text-ffie-muted`}>
-                  Pinned capability
-                </p>
-                <h4
-                  className={`mt-1 font-display text-sm font-bold leading-snug text-ffie-ink ${FFIE_CARD_TEXT}`}
-                >
-                  {selectedCard.hook}
-                </h4>
-                <p
-                  className={`mt-2 text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
-                >
-                  {selectedCard.description}
-                </p>
-              </div>
-
-              <div className={`min-w-0 flex-1 space-y-4 ${REFLECTION_PANEL}`}>
-                <label className="block space-y-2">
-                  <span className="text-sm leading-relaxed text-ffie-ink">
-                    What does {displayName} do, day to day?
-                  </span>
-                  <textarea
-                    value={dayToDayDescription}
-                    onChange={(event) => onDayToDayChange(event.target.value)}
-                    rows={4}
-                    className={FIELD}
-                    placeholder="what it does day to day"
-                  />
-                </label>
-
-                <label className="block space-y-2">
-                  <span className="text-sm leading-relaxed text-ffie-muted">
-                    Optional: If {displayName} had a pitch line…
-                  </span>
-                  <textarea
-                    value={artifactGoalPitch}
-                    onChange={(event) => onGoalPitchChange(event.target.value)}
-                    rows={2}
-                    className={FIELD}
-                    placeholder="a one-line pitch (optional)"
-                  />
-                </label>
-              </div>
-            </div>
+      {selectedCard && (
+        <div className="grid gap-6 lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)] lg:items-start">
+          <div className="rounded-xl border-2 border-ffie-accent bg-[#f6f4ff] px-4 py-3 shadow-[0_0_0_3px_rgba(110,82,196,0.18)]">
+            <p className={`${ffieCardCategory} text-ffie-accent`}>
+              Selected capability
+            </p>
+            <h4
+              className={`mt-1 font-display text-sm font-bold leading-snug text-ffie-ink ${FFIE_CARD_TEXT}`}
+            >
+              {selectedCard.hook}
+            </h4>
+            <p
+              className={`mt-2 text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}
+            >
+              {selectedCard.description}
+            </p>
           </div>
-        )}
-      </div>
+
+          <div className={`w-full min-w-0 ${REFLECTION_PANEL}`}>
+            <label className="block space-y-2">
+              <span className="text-sm leading-relaxed text-ffie-ink">
+                What does {displayName} do, day to day?
+              </span>
+              <textarea
+                value={dayToDayDescription}
+                onChange={(event) => onDayToDayChange(event.target.value)}
+                rows={5}
+                className={FIELD}
+                placeholder="what it does day to day"
+              />
+            </label>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -141,7 +141,7 @@ export function ArtifactProgressiveStep({
           className="space-y-3"
         >
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-            2b — Place it in the world
+            2b — Problem or tension
           </p>
           <p className="text-sm leading-relaxed text-ffie-ink">
             You said {p.subject} fears Artificial Intelligence will{" "}

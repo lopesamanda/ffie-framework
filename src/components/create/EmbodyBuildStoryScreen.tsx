@@ -8,7 +8,9 @@ import {
   hopeSectionLabel,
   possessiveStoryHeading,
 } from "@/lib/journey/future-card-copy";
+import { DrawnCardsCompactReference } from "@/components/create/DrawnCardsCompactReference";
 import { verbFor, type CharacterPronouns } from "@/lib/journey/character-pronouns";
+import type { CardHand } from "@/lib/journey/types";
 
 const REVEAL_PAUSE_MS = 700;
 
@@ -62,6 +64,7 @@ type EmbodyBuildStoryScreenProps = {
   };
   role: string;
   sector: string;
+  cardHand: CardHand | null;
   p: CharacterPronouns;
   onChange: (patch: {
     aiFunction?: string;
@@ -74,6 +77,7 @@ export function EmbodyBuildStoryScreen({
   draft,
   role,
   sector,
+  cardHand,
   p,
   onChange,
 }: EmbodyBuildStoryScreenProps) {
@@ -147,6 +151,10 @@ export function EmbodyBuildStoryScreen({
           about what changes along the way.
         </p>
       </header>
+
+      {cardHand && (
+        <DrawnCardsCompactReference cardHand={cardHand} />
+      )}
 
       <section className="space-y-3">
         <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">

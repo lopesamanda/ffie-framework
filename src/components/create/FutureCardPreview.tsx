@@ -384,20 +384,6 @@ export function FutureCardPreview({
           </div>
         </Wrap>
 
-        {isFinalCard && visualDirectionSrc && (
-          <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <div className="mt-4 overflow-hidden rounded-2xl border border-ffie-line/60 bg-ffie-bg/30">
-              <Image
-                src={visualDirectionSrc}
-                alt="Visual direction for artifact"
-                width={840}
-                height={420}
-                className="h-auto max-h-52 w-full object-contain md:max-h-56"
-              />
-            </div>
-          </Wrap>
-        )}
-
         <Wrap {...(revealAnimated ? nextReveal() : {})}>
           {isFinalCard ? (
             <header className="mt-4 md:mt-5">
@@ -507,11 +493,24 @@ export function FutureCardPreview({
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <div className={`${isFinalCard ? sectionGap : "mt-4"} space-y-4 text-sm`}>
               {isFinalCard && artifactHeading && (
-                <h4
-                  className={`font-display text-lg font-semibold leading-snug text-ffie-ink/90 ${FFIE_CARD_TEXT}`}
-                >
-                  {artifactHeading}
-                </h4>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                  {visualDirectionSrc && (
+                    <div className="shrink-0 overflow-hidden rounded-xl border border-ffie-line/60 bg-ffie-bg/30 sm:w-36 md:w-40">
+                      <Image
+                        src={visualDirectionSrc}
+                        alt=""
+                        width={320}
+                        height={240}
+                        className="h-auto w-full object-contain"
+                      />
+                    </div>
+                  )}
+                  <h4
+                    className={`min-w-0 font-display text-lg font-semibold leading-snug text-ffie-ink/90 ${FFIE_CARD_TEXT}`}
+                  >
+                    {artifactHeading}
+                  </h4>
+                </div>
               )}
               {capabilityName && (
                 <ArtifactDetailPanel label="AI FUNCTION" panelClassName="bg-ffie-bg/70">

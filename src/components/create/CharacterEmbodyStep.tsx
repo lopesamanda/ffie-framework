@@ -26,6 +26,7 @@ import {
 import { EmbodyBuildStoryScreen } from "@/components/create/EmbodyBuildStoryScreen";
 import { EmbodyFearScreen } from "@/components/create/EmbodyTensionScreen";
 import { FfieButton } from "@/components/create/design/FfieButton";
+import { FfieHeading } from "@/components/create/design/FfieEyebrow";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
@@ -360,6 +361,7 @@ export function CharacterEmbodyStep({
                 draft.personaSectorCustom,
               ) || "…"
             }
+            cardHand={cardHand}
             p={p}
             onChange={onChange}
           />
@@ -383,10 +385,10 @@ export function CharacterEmbodyStep({
 
   return (
     <div className="space-y-8">
-      <p className="text-sm leading-relaxed text-ffie-muted">
+      <FfieHeading as="h2">
         Picture someone living {FUTURE_HORIZON_LABEL}. Who are you building this
         future for?
-      </p>
+      </FfieHeading>
 
       <EmbodyDots current={embodySubStep} />
 
