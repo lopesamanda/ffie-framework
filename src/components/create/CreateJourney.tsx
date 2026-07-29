@@ -7,7 +7,6 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toPng } from "html-to-image";
 import { CreateStageShell } from "@/components/create/design/CreateStageShell";
 import { CreateEntryCover } from "@/components/create/design/CreateEntryCover";
-import { CreateUnderstandScreen } from "@/components/create/design/CreateUnderstandScreen";
 import { FfieButton } from "@/components/create/design/FfieButton";
 import {
   CategoryRegisterTiles,
@@ -30,7 +29,7 @@ import {
   OracleDrawReflectionPrompt,
 } from "@/components/create/design/OracleDrawRecap";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
-import { LikertQuestion } from "@/components/create/LikertQuestion";
+import { MatrixScaleQuestion } from "@/components/create/MatrixScaleQuestion";
 import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
@@ -58,6 +57,13 @@ import {
   getCreateFfiePhase,
   type CreatePhaseContext,
 } from "@/lib/create-journey-phases";
+import {
+  creationProgressSubtitle,
+  creationScreenTitle,
+  futureRevealTitle,
+  matrixPlacementTitle,
+  oracleDrawTitle,
+} from "@/lib/create-journey-titles";
 import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
 import {
   composeHiddenFunction,
@@ -76,7 +82,7 @@ import {
   buildReflectionQuestion,
   buildTitle,
   clearDraft,
-  computePlacementFromLikert,
+  computePlacementFromMatrixScales,
   createInitialDraft,
   genderLabelForDraft,
   getOrCreateSessionId,
@@ -87,16 +93,10 @@ import {
   type CardHand,
   type JourneyDraft,
   type JourneyStage,
-  type LikertScore,
+  type MatrixScaleScore,
 } from "@/lib/journey/types";
 
-const CREATION_STEPS = [
-  "Embody the future",
-  "Artifact type",
-  "Name, problem & capability",
-  "Embedded values",
-  "Hidden function",
-];
+const CREATION_STEP_COUNT = 5;
 
 const FIELD =
   "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
@@ -118,13 +118,22 @@ export function CreateJourney() {
   } | null>(null);
   const phaseSweepRef = useRef(phaseSweep);
   phaseSweepRef.current = phaseSweep;
+  const [oracleSituateStarted, setOracleSituateStarted] = useState(false);
   const materializeRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const sessionId = getOrCreateSessionId();
     const saved = loadDraft();
-    setDraft(saved ?? createInitialDraft(sessionId));
+    const initial = saved ?? createInitialDraft(sessionId);
+    setDraft(initial);
+    setOracleSituateStarted(
+      initial.stage === "reflection" ||
+        initial.stage === "creation" ||
+        initial.stage === "output" ||
+        initial.stage === "discovery" ||
+        Boolean(initial.cardHand),
+    );
   }, []);
 
   const update = useCallback((patch: Partial<JourneyDraft>) => {
@@ -167,6 +176,7 @@ export function CreateJourney() {
   const handleCreateAnotherFuture = useCallback(() => {
     clearDraft();
     resetOracleDraw();
+    setOracleSituateStarted(false);
     setSubmitting(false);
     setSubmitError(null);
     const next = createInitialDraft(crypto.randomUUID());
@@ -183,6 +193,9 @@ export function CreateJourney() {
       setRevealing(true);
       resetOracleDraw();
       const delayMs = options?.delayMs ?? 900;
+      if (options?.goToReflection) {
+        setOracleSituateStarted(true);
+      }
       window.setTimeout(() => {
         const hand = drawWorkshopHand(options?.previousHand ?? null);
         update({
@@ -200,6 +213,7 @@ export function CreateJourney() {
   );
 
   const handleDrawCards = () => {
+    setOracleSituateStarted(true);
     beginOracleDraw();
   };
 
@@ -347,7 +361,6 @@ export function CreateJourney() {
 
   const showLivePreview =
     draft.stage !== "entry" &&
-    draft.stage !== "understand" &&
     draft.stage !== "orientation" &&
     draft.stage !== "output" &&
     draft.stage !== "discovery";
@@ -361,23 +374,22 @@ export function CreateJourney() {
     embodySubStep: draft.embodySubStep,
     oracleDrawIndex,
     outputStep: draft.outputStep,
+    oracleSituateStarted,
   };
 
-  const phaseEyebrow = getCreatePhaseEyebrow(getCreateFfiePhase(phaseContext));
+  const ffiePhase = getCreateFfiePhase(phaseContext);
+  const phaseEyebrow = getCreatePhaseEyebrow(ffiePhase, {
+    outputStep: draft.outputStep,
+  });
 
   const creationEyebrow =
     draft.stage === "creation" && draft.creationStep > 0
       ? "MATERIALIZE"
       : undefined;
 
-  const creationTitle =
-    draft.stage === "creation"
-      ? draft.creationStep === 1
-        ? "Give it a body."
-        : draft.creationStep === 2
-          ? "Place it in the world."
-          : CREATION_STEPS[draft.creationStep]
-      : undefined;
+  const oracleStageTitle = oracleDrawTitle();
+  const outputTitle =
+    draft.outputStep === 0 ? matrixPlacementTitle() : futureRevealTitle();
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
@@ -391,7 +403,7 @@ export function CreateJourney() {
         <div className="min-w-0">
           <AnimatePresence mode="wait">
             <motion.div
-              key={draft.stage + draft.creationStep}
+              key={`${draft.stage}-${draft.creationStep}-${draft.embodySubStep}-${draft.outputStep}-${oracleDrawIndex}`}
               initial={
                 reduceMotion ? false : { opacity: 0, y: 16, scale: 0.985 }
               }
@@ -403,19 +415,7 @@ export function CreateJourney() {
             >
               {draft.stage === "entry" && (
                 <CreateStageShell stage="entry" headerMode="entry" variant="cover">
-                  <CreateEntryCover onBegin={() => goTo("understand")} />
-                </CreateStageShell>
-              )}
-
-              {draft.stage === "understand" && (
-                <CreateStageShell
-                  stage="understand"
-                  eyebrow={phaseEyebrow}
-                  phaseContext={phaseContext}
-                >
-                  <CreateUnderstandScreen
-                    onBegin={() => goTo("orientation")}
-                  />
+                  <CreateEntryCover onBegin={() => goTo("orientation")} />
                 </CreateStageShell>
               )}
 
@@ -423,6 +423,7 @@ export function CreateJourney() {
                 <CreateStageShell
                   stage="orientation"
                   eyebrow={phaseEyebrow}
+                  title={oracleStageTitle}
                   phaseContext={phaseContext}
                 >
                   <CategoryRegisterTiles />
@@ -457,6 +458,7 @@ export function CreateJourney() {
                 <CreateStageShell
                   stage="reflection"
                   eyebrow={phaseEyebrow}
+                  title={oracleStageTitle}
                   phaseContext={phaseContext}
                 >
                   {!draft.cardHand ? (
@@ -522,9 +524,9 @@ export function CreateJourney() {
                 <CreateStageShell
                   stage="creation"
                   eyebrow={creationEyebrow ?? phaseEyebrow}
-                  title={creationTitle}
+                  title={creationScreenTitle(draft)}
                   phaseContext={phaseContext}
-                  subtitle={`Step ${draft.creationStep + 1} of ${CREATION_STEPS.length} — ${CREATION_STEPS[draft.creationStep]}`}
+                  subtitle={creationProgressSubtitle(draft)}
                 >
                   {draft.creationStep === 0 && (
                     <CharacterEmbodyStep
@@ -651,7 +653,7 @@ export function CreateJourney() {
                           !draft.hiddenFunction.trim())
                       }
                       onClick={() => {
-                        if (draft.creationStep < CREATION_STEPS.length - 1) {
+                        if (draft.creationStep < CREATION_STEP_COUNT - 1) {
                           const nextStep = draft.creationStep + 1;
                           const patch: Partial<JourneyDraft> = {
                             creationStep: nextStep,
@@ -675,7 +677,7 @@ export function CreateJourney() {
                         );
                       }}
                     >
-                      {draft.creationStep < CREATION_STEPS.length - 1
+                      {draft.creationStep < CREATION_STEP_COUNT - 1
                         ? "Next"
                         : "Place on the matrix"}
                     </FfieButton>
@@ -688,30 +690,31 @@ export function CreateJourney() {
                 <CreateStageShell
                   stage="output"
                   eyebrow={phaseEyebrow}
+                  title={outputTitle}
                   phaseContext={phaseContext}
                   subtitle=""
                 >
                   {draft.outputStep === 0 ? (
                     <div className="w-full min-w-0 space-y-5">
                       <p className="text-sm text-ffie-muted">
-                        Two questions place this future on the Critical Feminist
-                        Matrix — no dragging, no numbers.
+                        Two scales place this future on the Critical Feminist
+                        Matrix — every answer leans toward one pole or the other.
                       </p>
-                      <LikertQuestion
-                        question="In the world you imagined, does this technology mostly extract something from the people who use it — time, data, autonomy — or give something back?"
-                        lowLabel="Extracts"
-                        highLabel="Gives back"
+                      <MatrixScaleQuestion
+                        question="System Logic — where does this future sit?"
+                        lowLabel="Extractive"
+                        highLabel="Emancipatory"
                         value={draft.systemLogicScore}
-                        onChange={(systemLogicScore: LikertScore) =>
+                        onChange={(systemLogicScore: MatrixScaleScore) =>
                           update({ systemLogicScore })
                         }
                       />
-                      <LikertQuestion
-                        question="Who decides how this technology is used in that future — a person or company at the top, or the community that lives with it, together?"
-                        lowLabel="Centralized decision"
-                        highLabel="Collective decision"
+                      <MatrixScaleQuestion
+                        question="Power Organization — who holds the power?"
+                        lowLabel="Hierarchical"
+                        highLabel="Collective Care"
                         value={draft.powerOrgScore}
-                        onChange={(powerOrgScore: LikertScore) =>
+                        onChange={(powerOrgScore: MatrixScaleScore) =>
                           update({ powerOrgScore })
                         }
                       />
@@ -727,7 +730,7 @@ export function CreateJourney() {
                           ) {
                             return;
                           }
-                          const placement = computePlacementFromLikert(
+                          const placement = computePlacementFromMatrixScales(
                             draft.systemLogicScore,
                             draft.powerOrgScore,
                           );

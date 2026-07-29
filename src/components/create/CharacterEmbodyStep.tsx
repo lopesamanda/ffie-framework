@@ -26,7 +26,6 @@ import {
 import { EmbodyBuildStoryScreen } from "@/components/create/EmbodyBuildStoryScreen";
 import { EmbodyFearScreen } from "@/components/create/EmbodyTensionScreen";
 import { FfieButton } from "@/components/create/design/FfieButton";
-import { FfieHeading } from "@/components/create/design/FfieEyebrow";
 import { ChipField, ChipSelect } from "@/components/create/ChipSelect";
 import { NarrativeBlank, NarrativeBlock } from "@/components/create/NarrativeBlank";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
@@ -363,10 +362,10 @@ export function CharacterEmbodyStep({
 
   return (
     <div className="space-y-8">
-      <FfieHeading as="h2">
+      <p className="text-sm font-medium text-ffie-ink">
         Picture someone living {FUTURE_HORIZON_LABEL}. Who are you building this
         future for?
-      </FfieHeading>
+      </p>
 
       <AnimatePresence mode="wait">
         <motion.div

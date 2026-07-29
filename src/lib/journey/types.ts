@@ -20,12 +20,14 @@ import { buildFutureCommonsNarrative } from "@/lib/journey/future-commons-narrat
 import { getFutureHorizonYear } from "@/lib/journey/future-horizon";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
-/** 5-point Likert used for automated matrix placement. */
+/** 6-point self-report scale for matrix placement (no exact midpoint). */
+export type MatrixScaleScore = 1 | 2 | 3 | 4 | 5 | 6;
+
+/** @deprecated Use MatrixScaleScore — kept for legacy session data. */
 export type LikertScore = 1 | 2 | 3 | 4 | 5;
 
 export type JourneyStage =
   | "entry"
-  | "understand"
   | "orientation"
   | "exploration"
   | "reflection"
@@ -35,7 +37,6 @@ export type JourneyStage =
 
 export const JOURNEY_STAGES: { id: JourneyStage; label: string }[] = [
   { id: "entry", label: "Entry" },
-  { id: "understand", label: "Understand" },
   { id: "orientation", label: "Orientation" },
   { id: "exploration", label: "Exploration" },
   { id: "reflection", label: "Reflection" },
@@ -90,6 +91,8 @@ export type JourneyDraft = {
   artifactType: ArtifactTypeId | "";
   /** Cosmetic subformat label — does not affect capability defaults. */
   artifactSubformat: string;
+  /** Free-text subformat when artifactSubformat is "Other". */
+  artifactSubformatOther: string;
   /** Path to selected visual-direction image (public/). */
   visualDirection: string;
   /** Problem or tension the artifact responds to (references embody fear). */
@@ -116,10 +119,10 @@ export type JourneyDraft = {
   imageDataUrl: string | null;
   /** Optional closing reflection on the final Future card. */
   closingReflection: string;
-  /** System Logic Likert (Q1) — Extracts ↔ Gives back */
-  systemLogicScore: LikertScore | null;
-  /** Power Organization Likert (Q2) — centralizada ↔ coletiva */
-  powerOrgScore: LikertScore | null;
+  /** System Logic scale — Extractive (1) ↔ Emancipatory (6) */
+  systemLogicScore: MatrixScaleScore | null;
+  /** Power Organization scale — Hierarchical (1) ↔ Collective Care (6) */
+  powerOrgScore: MatrixScaleScore | null;
   /**
    * Matrix coords in signed space [-1, 1]:
    * x: Extractive (−) ↔ Emancipatory (+)
@@ -185,7 +188,12 @@ export function signedToUnit(x: number, y: number): { x: number; y: number } {
   return { x: (x + 1) / 2, y: (y + 1) / 2 };
 }
 
-/** Likert 1–5 → signed −1.0 … 1.0 (1→−1, 3→0, 5→1). */
+/** 6-point scale → signed −1.0 … 1.0 (1→−1, 6→+1; no exact zero). */
+export function matrixScaleToSigned(score: MatrixScaleScore): number {
+  return ((score - 1) / 5) * 2 - 1;
+}
+
+/** @deprecated Use matrixScaleToSigned */
 export function likertToSigned(score: LikertScore): number {
   return (score - 3) / 2;
 }
@@ -194,14 +202,40 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-function jitter(amount = 0.05) {
+function jitter(amount = 0.03) {
   return (Math.random() * 2 - 1) * amount;
 }
 
 /**
- * Derive matrix position, quadrant, and power_position from the two Likert answers.
- * power_position: Q2 1–2 (centralized) → hegemonic; 3–5 (collective) → marginalized
- * — matches seed polarity (sole hegemonic entry sits on the hierarchical side).
+ * Derive matrix position from two 6-point self-report scales.
+ * power_position: 1–3 → hegemonic; 4–6 → marginalized
+ */
+export function computePlacementFromMatrixScales(
+  systemLogic: MatrixScaleScore,
+  powerOrg: MatrixScaleScore,
+): {
+  position: { x: number; y: number };
+  quadrant: FutureQuadrant;
+  powerPosition: PowerPosition;
+  placementJustification: string;
+} {
+  const x = clamp(matrixScaleToSigned(systemLogic) + jitter(), -1, 1);
+  const y = clamp(matrixScaleToSigned(powerOrg) + jitter(), -1, 1);
+  const powerPosition: PowerPosition = powerOrg <= 3 ? "hegemonic" : "marginalized";
+
+  return {
+    position: { x, y },
+    quadrant: quadrantFromPosition(x, y),
+    powerPosition,
+    placementJustification: [
+      `System Logic (Extractive→Emancipatory): ${systemLogic}/6.`,
+      `Power Organization (Hierarchical→Collective Care): ${powerOrg}/6.`,
+    ].join(" "),
+  };
+}
+
+/**
+ * @deprecated Use computePlacementFromMatrixScales
  */
 export function computePlacementFromLikert(
   systemLogic: LikertScore,
@@ -324,6 +358,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     artifactName: "",
     artifactType: "",
     artifactSubformat: "",
+    artifactSubformatOther: "",
     visualDirection: "",
     artifactProblemTension: "",
     selectedAiPower: "",
@@ -361,11 +396,26 @@ export function loadDraft(): JourneyDraft | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<JourneyDraft>;
     if (!parsed.sessionId) return null;
+    const coerceMatrixScale = (
+      score: number | null | undefined,
+    ): MatrixScaleScore | null => {
+      if (score == null) return null;
+      if (score >= 1 && score <= 6) return score as MatrixScaleScore;
+      return null;
+    };
+
+    const legacyStage = parsed.stage as string | undefined;
+    const stage: JourneyStage =
+      legacyStage === "understand"
+        ? "orientation"
+        : (legacyStage as JourneyStage) ?? "entry";
+
     const draft = {
       ...createInitialDraft(parsed.sessionId),
       ...parsed,
-      systemLogicScore: parsed.systemLogicScore ?? null,
-      powerOrgScore: parsed.powerOrgScore ?? null,
+      stage,
+      systemLogicScore: coerceMatrixScale(parsed.systemLogicScore),
+      powerOrgScore: coerceMatrixScale(parsed.powerOrgScore),
       powerPosition: parsed.powerPosition ?? "marginalized",
       position: parsed.position ?? { x: 0, y: 0 },
       characterGender: parsed.characterGender ?? "",
@@ -380,6 +430,7 @@ export function loadDraft(): JourneyDraft | null {
       roleCustom: parsed.roleCustom ?? "",
       artifactType: parsed.artifactType ?? "",
       artifactSubformat: parsed.artifactSubformat ?? "",
+      artifactSubformatOther: parsed.artifactSubformatOther ?? "",
       visualDirection: parsed.visualDirection ?? "",
       artifactProblemTension: parsed.artifactProblemTension ?? "",
       dayToDaySubStep: parsed.dayToDaySubStep ?? 0,

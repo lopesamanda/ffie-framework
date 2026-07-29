@@ -11,7 +11,7 @@ export type StageMeta = {
 
 /** Maps journey stages → legacy 5-segment index (Explore path only). */
 export function getPhaseIndex(stage: JourneyStage): number {
-  if (stage === "entry" || stage === "understand") return 1;
+  if (stage === "entry") return 1;
   if (stage === "orientation" || stage === "reflection") return 2;
   if (stage === "exploration") return 2;
   if (stage === "creation") return 4;
@@ -25,16 +25,10 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     title: "A future is taking shape.",
     accentColor: "#6e52c4",
   },
-  understand: {
+  orientation: {
     phaseLabel: "Understand",
     eyebrow: "UNDERSTAND",
-    title: "Before you begin.",
-    accentColor: "#6e52c4",
-  },
-  orientation: {
-    phaseLabel: "Situate",
-    eyebrow: "SITUATE",
-    title: "Five cards will shape your future.",
+    title: "The Draw.",
     subtitle:
       "Each card carries a structural tension mapped during a real research process — studying how AI is actually being used across today's innovation ecosystems. You'll draw one card from each register, plus the Environmental Impact card, which applies to every future by default. Your combination can generate a different future each time. Need inspiration? Browse Research Findings anytime via the link below.",
     accentColor: "#c8472a",
@@ -50,7 +44,7 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
   reflection: {
     phaseLabel: "Situate",
     eyebrow: "SITUATE",
-    title: "Your hand.",
+    title: "The Draw.",
     subtitle:
       "One card from each category, plus the Environmental Impact lens — always applied, never drawn.",
     accentColor: "#1a2870",
@@ -58,7 +52,7 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
   creation: {
     phaseLabel: "Creation",
     eyebrow: "EMBODY",
-    title: "Give it a body.",
+    title: "Give them a life.",
     subtitle:
       "Character, machine, artifact — then two questions place it on the matrix.",
     accentColor: "#c22b7a",
@@ -66,7 +60,7 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
   output: {
     phaseLabel: "Share",
     eyebrow: "SHARE",
-    title: "It exists now.",
+    title: "Where does it belong?",
     accentColor: "#6e52c4",
   },
   discovery: {

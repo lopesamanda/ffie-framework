@@ -17,12 +17,14 @@ export type CreatePhaseContext = {
   embodySubStep: number;
   oracleDrawIndex: number;
   outputStep: number;
+  /** True once the user leaves the Oracle intro and begins drawing cards. */
+  oracleSituateStarted: boolean;
 };
 
 export function getCreateFfiePhase(ctx: CreatePhaseContext): CreateFfiePhase {
-  const { stage, creationStep, outputStep } = ctx;
+  const { stage, creationStep, outputStep, oracleSituateStarted } = ctx;
 
-  if (stage === "understand") return "UNDERSTAND";
+  if (stage === "orientation" && !oracleSituateStarted) return "UNDERSTAND";
   if (stage === "orientation" || stage === "reflection") return "SITUATE";
   if (stage === "creation" && creationStep === 0) return "EMBODY";
   if (stage === "creation" && creationStep > 0) return "MATERIALIZE";
@@ -31,10 +33,16 @@ export function getCreateFfiePhase(ctx: CreatePhaseContext): CreateFfiePhase {
   return "UNDERSTAND";
 }
 
-/** Sub-step count for the active FFIE phase only. */
-export function getActivePhaseSubStepCount(
+export function getCreatePhaseEyebrow(
   phase: CreateFfiePhase,
-): number {
+  options?: { outputStep?: number },
+): string {
+  if (phase === "SHARE" && options?.outputStep === 1) return "YOUR FUTURE";
+  return phase;
+}
+
+/** Sub-step count for the active FFIE phase only. */
+export function getActivePhaseSubStepCount(phase: CreateFfiePhase): number {
   switch (phase) {
     case "UNDERSTAND":
       return 1;
@@ -45,7 +53,7 @@ export function getActivePhaseSubStepCount(
     case "MATERIALIZE":
       return 4;
     case "SHARE":
-      return 3;
+      return 2;
     default:
       return 1;
   }
@@ -68,13 +76,8 @@ export function getActivePhaseSubStepIndex(
     case "MATERIALIZE":
       return Math.max(0, ctx.creationStep - 1);
     case "SHARE":
-      if (ctx.stage === "discovery") return 2;
       return ctx.outputStep;
     default:
       return 0;
   }
-}
-
-export function getCreatePhaseEyebrow(phase: CreateFfiePhase): string {
-  return phase;
 }

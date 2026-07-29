@@ -6,6 +6,7 @@ import { AiPowerSelector } from "@/components/create/AiPowerSelector";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 import {
   artifactTypeLabel,
+  resolvedArtifactSubformat,
   type ArtifactTypeId,
 } from "@/lib/journey/character-options";
 import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
@@ -116,9 +117,15 @@ export function ArtifactProgressiveStep({
                 {artifactTypeLabel(draft.artifactType)}
               </span>
             )}
-            {draft.artifactSubformat && (
+            {resolvedArtifactSubformat(
+              draft.artifactSubformat,
+              draft.artifactSubformatOther,
+            ) && (
               <span className="rounded-full border border-ffie-accent/25 bg-ffie-accent-soft/40 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink">
-                {draft.artifactSubformat}
+                {resolvedArtifactSubformat(
+                  draft.artifactSubformat,
+                  draft.artifactSubformatOther,
+                )}
               </span>
             )}
           </div>

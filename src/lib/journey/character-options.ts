@@ -105,6 +105,8 @@ export const ARTIFACT_TYPE_OPTIONS: {
   },
 ];
 
+export const ARTIFACT_SUBFORMAT_OTHER = "Other";
+
 /** Cosmetic subformats per artifact type — do not affect capability defaults. */
 export const ARTIFACT_SUBFORMATS: Record<ArtifactTypeId, string[]> = {
   object: ["Wearable", "Hardware"],
@@ -114,6 +116,16 @@ export const ARTIFACT_SUBFORMATS: Record<ArtifactTypeId, string[]> = {
   policy: ["Official document", "Certification", "Public notice", "Contract"],
   narrative: ["Campaign", "Social Media", "Ads", "Audiovisual piece"],
 };
+
+export function resolvedArtifactSubformat(
+  subformat: string,
+  subformatOther: string,
+): string {
+  if (subformat === ARTIFACT_SUBFORMAT_OTHER) {
+    return subformatOther.trim();
+  }
+  return subformat.trim();
+}
 
 export function artifactTypeLabel(type: ArtifactTypeId | ""): string {
   const match = ARTIFACT_TYPE_OPTIONS.find((option) => option.id === type);

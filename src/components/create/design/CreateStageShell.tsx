@@ -65,6 +65,7 @@ export function CreateStageShell({
                   embodySubStep: 0,
                   oracleDrawIndex: 0,
                   outputStep: 0,
+                  oracleSituateStarted: false,
                 }
               }
             />

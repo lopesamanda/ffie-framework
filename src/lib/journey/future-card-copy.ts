@@ -95,7 +95,7 @@ export function buildFinalCardNarrative(
 }
 
 export function possessiveStoryHeading(p: CharacterPronouns): string {
-  return `BUILD ${p.possessiveCap} STORY`;
+  return `Build ${p.possessiveCap} Story.`;
 }
 
 export function gainSectionLabel(p: CharacterPronouns): string {

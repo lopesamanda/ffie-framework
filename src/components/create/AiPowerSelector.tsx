@@ -294,8 +294,8 @@ export function AiPowerSelector({
 
       {selectedCard && (
         <div className="grid gap-6 lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)] lg:items-start">
-          <div className="rounded-xl border-2 border-ffie-accent bg-[#f6f4ff] px-4 py-3 shadow-[0_0_0_3px_rgba(110,82,196,0.18)]">
-            <p className={`${ffieCardCategory} text-ffie-accent`}>
+          <div className="rounded-xl border border-ffie-line bg-white px-4 py-3 shadow-[0_2px_8px_rgba(35,19,82,0.06)]">
+            <p className={`${ffieCardCategory} text-ffie-muted`}>
               Selected capability
             </p>
             <h4
