@@ -299,19 +299,20 @@ export function FutureCardPreview({
     1 +
     1 +
     (isFinalCard
-      ? (visualDirectionSrc ? 1 : 0) +
-        (narrativeBeats.length > 0 ? 1 : 0) +
+      ? (narrativeBeats.length > 0 ? 1 : 0) +
         (synthesisLine ? 1 : 0) +
         (showCardTags && draft.cardHand ? 1 : 0) +
         (artifactHeading ||
+        capabilityName ||
+        visualDirectionSrc ||
         draft.publicPromise ||
         draft.artifactGoalPitch ||
-        hiddenFunctionDisplay ||
-        capabilityName
+        hiddenFunctionDisplay
           ? 1
           : 0) +
         (artifactValues.length > 0 ? 1 : 0)
-      : (commonsNarrative || synthesisLine ? 1 : 0) +
+      : (visualDirectionSrc ? 1 : 0) +
+        (commonsNarrative || synthesisLine ? 1 : 0) +
         (synthesisTensionsLine ? 1 : 0) +
         (showCardTags && draft.cardHand ? 1 : 0) +
         (draft.publicPromise || hiddenFunctionDisplay || capabilityName ? 1 : 0));
@@ -477,42 +478,62 @@ export function FutureCardPreview({
           </Wrap>
         )}
 
-        {showCardTags && draft.cardHand && isFinalCard && (
+        {isFinalCard &&
+          (artifactHeading ||
+            capabilityName ||
+            visualDirectionSrc ||
+            (showCardTags && draft.cardHand)) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <DrawnCardTags hand={draft.cardHand} finalOnly />
-          </Wrap>
-        )}
-
-        {(isFinalCard
-          ? artifactHeading ||
-            draft.publicPromise ||
-            draft.artifactGoalPitch ||
-            hiddenFunctionDisplay ||
-            capabilityName
-          : draft.publicPromise || hiddenFunctionDisplay || capabilityName) && (
-          <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <div className={`${isFinalCard ? sectionGap : "mt-4"} space-y-4 text-sm`}>
-              {isFinalCard && artifactHeading && (
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                  {visualDirectionSrc && (
-                    <div className="shrink-0 overflow-hidden rounded-xl border border-ffie-line/60 bg-ffie-bg/30 sm:w-36 md:w-40">
-                      <Image
-                        src={visualDirectionSrc}
-                        alt=""
-                        width={320}
-                        height={240}
-                        className="h-auto w-full object-contain"
-                      />
-                    </div>
-                  )}
+            <div className={`${sectionGap} flex flex-col gap-4 sm:flex-row sm:items-start`}>
+              {visualDirectionSrc && (
+                <div className="mx-auto w-full max-w-[140px] shrink-0 overflow-hidden rounded-xl border border-ffie-line/60 bg-ffie-bg/30 sm:mx-0 sm:w-32 md:w-36">
+                  <Image
+                    src={visualDirectionSrc}
+                    alt=""
+                    width={320}
+                    height={240}
+                    className="h-auto w-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="min-w-0 flex-1 space-y-3">
+                {artifactHeading && (
                   <h4
-                    className={`min-w-0 font-display text-lg font-semibold leading-snug text-ffie-ink/90 ${FFIE_CARD_TEXT}`}
+                    className={`font-display text-lg font-semibold leading-snug text-ffie-ink/90 ${FFIE_CARD_TEXT}`}
                   >
                     {artifactHeading}
                   </h4>
-                </div>
-              )}
-              {capabilityName && (
+                )}
+                {capabilityName && (
+                  <ArtifactDetailPanel
+                    label="AI FUNCTION"
+                    panelClassName="bg-ffie-bg/70"
+                  >
+                    <p className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                      <span className="font-semibold">{capabilityName}</span>
+                      {capabilityDescription && (
+                        <span className="mt-2 block font-normal text-ffie-muted">
+                          {capabilityDescription}
+                        </span>
+                      )}
+                    </p>
+                  </ArtifactDetailPanel>
+                )}
+                {showCardTags && draft.cardHand && (
+                  <DrawnCardTags hand={draft.cardHand} finalOnly />
+                )}
+              </div>
+            </div>
+          </Wrap>
+        )}
+
+        {(isFinalCard ||
+          draft.publicPromise ||
+          hiddenFunctionDisplay ||
+          capabilityName) && (
+          <Wrap {...(revealAnimated ? nextReveal() : {})}>
+            <div className={`${isFinalCard ? sectionGap : "mt-4"} space-y-4 text-sm`}>
+              {!isFinalCard && capabilityName && (
                 <ArtifactDetailPanel label="AI FUNCTION" panelClassName="bg-ffie-bg/70">
                   <p className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
                     <span className="font-semibold">{capabilityName}</span>
@@ -524,11 +545,7 @@ export function FutureCardPreview({
                   </p>
                 </ArtifactDetailPanel>
               )}
-              <div
-                className={`grid gap-4 ${
-                  isFinalCard ? "grid-cols-1" : compact ? "" : "md:grid-cols-2"
-                }`}
-              >
+              {(isFinalCard || draft.publicPromise || draft.artifactGoalPitch) && (
                 <ArtifactDetailPanel
                   label="ARTIFACT GOAL"
                   labelTone="text-ffie-accent"
@@ -543,20 +560,20 @@ export function FutureCardPreview({
                     </p>
                   )}
                 </ArtifactDetailPanel>
-                <ArtifactDetailPanel
-                  label="ARTIFACT WEAKNESS"
-                  labelTone="text-[#c8472a]"
-                  panelClassName="bg-[#fdf1ee]/90"
-                >
-                  <p className={`text-sm text-ffie-ink ${FFIE_CARD_TEXT}`}>
-                    <HighlightedWeaknessText
-                      text={hiddenFunctionDisplay || "—"}
-                      extremeValue={draft.hiddenFunctionExtremeValue}
-                      highlightedValue={highlightedValue}
-                    />
-                  </p>
-                </ArtifactDetailPanel>
-              </div>
+              )}
+              <ArtifactDetailPanel
+                label="ARTIFACT WEAKNESS"
+                labelTone="text-[#c8472a]"
+                panelClassName="bg-[#fdf1ee]/90"
+              >
+                <p className={`text-sm text-ffie-ink ${FFIE_CARD_TEXT}`}>
+                  <HighlightedWeaknessText
+                    text={hiddenFunctionDisplay || "—"}
+                    extremeValue={draft.hiddenFunctionExtremeValue}
+                    highlightedValue={highlightedValue}
+                  />
+                </p>
+              </ArtifactDetailPanel>
             </div>
           </Wrap>
         )}

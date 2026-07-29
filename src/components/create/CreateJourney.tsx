@@ -391,6 +391,13 @@ export function CreateJourney() {
   const outputTitle =
     draft.outputStep === 0 ? matrixPlacementTitle() : futureRevealTitle();
 
+  const stageMotionKey =
+    draft.stage === "creation"
+      ? `creation-${draft.creationStep}-${draft.embodySubStep}`
+      : draft.stage === "output"
+        ? `output-${draft.outputStep}`
+        : draft.stage;
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
       <div
@@ -403,7 +410,7 @@ export function CreateJourney() {
         <div className="min-w-0">
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${draft.stage}-${draft.creationStep}-${draft.embodySubStep}-${draft.outputStep}-${oracleDrawIndex}`}
+              key={stageMotionKey}
               initial={
                 reduceMotion ? false : { opacity: 0, y: 16, scale: 0.985 }
               }

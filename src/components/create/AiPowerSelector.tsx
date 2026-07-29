@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import type { AiCapabilityCard } from "@/data/ai-capability-cards";
 import type { ArtifactTypeId } from "@/lib/journey/character-options";
 import {
@@ -173,6 +174,8 @@ export function AiPowerSelector({
   onSelectCapability,
   onDayToDayChange,
 }: AiPowerSelectorProps) {
+  const reduceMotion = useReducedMotion();
+  const dayToDayRef = useRef<HTMLDivElement>(null);
   const [openPower, setOpenPower] = useState<AiCapabilityPowerId | null>(() =>
     selectedCapabilityId ? findPowerForCard(selectedCapabilityId) : null,
   );
@@ -201,6 +204,17 @@ export function AiPowerSelector({
   const selectedCard = selectedCapabilityId
     ? findCardById(selectedCapabilityId, powerGroups)
     : null;
+
+  useEffect(() => {
+    if (!selectedCapabilityId) return;
+    const timer = window.setTimeout(() => {
+      dayToDayRef.current?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "nearest",
+      });
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [selectedCapabilityId, reduceMotion]);
 
   const handlePowerTagClick = (powerId: AiCapabilityPowerId) => {
     setOpenPower((current) => (current === powerId ? null : powerId));
@@ -310,7 +324,7 @@ export function AiPowerSelector({
             </p>
           </div>
 
-          <div className={`w-full min-w-0 ${REFLECTION_PANEL}`}>
+          <div ref={dayToDayRef} className={`w-full min-w-0 ${REFLECTION_PANEL}`}>
             <label className="block space-y-2">
               <span className="text-sm leading-relaxed text-ffie-ink">
                 What does {displayName} do, day to day?

@@ -114,6 +114,14 @@ export function FutureRevealStage({
                   prominent
                   className="w-full origin-top lg:scale-[1.08]"
                 />
+                <div className="mt-4 space-y-2 rounded-xl border border-ffie-line/70 bg-ffie-surface/60 px-4 py-3">
+                  <p className="font-display text-base font-bold text-ffie-ink">
+                    {formatQuadrantLabel(quadrant)}
+                  </p>
+                  <p className="text-sm leading-relaxed text-ffie-muted">
+                    {QUADRANT_DESCRIPTIONS[quadrant]}
+                  </p>
+                </div>
               </div>
 
               <div className="mx-auto w-full max-w-xl shrink-0 lg:mx-0 lg:max-w-none">

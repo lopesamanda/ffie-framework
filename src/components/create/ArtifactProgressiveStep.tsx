@@ -56,18 +56,26 @@ export function ArtifactProgressiveStep({
     resolvedPersonaSector(draft.personaSector, draft.personaSectorCustom) ||
     "their";
 
+  const capabilitySelected = Boolean(draft.selectedAiCapability);
   const nameFilled = draft.artifactName.trim().length > 0;
   const problemFilled = draft.artifactProblemTension.trim().length > 0;
 
+  const nameRef = useRef<HTMLDivElement>(null);
   const problemRef = useRef<HTMLDivElement>(null);
-  const powerRef = useRef<HTMLDivElement>(null);
 
+  const { revealed: showName, reveal: revealName } = useStickyReveal(
+    nameFilled || capabilitySelected,
+  );
   const { revealed: showProblem, reveal: revealProblem } = useStickyReveal(
     problemFilled || nameFilled,
   );
-  const { revealed: showPower, reveal: revealPower } = useStickyReveal(
-    problemFilled,
-  );
+
+  useEffect(() => {
+    if (capabilitySelected) {
+      const timer = setTimeout(revealName, REVEAL_PAUSE_MS);
+      return () => clearTimeout(timer);
+    }
+  }, [capabilitySelected, revealName]);
 
   useEffect(() => {
     if (nameFilled) {
@@ -77,11 +85,13 @@ export function ArtifactProgressiveStep({
   }, [nameFilled, revealProblem]);
 
   useEffect(() => {
-    if (problemFilled) {
-      const timer = setTimeout(revealPower, REVEAL_PAUSE_MS);
-      return () => clearTimeout(timer);
+    if (showName) {
+      nameRef.current?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "nearest",
+      });
     }
-  }, [problemFilled, revealPower]);
+  }, [showName, reduceMotion]);
 
   useEffect(() => {
     if (showProblem) {
@@ -92,54 +102,78 @@ export function ArtifactProgressiveStep({
     }
   }, [showProblem, reduceMotion]);
 
-  useEffect(() => {
-    if (showPower) {
-      powerRef.current?.scrollIntoView({
-        behavior: reduceMotion ? "auto" : "smooth",
-        block: "nearest",
-      });
-    }
-  }, [showPower, reduceMotion]);
-
   return (
     <div className="space-y-10">
       <section className="space-y-3">
         <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-          2a — Name
+          2a — Power + Capability
         </p>
-        <p className="text-sm leading-relaxed text-ffie-ink">
-          Give it a name. What is this artifact called?
-        </p>
-        {(draft.artifactType || draft.artifactSubformat) && (
-          <div className="flex flex-wrap items-center gap-2">
-            {draft.artifactType && (
-              <span className="rounded-full border border-ffie-line bg-ffie-surface px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-ffie-muted">
-                {artifactTypeLabel(draft.artifactType)}
-              </span>
-            )}
-            {resolvedArtifactSubformat(
-              draft.artifactSubformat,
-              draft.artifactSubformatOther,
-            ) && (
-              <span className="rounded-full border border-ffie-accent/25 bg-ffie-accent-soft/40 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink">
-                {resolvedArtifactSubformat(
-                  draft.artifactSubformat,
-                  draft.artifactSubformatOther,
-                )}
-              </span>
-            )}
-          </div>
-        )}
-        <input
-          value={draft.artifactName}
-          onChange={(event) => onChange({ artifactName: event.target.value })}
-          onBlur={() => {
-            if (nameFilled) revealProblem();
-          }}
-          placeholder="artifact name"
-          className={FIELD}
+        <AiPowerSelector
+          values={draft.values}
+          artifactType={draft.artifactType as ArtifactTypeId | ""}
+          artifactName={draft.artifactName}
+          selectedPower={draft.selectedAiPower}
+          selectedCapabilityId={draft.selectedAiCapability}
+          dayToDayDescription={draft.publicPromise}
+          artifactGoalPitch={draft.artifactGoalPitch}
+          onSelectCapability={(selectedAiCapability, powerId) =>
+            onChange({
+              selectedAiCapability,
+              selectedAiPower: powerId,
+              publicPromise: "",
+              artifactGoalPitch: "",
+            })
+          }
+          onDayToDayChange={(publicPromise) => onChange({ publicPromise })}
+          onGoalPitchChange={(artifactGoalPitch) =>
+            onChange({ artifactGoalPitch })
+          }
         />
       </section>
+
+      {showName && (
+        <motion.section
+          ref={nameRef}
+          {...sectionReveal(reduceMotion)}
+          className="space-y-3"
+        >
+          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+            2b — Name
+          </p>
+          <p className="text-sm leading-relaxed text-ffie-ink">
+            Give it a name. What is this artifact called?
+          </p>
+          {(draft.artifactType || draft.artifactSubformat) && (
+            <div className="flex flex-wrap items-center gap-2">
+              {draft.artifactType && (
+                <span className="rounded-full border border-ffie-line bg-ffie-surface px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-ffie-muted">
+                  {artifactTypeLabel(draft.artifactType)}
+                </span>
+              )}
+              {resolvedArtifactSubformat(
+                draft.artifactSubformat,
+                draft.artifactSubformatOther,
+              ) && (
+                <span className="rounded-full border border-ffie-accent/25 bg-ffie-accent-soft/40 px-2.5 py-0.5 text-[10px] font-semibold text-ffie-ink">
+                  {resolvedArtifactSubformat(
+                    draft.artifactSubformat,
+                    draft.artifactSubformatOther,
+                  )}
+                </span>
+              )}
+            </div>
+          )}
+          <input
+            value={draft.artifactName}
+            onChange={(event) => onChange({ artifactName: event.target.value })}
+            onBlur={() => {
+              if (nameFilled) revealProblem();
+            }}
+            placeholder="artifact name"
+            className={FIELD}
+          />
+        </motion.section>
+      )}
 
       {showProblem && (
         <motion.section
@@ -148,7 +182,7 @@ export function ArtifactProgressiveStep({
           className="space-y-3"
         >
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-            2b — Problem or tension
+            2c — Place it in the world
           </p>
           <p className="text-sm leading-relaxed text-ffie-ink">
             You said {p.subject} fears Artificial Intelligence will{" "}
@@ -161,41 +195,9 @@ export function ArtifactProgressiveStep({
             onChange={(event) =>
               onChange({ artifactProblemTension: event.target.value })
             }
-            onBlur={() => {
-              if (problemFilled) revealPower();
-            }}
             rows={4}
             placeholder="problem it solves or worsens"
             className={`${FIELD} resize-y`}
-          />
-        </motion.section>
-      )}
-
-      {showPower && (
-        <motion.section ref={powerRef} {...sectionReveal(reduceMotion)}>
-          <p className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-            2c — Power + Capability
-          </p>
-          <AiPowerSelector
-            values={draft.values}
-            artifactType={draft.artifactType as ArtifactTypeId | ""}
-            artifactName={draft.artifactName}
-            selectedPower={draft.selectedAiPower}
-            selectedCapabilityId={draft.selectedAiCapability}
-            dayToDayDescription={draft.publicPromise}
-            artifactGoalPitch={draft.artifactGoalPitch}
-            onSelectCapability={(selectedAiCapability, powerId) =>
-              onChange({
-                selectedAiCapability,
-                selectedAiPower: powerId,
-                publicPromise: "",
-                artifactGoalPitch: "",
-              })
-            }
-            onDayToDayChange={(publicPromise) => onChange({ publicPromise })}
-            onGoalPitchChange={(artifactGoalPitch) =>
-              onChange({ artifactGoalPitch })
-            }
           />
         </motion.section>
       )}
