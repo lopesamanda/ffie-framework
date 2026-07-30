@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { FutureWorkActionsGrid } from "@/components/create/FutureWorkWithPanel";
@@ -31,9 +31,11 @@ export function FutureRevealStage({
   const reduceMotion = useReducedMotion();
   const stageRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const quadrantDescRef = useRef<HTMLDivElement>(null);
   const [cardRevealed, setCardRevealed] = useState(false);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
   const [transformOrigin, setTransformOrigin] = useState<string>("center center");
+  const [quadrantHighlighted, setQuadrantHighlighted] = useState(false);
 
   const quadrant = quadrantFromPosition(draft.position.x, draft.position.y);
 
@@ -41,6 +43,15 @@ export function FutureRevealStage({
     setAnchor(dotCenter);
     setCardRevealed(true);
   };
+
+  const handlePositionDotClick = useCallback(() => {
+    quadrantDescRef.current?.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "nearest",
+    });
+    setQuadrantHighlighted(true);
+    window.setTimeout(() => setQuadrantHighlighted(false), 2200);
+  }, [reduceMotion]);
 
   useLayoutEffect(() => {
     if (!cardRevealed || !anchor || !stageRef.current || !cardRef.current) {
@@ -106,15 +117,23 @@ export function FutureRevealStage({
         <div className="space-y-8">
           <div className="relative mx-auto w-full max-w-7xl">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.35fr)] lg:items-start lg:gap-10 xl:gap-12">
-              <div className="mx-auto w-full max-w-[320px] lg:mx-0 lg:max-w-none lg:pt-1">
+              <div className="mx-auto w-full max-w-[320px] lg:sticky lg:top-6 lg:mx-0 lg:max-w-none lg:self-start">
                 <InteractiveMatrixReveal
                   position={draft.position}
                   hidePlacementCaption
                   hideQuadrantCopy
                   prominent
+                  onPositionDotClick={handlePositionDotClick}
                   className="w-full origin-top lg:scale-[1.08]"
                 />
-                <div className="mt-4 space-y-2 rounded-xl border border-ffie-line/70 bg-ffie-surface/60 px-4 py-3">
+                <div
+                  ref={quadrantDescRef}
+                  className={`mt-4 space-y-2 rounded-xl border px-4 py-3 transition-[background-color,border-color,box-shadow] duration-500 ${
+                    quadrantHighlighted
+                      ? "border-ffie-accent bg-ffie-accent-soft/45 shadow-[0_0_0_3px_rgba(110,82,196,0.18)]"
+                      : "border-ffie-line/70 bg-ffie-surface/60"
+                  }`}
+                >
                   <p className="font-display text-base font-bold text-ffie-ink">
                     {formatQuadrantLabel(quadrant)}
                   </p>

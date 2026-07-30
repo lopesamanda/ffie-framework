@@ -19,28 +19,11 @@ function plotToSvg(unitX: number, unitY: number) {
   };
 }
 
-function FeministCareMark({ x, y }: { x: number; y: number }) {
-  return (
-    <g transform={`translate(${x - 8}, ${y - 10})`} aria-hidden>
-      <path
-        d="M8 16 C8 10 4 6 4 4 C4 2 6 0 8 0 C10 0 12 2 12 4 C12 6 8 10 8 16 Z"
-        fill="#2c8a52"
-        opacity={0.85}
-      />
-      <path
-        d="M8 8 L8 14 M5 11 L11 11"
-        stroke="#2c8a52"
-        strokeWidth={1.2}
-        strokeLinecap="round"
-      />
-    </g>
-  );
-}
-
 export function InteractiveMatrixReveal({
   position,
   interactive = false,
   onDotClick,
+  onPositionDotClick,
   prominent = false,
   stageRef,
   hidePlacementCaption = false,
@@ -49,7 +32,10 @@ export function InteractiveMatrixReveal({
 }: {
   position: { x: number; y: number };
   interactive?: boolean;
+  /** Initial reveal — passes anchor coords for card zoom origin. */
   onDotClick?: (anchor: { x: number; y: number }) => void;
+  /** Post-reveal — e.g. scroll to quadrant copy beside the matrix. */
+  onPositionDotClick?: () => void;
   prominent?: boolean;
   stageRef?: React.RefObject<HTMLElement | null>;
   hidePlacementCaption?: boolean;
@@ -68,18 +54,24 @@ export function InteractiveMatrixReveal({
   const handleDotActivate = (
     event: React.MouseEvent<SVGCircleElement>,
   ) => {
-    if (!interactive || !onDotClick) return;
-    const dotRect = event.currentTarget.getBoundingClientRect();
-    const stageRect =
-      stageRef?.current?.getBoundingClientRect() ??
-      event.currentTarget.ownerSVGElement?.getBoundingClientRect();
-    if (!stageRect) return;
+    if (interactive && onDotClick) {
+      const dotRect = event.currentTarget.getBoundingClientRect();
+      const stageRect =
+        stageRef?.current?.getBoundingClientRect() ??
+        event.currentTarget.ownerSVGElement?.getBoundingClientRect();
+      if (!stageRect) return;
 
-    onDotClick({
-      x: dotRect.left + dotRect.width / 2 - stageRect.left,
-      y: dotRect.top + dotRect.height / 2 - stageRect.top,
-    });
+      onDotClick({
+        x: dotRect.left + dotRect.width / 2 - stageRect.left,
+        y: dotRect.top + dotRect.height / 2 - stageRect.top,
+      });
+      return;
+    }
+
+    onPositionDotClick?.();
   };
+
+  const dotClickable = interactive || Boolean(onPositionDotClick);
 
   return (
     <div
@@ -137,8 +129,6 @@ export function InteractiveMatrixReveal({
           height={half}
           fill={QUADRANT_COLORS.fragmented}
         />
-
-        <FeministCareMark x={mid + half * 0.75} y={PLOT.padding + half * 0.35} />
 
         <line
           x1={mid}
@@ -227,10 +217,12 @@ export function InteractiveMatrixReveal({
 
         {!interactive && (
           <motion.circle
-            r={12}
+            r={prominent ? 14 : 12}
             fill="#6e52c4"
             stroke="#fff"
             strokeWidth={2}
+            filter={prominent ? "url(#matrix-dot-glow)" : undefined}
+            style={{ cursor: dotClickable ? "pointer" : undefined }}
             initial={
               reduceMotion
                 ? { cx, cy, opacity: 1, scale: 1 }
@@ -241,6 +233,26 @@ export function InteractiveMatrixReveal({
               reduceMotion
                 ? { duration: 0 }
                 : { type: "spring", stiffness: 120, damping: 16, delay: 0.15 }
+            }
+            onClick={dotClickable ? handleDotActivate : undefined}
+            onKeyDown={
+              dotClickable
+                ? (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      handleDotActivate(
+                        event as unknown as React.MouseEvent<SVGCircleElement>,
+                      );
+                    }
+                  }
+                : undefined
+            }
+            role={dotClickable ? "button" : undefined}
+            tabIndex={dotClickable ? 0 : undefined}
+            aria-label={
+              onPositionDotClick
+                ? "Scroll to scenario description for this placement"
+                : undefined
             }
           />
         )}

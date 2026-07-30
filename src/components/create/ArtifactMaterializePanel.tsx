@@ -42,6 +42,10 @@ export function ArtifactMaterializePanel({ draft }: { draft: JourneyDraft }) {
         </FfieButton>
         {copyError && <p className="text-xs text-red-700">{copyError}</p>}
       </div>
+      <p className="text-xs leading-relaxed text-ffie-muted">
+        Paste this into any AI image tool you like, and feel free to adjust it
+        to fit what you&apos;re going for.
+      </p>
 
       <details className="group">
         <summary className="cursor-pointer text-xs font-medium text-ffie-accent">

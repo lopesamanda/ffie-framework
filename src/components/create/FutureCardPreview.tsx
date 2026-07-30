@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
-import { MatrixPositionModal } from "@/components/create/MatrixPositionModal";
 import { CardReferenceTag } from "@/components/create/CardReferenceTag";
 import { HighlightedWeaknessText } from "@/components/create/HighlightedWeaknessText";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
@@ -47,16 +46,30 @@ function ArtifactDetailPanel({
   label,
   labelTone = "text-ffie-muted",
   panelClassName,
+  labelStyle,
+  style,
   children,
 }: {
   label: string;
   labelTone?: string;
   panelClassName?: string;
+  labelStyle?: CSSProperties;
+  style?: CSSProperties;
   children: ReactNode;
 }) {
   return (
-    <div className={`${ARTIFACT_PANEL} ${panelClassName ?? "bg-ffie-surface/80"}`}>
-      <p className={`${ffieCardSectionLabel} ${labelTone}`}>{label}</p>
+    <div
+      className={`${ARTIFACT_PANEL} ${
+        panelClassName ?? (style?.backgroundColor ? "" : "bg-ffie-surface/80")
+      }`}
+      style={style}
+    >
+      <p
+        className={`${ffieCardSectionLabel} ${labelStyle ? "" : labelTone}`}
+        style={labelStyle}
+      >
+        {label}
+      </p>
       <div className="mt-2.5">{children}</div>
     </div>
   );
@@ -76,26 +89,31 @@ function FinalCardQuadrantFrame({
     <>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-1.5 rounded-t-[inherit]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-2 rounded-t-[inherit]"
         style={{ backgroundColor: accent }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 w-[3px] rounded-l-[inherit]"
-        style={{ backgroundColor: accent, opacity: 0.85 }}
+        className="pointer-events-none absolute inset-y-0 left-0 w-1 rounded-l-[inherit]"
+        style={{ backgroundColor: accent, opacity: 0.9 }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-28 rounded-t-[inherit]"
+        className="pointer-events-none absolute inset-y-0 right-0 w-px rounded-r-[inherit]"
+        style={{ backgroundColor: accent, opacity: 0.18 }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-40 rounded-t-[inherit]"
         style={{
-          background: `linear-gradient(180deg, color-mix(in srgb, ${wash} 72%, transparent) 0%, transparent 100%)`,
+          background: `linear-gradient(180deg, color-mix(in srgb, ${wash} 88%, transparent) 0%, transparent 100%)`,
         }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-16 rounded-b-[inherit]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-24 rounded-b-[inherit]"
         style={{
-          background: `linear-gradient(0deg, color-mix(in srgb, ${wash} 28%, transparent) 0%, transparent 100%)`,
+          background: `linear-gradient(0deg, color-mix(in srgb, ${wash} 42%, transparent) 0%, transparent 100%)`,
         }}
       />
       <QuadrantAmbientField quadrant={quadrant} reduceMotion={reduceMotion} />
@@ -178,16 +196,27 @@ function QuadrantAmbientField({
 function DrawnCardTags({
   hand,
   finalOnly = false,
+  className = "mt-3",
+  dividerColor,
 }: {
   hand: CardHand;
   finalOnly?: boolean;
+  className?: string;
+  dividerColor?: string;
 }) {
   const cards: NarrativeCard[] = finalOnly
     ? [hand.benefit, hand.risk, hand.trust, hand.barrier]
     : [hand.risk, hand.benefit, hand.trust, hand.barrier, hand.transversal];
 
   return (
-    <div className="mt-3 flex flex-wrap gap-1.5">
+    <div
+      className={`flex flex-wrap gap-1.5 ${className}`}
+      style={
+        dividerColor
+          ? { borderTopColor: dividerColor, borderTopWidth: 1, paddingTop: 12 }
+          : undefined
+      }
+    >
       {cards.map((card) => {
         const style = CATEGORY_STYLES[card.category];
         return (
@@ -234,12 +263,13 @@ export function FutureCardPreview({
 }) {
   const reduceMotion = useReducedMotion();
   const [highlightedValue, setHighlightedValue] = useState<string | null>(null);
-  const [matrixOpen, setMatrixOpen] = useState(false);
   const isFinalCard = showCommonsNarrative;
   const quadrant: FutureQuadrant = quadrantFromPosition(
     draft.position.x,
     draft.position.y,
   );
+  const quadrantWash = QUADRANT_COLORS[quadrant];
+  const quadrantAccent = QUADRANT_TEXT_COLORS[quadrant];
   const title =
     draft.title ||
     (draft.artifactName
@@ -289,8 +319,14 @@ export function FutureCardPreview({
 
   const sectionGap = isFinalCard ? "mt-8" : "mt-3";
   const finalCardShell = isFinalCard
-    ? "overflow-hidden rounded-[20px] border-2 border-ffie-line/80 bg-ffie-surface/95 p-7 shadow-[0_16px_48px_rgba(35,19,82,0.14),0_0_0_1px_rgba(255,255,255,0.5)_inset] ring-1 ring-ffie-accent/10 backdrop-blur-sm md:p-8"
+    ? "overflow-hidden rounded-[20px] border-2 bg-ffie-surface/95 p-7 shadow-[0_16px_48px_rgba(35,19,82,0.14),0_0_0_1px_rgba(255,255,255,0.5)_inset] backdrop-blur-sm md:p-8"
     : `${ffieCardShell} bg-ffie-surface/95 backdrop-blur-[1px] ${compact ? "p-5" : "p-6"}`;
+  const finalCardShellStyle = isFinalCard
+    ? {
+        borderColor: `color-mix(in srgb, ${quadrantAccent} 35%, #e8e4f0)`,
+        boxShadow: `0 16px 48px rgba(35,19,82,0.14), 0 0 0 1px color-mix(in srgb, ${quadrantWash} 55%, white) inset`,
+      }
+    : undefined;
 
   const hiddenFunctionDisplay =
     composeHiddenFunction(draft) || draft.hiddenFunction;
@@ -301,7 +337,6 @@ export function FutureCardPreview({
     (isFinalCard
       ? (narrativeBeats.length > 0 ? 1 : 0) +
         (synthesisLine ? 1 : 0) +
-        (showCardTags && draft.cardHand ? 1 : 0) +
         (artifactHeading ||
         capabilityName ||
         visualDirectionSrc ||
@@ -331,18 +366,15 @@ export function FutureCardPreview({
 
   return (
     <div className={`relative ${isFinalCard ? "mx-auto w-full max-w-none" : ""}`}>
-      {isFinalCard && (
-        <MatrixPositionModal
-          open={matrixOpen}
-          onClose={() => setMatrixOpen(false)}
-          position={draft.position}
-        />
-      )}
       {revealAnimated && !isFinalCard && (
         <QuadrantAmbientField quadrant={quadrant} reduceMotion={reduceMotion} />
       )}
 
-      <div id={id} className={`relative ${finalCardShell}`}>
+      <div
+        id={id}
+        className={`relative ${finalCardShell}`}
+        style={finalCardShellStyle}
+      >
         {isFinalCard && (
           <FinalCardQuadrantFrame
             quadrant={quadrant}
@@ -358,20 +390,6 @@ export function FutureCardPreview({
               seal={revealAnimated}
               sealDelay={sealDelay}
             />
-            {isFinalCard && (
-              <>
-                <span className="text-xs text-ffie-muted" aria-hidden>
-                  ·
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setMatrixOpen(true)}
-                  className="text-xs font-medium text-ffie-accent underline-offset-2 transition hover:text-ffie-ink hover:underline"
-                >
-                  View Matrix
-                </button>
-              </>
-            )}
             {sectorLabel && (
               <span className="rounded-full border border-ffie-line bg-ffie-bg px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-ffie-muted">
                 {sectorLabel}
@@ -427,7 +445,13 @@ export function FutureCardPreview({
 
         {isFinalCard && narrativeBeats.length > 0 && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <div className={`${sectionGap} space-y-3`}>
+            <div
+              className={`${sectionGap} space-y-3 rounded-2xl border px-5 py-4`}
+              style={{
+                borderColor: `color-mix(in srgb, ${quadrantAccent} 22%, transparent)`,
+                backgroundColor: `color-mix(in srgb, ${quadrantWash} 38%, white)`,
+              }}
+            >
               {narrativeBeats.map((beat) => (
                 <p
                   key={beat}
@@ -443,10 +467,15 @@ export function FutureCardPreview({
         {isFinalCard && synthesisLine && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <div
-              className={`${sectionGap} rounded-2xl border border-ffie-accent/20 bg-ffie-accent-soft/35 px-5 py-4`}
+              className={`${sectionGap} rounded-2xl border px-5 py-4`}
+              style={{
+                borderColor: `color-mix(in srgb, ${quadrantAccent} 35%, transparent)`,
+                backgroundColor: `color-mix(in srgb, ${quadrantWash} 72%, white)`,
+              }}
             >
               <p
-                className={`text-sm font-medium italic leading-relaxed text-ffie-accent ${FFIE_CARD_TEXT}`}
+                className={`text-sm font-medium italic leading-relaxed ${FFIE_CARD_TEXT}`}
+                style={{ color: quadrantAccent }}
               >
                 {synthesisLine}
               </p>
@@ -454,6 +483,14 @@ export function FutureCardPreview({
                 <p className={`mt-2.5 text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
                   {synthesisTensionsLine}
                 </p>
+              )}
+              {showCardTags && draft.cardHand && (
+                <DrawnCardTags
+                  hand={draft.cardHand}
+                  finalOnly
+                  className="mt-0"
+                  dividerColor={`color-mix(in srgb, ${quadrantAccent} 28%, transparent)`}
+                />
               )}
             </div>
           </Wrap>
@@ -479,14 +516,21 @@ export function FutureCardPreview({
         )}
 
         {isFinalCard &&
-          (artifactHeading ||
-            capabilityName ||
-            visualDirectionSrc ||
-            (showCardTags && draft.cardHand)) && (
+          (artifactHeading || capabilityName || visualDirectionSrc) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <div className={`${sectionGap} flex flex-col gap-4 sm:flex-row sm:items-start`}>
+            <div
+              className={`${sectionGap} flex flex-col gap-4 rounded-2xl border p-4 sm:flex-row sm:items-start`}
+              style={{
+                borderColor: `color-mix(in srgb, ${quadrantAccent} 18%, transparent)`,
+                backgroundColor: `color-mix(in srgb, ${quadrantWash} 24%, white)`,
+              }}
+            >
               {visualDirectionSrc && (
-                <div className="mx-auto w-full max-w-[140px] shrink-0 overflow-hidden rounded-xl border border-ffie-line/60 bg-ffie-bg/30 sm:mx-0 sm:w-32 md:w-36">
+                <div className="mx-auto w-full max-w-[140px] shrink-0 overflow-hidden rounded-xl border bg-ffie-bg/30 sm:mx-0 sm:w-32 md:w-36"
+                  style={{
+                    borderColor: `color-mix(in srgb, ${quadrantAccent} 20%, transparent)`,
+                  }}
+                >
                   <Image
                     src={visualDirectionSrc}
                     alt=""
@@ -499,7 +543,8 @@ export function FutureCardPreview({
               <div className="min-w-0 flex-1 space-y-3">
                 {artifactHeading && (
                   <h4
-                    className={`font-display text-lg font-semibold leading-snug text-ffie-ink/90 ${FFIE_CARD_TEXT}`}
+                    className={`font-display text-lg font-semibold leading-snug ${FFIE_CARD_TEXT}`}
+                    style={{ color: quadrantAccent }}
                   >
                     {artifactHeading}
                   </h4>
@@ -507,7 +552,11 @@ export function FutureCardPreview({
                 {capabilityName && (
                   <ArtifactDetailPanel
                     label="AI FUNCTION"
-                    panelClassName="bg-ffie-bg/70"
+                    labelStyle={{ color: quadrantAccent }}
+                    style={{
+                      borderColor: `color-mix(in srgb, ${quadrantAccent} 22%, transparent)`,
+                      backgroundColor: `color-mix(in srgb, ${quadrantWash} 45%, white)`,
+                    }}
                   >
                     <p className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
                       <span className="font-semibold">{capabilityName}</span>
@@ -518,9 +567,6 @@ export function FutureCardPreview({
                       )}
                     </p>
                   </ArtifactDetailPanel>
-                )}
-                {showCardTags && draft.cardHand && (
-                  <DrawnCardTags hand={draft.cardHand} finalOnly />
                 )}
               </div>
             </div>
@@ -548,8 +594,17 @@ export function FutureCardPreview({
               {(isFinalCard || draft.publicPromise || draft.artifactGoalPitch) && (
                 <ArtifactDetailPanel
                   label="ARTIFACT GOAL"
-                  labelTone="text-ffie-accent"
-                  panelClassName="bg-[#f6f4ff]/90"
+                  labelTone={isFinalCard ? undefined : "text-ffie-accent"}
+                  panelClassName={isFinalCard ? undefined : "bg-[#f6f4ff]/90"}
+                  labelStyle={isFinalCard ? { color: quadrantAccent } : undefined}
+                  style={
+                    isFinalCard
+                      ? {
+                          borderColor: `color-mix(in srgb, ${quadrantAccent} 28%, transparent)`,
+                          backgroundColor: `color-mix(in srgb, ${quadrantWash} 58%, white)`,
+                        }
+                      : undefined
+                  }
                 >
                   <p className={`text-sm text-ffie-ink ${FFIE_CARD_TEXT}`}>
                     {draft.publicPromise || "—"}

@@ -19,24 +19,6 @@ function plotToSvg(unitX: number, unitY: number) {
   };
 }
 
-function FeministCareMark({ x, y }: { x: number; y: number }) {
-  return (
-    <g transform={`translate(${x - 8}, ${y - 10})`} aria-hidden>
-      <path
-        d="M8 16 C8 10 4 6 4 4 C4 2 6 0 8 0 C10 0 12 2 12 4 C12 6 8 10 8 16 Z"
-        fill="#2c8a52"
-        opacity={0.85}
-      />
-      <path
-        d="M8 8 L8 14 M5 11 L11 11"
-        stroke="#2c8a52"
-        strokeWidth={1.2}
-        strokeLinecap="round"
-      />
-    </g>
-  );
-}
-
 /**
  * Read-only matrix reveal: animates the marker to the computed placement.
  * Expects signed [−1, 1] coords from Likert placement.
@@ -94,8 +76,6 @@ export function MatrixReveal({
           height={half}
           fill={QUADRANT_COLORS.fragmented}
         />
-
-        <FeministCareMark x={mid + half * 0.75} y={PLOT.padding + half * 0.35} />
 
         <line
           x1={mid}
