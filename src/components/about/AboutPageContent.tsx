@@ -5,8 +5,24 @@ import { ScrollRevealSection } from "@/components/motion/ScrollRevealSection";
 import { PhaseTimelineExplainer } from "@/components/create/design/PhaseTimelineExplainer";
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
 import { ABOUT_SECTIONS, FOUR_FUTURES } from "@/data/about-content";
+import {
+  FFIE_INSTITUTIONAL_AFFILIATION,
+  FFIE_OPEN_ACCESS_STATEMENT,
+  FFIE_PEER_REVIEWED_PUBLICATIONS,
+  FFIE_VALIDATION_ORIGIN,
+} from "@/data/about-publications";
 import { ffieCardShell } from "@/lib/card-layout";
 import { QUADRANT_COLORS } from "@/types/future";
+
+const NAV_SECTIONS = [
+  ABOUT_SECTIONS.problem,
+  ABOUT_SECTIONS.origin,
+  ABOUT_SECTIONS.method,
+  ABOUT_SECTIONS.fourFutures,
+  ABOUT_SECTIONS.why,
+  ABOUT_SECTIONS.credibility,
+  ABOUT_SECTIONS.access,
+];
 
 export function AboutPageContent() {
   return (
@@ -30,19 +46,33 @@ export function AboutPageContent() {
           . The method is validated in workshops; the site is where you engage
           with it directly.
         </p>
+        <div className="mt-6 rounded-xl border border-ffie-line bg-ffie-surface/80 px-4 py-3">
+          <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-accent">
+            Institutional affiliation
+          </p>
+          <p className="mt-1 font-display text-base font-bold text-ffie-ink">
+            {FFIE_INSTITUTIONAL_AFFILIATION.name}
+          </p>
+          <p className="mt-1 text-sm text-ffie-muted">
+            {FFIE_INSTITUTIONAL_AFFILIATION.program} ·{" "}
+            {FFIE_INSTITUTIONAL_AFFILIATION.lab}
+          </p>
+          <a
+            href={FFIE_INSTITUTIONAL_AFFILIATION.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex text-sm font-medium text-ffie-accent transition hover:underline"
+          >
+            {FFIE_INSTITUTIONAL_AFFILIATION.researcher} →
+          </a>
+        </div>
       </ScrollRevealSection>
 
       <nav
         aria-label="About sections"
         className="sticky top-0 z-10 mt-10 flex flex-wrap gap-2 border-b border-ffie-line bg-ffie-bg/95 py-4 backdrop-blur-sm"
       >
-        {[
-          ABOUT_SECTIONS.problem,
-          ABOUT_SECTIONS.method,
-          ABOUT_SECTIONS.fourFutures,
-          ABOUT_SECTIONS.why,
-          ABOUT_SECTIONS.credibility,
-        ].map((section) => (
+        {NAV_SECTIONS.map((section) => (
           <a
             key={section.id}
             href={`#${section.id}`}
@@ -74,6 +104,42 @@ export function AboutPageContent() {
         </ScrollRevealSection>
 
         <ScrollRevealSection
+          id={ABOUT_SECTIONS.origin.id}
+          className={`scroll-mt-24 px-[18px] py-6 ${ffieCardShell} bg-ffie-surface`}
+          delay={0.05}
+        >
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-accent">
+            {ABOUT_SECTIONS.origin.eyebrow}
+          </p>
+          <h2 className="mt-2 font-display text-xl font-bold tracking-tight">
+            {ABOUT_SECTIONS.origin.title}
+          </h2>
+          <div className="mt-4 space-y-4">
+            {ABOUT_SECTIONS.origin.body.map((paragraph) => (
+              <p key={paragraph} className="max-w-prose leading-relaxed text-ffie-muted">
+                {paragraph}
+              </p>
+            ))}
+            <p className="max-w-prose text-sm leading-relaxed text-ffie-muted">
+              {FFIE_VALIDATION_ORIGIN.preStudy}
+            </p>
+            <ul className="space-y-3">
+              {FFIE_VALIDATION_ORIGIN.cohorts.map((cohort) => (
+                <li
+                  key={cohort.label}
+                  className="rounded-lg border border-ffie-line/80 bg-ffie-bg/40 px-4 py-3"
+                >
+                  <p className="font-medium text-ffie-ink">{cohort.label}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-ffie-muted">
+                    {cohort.detail}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </ScrollRevealSection>
+
+        <ScrollRevealSection
           id={ABOUT_SECTIONS.method.id}
           className={`scroll-mt-24 px-[18px] py-6 ${ffieCardShell} bg-ffie-surface`}
           delay={0.05}
@@ -90,6 +156,12 @@ export function AboutPageContent() {
                 {paragraph}
               </p>
             ))}
+            <p className="max-w-prose text-sm leading-relaxed text-ffie-ink">
+              {ABOUT_SECTIONS.method.createBridge}{" "}
+              <Link href="/create" className="font-medium text-ffie-accent hover:underline">
+                Create →
+              </Link>
+            </p>
           </div>
           <div className="mt-8">
             <PhaseTimelineExplainer />
@@ -166,6 +238,58 @@ export function AboutPageContent() {
                 {paragraph}
               </p>
             ))}
+          </div>
+
+          <div className="mt-8 space-y-4 border-t border-ffie-line pt-6">
+            <p className="text-sm font-medium text-ffie-ink">
+              Read the published research →
+            </p>
+            <ul className="space-y-4">
+              {FFIE_PEER_REVIEWED_PUBLICATIONS.map((pub) => (
+                <li
+                  key={pub.doi}
+                  className="rounded-lg border border-ffie-line/80 bg-ffie-bg/30 px-4 py-3"
+                >
+                  <p className="text-sm font-medium leading-snug text-ffie-ink">
+                    {pub.title}
+                  </p>
+                  <p className="mt-1 text-xs text-ffie-muted">
+                    {pub.authors} · {pub.venue}, {pub.year}
+                  </p>
+                  <a
+                    href={`https://doi.org/${pub.doi}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex font-mono text-xs text-ffie-accent transition hover:underline"
+                  >
+                    doi:{pub.doi}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </ScrollRevealSection>
+
+        <ScrollRevealSection
+          id={ABOUT_SECTIONS.access.id}
+          className={`scroll-mt-24 px-[18px] py-6 ${ffieCardShell} bg-ffie-surface`}
+          delay={0.05}
+        >
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-accent">
+            {ABOUT_SECTIONS.access.eyebrow}
+          </p>
+          <h2 className="mt-2 font-display text-xl font-bold tracking-tight">
+            {ABOUT_SECTIONS.access.title}
+          </h2>
+          <div className="mt-4 space-y-4">
+            {ABOUT_SECTIONS.access.body.map((paragraph) => (
+              <p key={paragraph} className="max-w-prose leading-relaxed text-ffie-muted">
+                {paragraph}
+              </p>
+            ))}
+            <p className="max-w-prose text-sm font-medium text-ffie-ink">
+              {FFIE_OPEN_ACCESS_STATEMENT}
+            </p>
           </div>
         </ScrollRevealSection>
       </div>

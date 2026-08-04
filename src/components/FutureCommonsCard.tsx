@@ -54,7 +54,12 @@ export function FutureCommonsCard({
         {entry.title}
       </h3>
       <p className={`mt-1 text-sm text-ffie-muted ${FFIE_CARD_TEXT}`}>
-        {entry.character.name} · {entry.artifact.name}
+        {entry.artifact.name}
+        {entry.previewSubtitle ? ` — ${entry.previewSubtitle}` : ""}
+      </p>
+      <p className={`mt-0.5 text-xs text-ffie-muted/90 ${FFIE_CARD_TEXT}`}>
+        {entry.character.name}
+        {entry.character.sector ? ` · ${entry.character.sector}` : ""}
       </p>
       <div className={`my-3 ${ffieCardDivider}`} />
       <p className={`flex-1 text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>

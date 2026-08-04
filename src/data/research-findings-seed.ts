@@ -16,6 +16,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       name: "Valentina",
       age: 30,
       role: "Software engineer at a startup",
+      sector: "Innovation",
       aiFunction: "Delivers high-quality code",
       desire: "Strategic leadership, professional advancement",
       fear: "Stagnating, leadership potential limited in a male-dominated environment",
@@ -27,6 +28,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       hiddenFunction:
         "Behavioral and intellectual surveillance disguised as corporate care",
     },
+    previewSubtitle: "Onboarding stickers that listen for culture fit",
     tension: "Belonging vs. Surveillance",
     quadrant: "dominant_dystopian",
     powerPosition: "marginalized",
@@ -47,6 +49,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       name: "Leide",
       age: 70,
       role: "Freelance public sector manager",
+      sector: "Public Sector",
       aiFunction: "Work tool and companion",
       desire: "Stay useful, productive, and autonomous with a high quality of life",
       fear: "Loneliness, abandonment, erosion of genuine human relationships",
@@ -58,6 +61,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       hiddenFunction:
         "The autonomy it promises risks producing a structurally deeper isolation",
     },
+    previewSubtitle: "A companion AI that never asks to leave",
     tension: "Companionship vs. Isolation",
     quadrant: "feminist_preferred",
     powerPosition: "marginalized",
@@ -78,6 +82,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       name: "Pietra",
       age: 50,
       role: "ESG & sustainability manager",
+      sector: "ESG",
       aiFunction:
         "Performance boost; tasked with reducing AI use in her organization",
       desire: "Move the ecosystem's focus beyond mere efficiency",
@@ -91,6 +96,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       hiddenFunction:
         "Reproduces the surveillance infrastructure it is meant to counteract",
     },
+    previewSubtitle: "Protection that reproduces the surveillance it fights",
     tension: "Protection vs. Surveillance",
     quadrant: "techno_optimist",
     powerPosition: "marginalized",
@@ -111,6 +117,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       name: "Helena",
       age: 28,
       role: "Freelance front-end developer",
+      sector: "Innovation",
       aiFunction: "Daily work aid and search tool",
       desire: "Social advancement through formal employment (a CLT contract)",
       fear:
@@ -123,6 +130,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       hiddenFunction:
         "Participation made conditional on commodifying personal identity",
     },
+    previewSubtitle: "Inclusion sold as self-commodification",
     tension: "Inclusion vs. Self-commodification",
     quadrant: "dominant_dystopian",
     powerPosition: "marginalized",
@@ -143,6 +151,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       name: "Erika",
       age: 43,
       role: "Politician",
+      sector: "Media",
       aiFunction: "Boosts and leverages inclusion projects",
       desire: "A more just world, rapid dissemination of rights",
       fear: 'Unable to access informal networks of power ("the boys\' club")',
@@ -155,6 +164,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       hiddenFunction:
         'Classifies her profile as "high-risk," reduces reach, amplifies opposition, sells behavioral data',
     },
+    previewSubtitle: "A megaphone that flags you as high risk",
     tension: "Voice vs. Suppression",
     quadrant: "dominant_dystopian",
     powerPosition: "marginalized",
@@ -175,6 +185,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       name: "Tainá",
       age: 23,
       role: "Researcher",
+      sector: "Education",
       aiFunction:
         "Ethical design, translation, data visualization in research planning",
       desire: "Develop solutions for children with cognitive limitations",
@@ -189,6 +200,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       hiddenFunction:
         "Continuous biometric capture every 0.3s; Global North-trained model; reclassification without explicit consent",
     },
+    previewSubtitle: "A lens that captures every blink",
     tension: "Care vs. Extraction",
     quadrant: "feminist_preferred",
     powerPosition: "marginalized",
@@ -209,6 +221,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       name: "Sofia",
       age: 31,
       role: "Freelance IT consultant/developer, migrant",
+      sector: "Innovation",
       aiFunction: "Performance amplifier",
       desire:
         "Stable financial life, recognition of competencies, respect",
@@ -228,6 +241,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       hiddenFunction:
         'Gamification of professional survival; countered by WinWatch and a transparent "Shadow CV"',
     },
+    previewSubtitle: "A gamified CV the system can use against you",
     tension: "Recognition vs. Gamified Survival",
     quadrant: "techno_optimist",
     powerPosition: "marginalized",
@@ -248,6 +262,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       name: "John Bell",
       age: 48,
       role: "BigTech C-level executive",
+      sector: "Deeptech",
       aiFunction: "Manages and controls business routines",
       desire: "Lead the AI race, dominate the market",
       fear: "Losing dominance, becoming irrelevant",
@@ -259,6 +274,7 @@ export const researchFindingsSeed: FutureEntry[] = [
       hiddenFunction:
         "Neural stimuli suppress fear; empathy and sleep become KPIs; working class evaluated by the same sensors for replacement",
     },
+    previewSubtitle: "Sleep and empathy turned into KPIs",
     tension: "Optimization vs. Disposability",
     quadrant: "fragmented",
     powerPosition: "hegemonic",

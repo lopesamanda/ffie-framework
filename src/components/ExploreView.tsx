@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { SegmentedControl } from "@/components/create/design/SegmentedControl";
@@ -33,10 +34,16 @@ const EPISTEMIC_ENTRY =
 
 const COLLECTION_COPY: Record<FutureCollection, string> = {
   research_findings:
-    "Eight diegetic prototypes from the thesis — fixed, validated, immutable. Use country and scenario filters atop the matrix.",
+    "Eight diegetic prototypes from the thesis — fixed, validated, immutable. Filter by country, scenario, or sector atop the matrix.",
   future_commons:
     "A living, growing collection — moderated, but not the validated thesis data above.",
 };
+
+const FUTURE_COMMONS_EMPTY =
+  "The first futures from visitors like you will appear here. Be among the first to publish one.";
+
+const NO_FILTER_MATCH =
+  "No futures match these filters. Try widening country, scenario, or sector.";
 
 const LENS_OPTIONS: { value: BrowseLens; label: string }[] = [
   { value: "matrix", label: "Matrix" },
@@ -114,8 +121,9 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
     setSelected(null);
     setDetailAnchor(null);
     if (next === "research_findings") {
-      setSector("all");
       setRole("all");
+    } else {
+      setSector("all");
     }
   };
 
@@ -200,24 +208,25 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
                 />
               ),
             )}
+            <span className="mx-1 hidden h-6 w-px self-center bg-ffie-line sm:inline" />
+            <FilterChip
+              label="All sectors"
+              active={sector === "all"}
+              onClick={() => setSector("all")}
+            />
+            {PERSONA_SECTOR_OPTIONS.map((option) => (
+              <FilterChip
+                key={option}
+                label={option}
+                active={sector === option}
+                onClick={() =>
+                  setSector((current) => (current === option ? "all" : option))
+                }
+              />
+            ))}
           </div>
           {collection === "future_commons" && (
             <div className="flex flex-wrap gap-2 pt-2">
-              <FilterChip
-                label="All sectors"
-                active={sector === "all"}
-                onClick={() => setSector("all")}
-              />
-              {PERSONA_SECTOR_OPTIONS.map((option) => (
-                <FilterChip
-                  key={option}
-                  label={option}
-                  active={sector === option}
-                  onClick={() =>
-                    setSector((current) => (current === option ? "all" : option))
-                  }
-                />
-              ))}
               <span className="mx-1 hidden h-6 w-px self-center bg-ffie-line sm:inline" />
               <FilterChip
                 label="All roles"
@@ -249,6 +258,13 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
           layout={!reduceMotion}
         >
           {lens === "matrix" ? (
+            filteredEntries.length === 0 ? (
+              <p className="rounded-2xl border border-dashed border-ffie-line p-10 text-center text-sm text-ffie-muted">
+                {collection === "future_commons" && baseEntries.length === 0
+                  ? FUTURE_COMMONS_EMPTY
+                  : NO_FILTER_MATCH}
+              </p>
+            ) : (
             <div className="space-y-4">
               <MatrixPointInteraction
                 open={Boolean(selected)}
@@ -296,18 +312,51 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
                   wander.
                 </p>
               )}
+
+              <div className="flex flex-col gap-3 border-t border-ffie-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-ffie-muted">
+                  Seen a future that feels close to home?
+                </p>
+                <Link
+                  href="/create"
+                  className="inline-flex w-fit rounded-full bg-ffie-accent px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+                >
+                  Build your own →
+                </Link>
+              </div>
             </div>
+            )
           ) : lens === "constellation" ? (
             <FutureConstellation
               entries={filteredEntries}
               emptyMessage={
-                collection === "future_commons"
-                  ? "No published futures yet. Complete the Create journey to submit one for moderation."
-                  : "No research findings match these filters."
+                collection === "future_commons" && baseEntries.length === 0
+                  ? FUTURE_COMMONS_EMPTY
+                  : NO_FILTER_MATCH
               }
             />
+          ) : filteredEntries.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-ffie-line p-10 text-center text-sm text-ffie-muted">
+              {collection === "future_commons" && baseEntries.length === 0
+                ? FUTURE_COMMONS_EMPTY
+                : NO_FILTER_MATCH}
+            </p>
           ) : (
             <FutureGrid entries={filteredEntries} />
+          )}
+
+          {lens !== "matrix" && filteredEntries.length > 0 && (
+            <div className="flex flex-col gap-3 border-t border-ffie-line pt-8 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-ffie-muted">
+                Seen a future that feels close to home?
+              </p>
+              <Link
+                href="/create"
+                className="inline-flex w-fit rounded-full bg-ffie-accent px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+              >
+                Build your own →
+              </Link>
+            </div>
           )}
         </motion.div>
       </AnimatePresence>

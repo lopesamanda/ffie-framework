@@ -53,6 +53,8 @@ export type FutureEntry = {
   quadrant: FutureQuadrant;
   powerPosition: PowerPosition;
   position: { x: number; y: number };
+  /** One-line hook shown beside artifact name on matrix / cards. */
+  previewSubtitle?: string;
   status: FutureStatus;
   imageUrl?: string;
   /** Oracle Draw synthesis — main sentence (card names). */

@@ -86,6 +86,16 @@ export const ABOUT_SECTIONS = {
       "The replicable output is always the same: persona + diegetic artifact, positioned on the Critical Feminist Matrix — System Logic (Extractive ↔ Emancipatory) × Power Organization (Hierarchical ↔ Collective Care).",
       "Narrative Cards supply structural tensions drawn from real workshop data — Risk, Benefit, Trust, Barrier — plus Environmental Impact as a transversal lens always applied.",
     ],
+    createBridge:
+      "Walk the method yourself — start in Create when you are ready to draw cards and build a future.",
+  },
+  origin: {
+    id: "origin",
+    eyebrow: "Origin",
+    title: "Where FFIE was validated",
+    body: [
+      "FFIE is not a thought experiment ported to the web. It is doctoral research in Design, tested twice in the field before this instrument existed.",
+    ],
   },
   fourFutures: {
     id: "four-futures",
@@ -110,9 +120,17 @@ export const ABOUT_SECTIONS = {
     eyebrow: "Credibility",
     title: "Methodology & lineage",
     body: [
-      "Doctoral research in Design by Amanda Lopes — two cohorts, 134 survey responses, 23 interviews, eight diegetic prototypes validated in Recife and Lisbon.",
+      "Doctoral research in Design by Amanda Lopes Oliveira at IADE — Universidade Europeia (UNIDCOM). Two independent workshop cohorts, 134 survey responses, 23 interviews, eight diegetic prototypes validated in Recife and Lisbon.",
       "FFIE sits in a lineage of feminist speculative tools — including kindred work on transfeminist technology oracles — named openly rather than reinvented in isolation.",
       "Publications and thesis documentation anchor the empirical claims; this site is the instrument built from that research, not a substitute for it.",
+    ],
+  },
+  access: {
+    id: "access",
+    eyebrow: "Access",
+    title: "Open by design",
+    body: [
+      "Everything you create here can be exported without an account. No email gate, no paywall — the instrument stays as frictionless as the research allows.",
     ],
   },
 } as const;

@@ -259,7 +259,7 @@ export function FutureMatrix({
               />
               <text
                 x={cx}
-                y={cy - 16}
+                y={cy - (entry.previewSubtitle ? 28 : 16)}
                 textAnchor="middle"
                 className="pointer-events-none fill-ffie-ink text-[10px] font-medium"
                 style={{
@@ -269,6 +269,22 @@ export function FutureMatrix({
               >
                 {entry.artifact.name}
               </text>
+              {entry.previewSubtitle && (
+                <text
+                  x={cx}
+                  y={cy - 14}
+                  textAnchor="middle"
+                  className="pointer-events-none fill-ffie-muted text-[8px]"
+                  style={{
+                    fontFamily: "var(--font-sans)",
+                    opacity: isDimmed ? 0.3 : 0.85,
+                  }}
+                >
+                  {entry.previewSubtitle.length > 42
+                    ? `${entry.previewSubtitle.slice(0, 40)}…`
+                    : entry.previewSubtitle}
+                </text>
+              )}
             </>
           );
 

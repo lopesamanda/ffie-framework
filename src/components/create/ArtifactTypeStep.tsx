@@ -96,6 +96,9 @@ export function ArtifactTypeStep({
           <p className="text-sm font-medium text-ffie-ink">
             Which subformat fits best?
           </p>
+          <p className="text-sm leading-relaxed text-ffie-muted">
+            This shapes how the artifact is described later — not a hard rule.
+          </p>
           <ChipSelect
             label=""
             options={subformats}

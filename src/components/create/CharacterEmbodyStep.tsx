@@ -398,7 +398,7 @@ export function CharacterEmbodyStep({
             }
           }}
         >
-          {embodySubStep < EMBODY_SCREEN_COUNT - 1 ? "Continue" : "Next"}
+          {embodySubStep < EMBODY_SCREEN_COUNT - 1 ? "Continue" : "Continue"}
         </FfieButton>
       </div>
     </div>

@@ -119,6 +119,7 @@ export function CreateJourney() {
   const phaseSweepRef = useRef(phaseSweep);
   phaseSweepRef.current = phaseSweep;
   const [oracleSituateStarted, setOracleSituateStarted] = useState(false);
+  const [shuffleNotice, setShuffleNotice] = useState(false);
   const materializeRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
@@ -236,8 +237,15 @@ export function CreateJourney() {
         return next;
       });
       setRevealing(false);
+      setShuffleNotice(true);
     }, 400);
   };
+
+  useEffect(() => {
+    if (!shuffleNotice) return;
+    const timer = window.setTimeout(() => setShuffleNotice(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, [shuffleNotice]);
 
   const handleFinishOutput = async () => {
     if (!draft) return;
@@ -435,12 +443,15 @@ export function CreateJourney() {
                 >
                   <CategoryRegisterTiles />
                   <EnvironmentalBanner />
+                  <p className="mt-2 text-sm text-ffie-muted">
+                    About 10 minutes, five short moments.
+                  </p>
                   <div className="mt-8 flex flex-col items-start gap-4">
                     <FfieButton
                       disabled={revealing}
                       onClick={() => beginOracleDraw({ goToReflection: true })}
                     >
-                      {revealing ? "Drawing…" : "Draw your cards"}
+                      {revealing ? "Drawing…" : "Begin the Draw"}
                     </FfieButton>
                     <Link
                       href="/explore"
@@ -474,6 +485,14 @@ export function CreateJourney() {
                     </FfieButton>
                   ) : oracleDrawIndex >= 4 ? (
                     <div className="space-y-6">
+                      {shuffleNotice && (
+                        <p
+                          className="text-sm font-medium text-ffie-accent"
+                          role="status"
+                        >
+                          New combination drawn.
+                        </p>
+                      )}
                       <OracleDrawRecap hand={draft.cardHand} />
 
                       <FfieButton
@@ -501,7 +520,7 @@ export function CreateJourney() {
                           )
                         }
                       >
-                        Build your future
+                        Continue
                       </FfieButton>
                     </div>
                   ) : (
@@ -605,6 +624,13 @@ export function CreateJourney() {
                   )}
 
                   {draft.creationStep === 4 && (
+                    <p className="mb-4 text-sm leading-relaxed text-ffie-muted">
+                      You just named what this artifact stands for. Now, what
+                      happens if that goes too far?
+                    </p>
+                  )}
+
+                  {draft.creationStep === 4 && (
                     <HiddenFunctionStep
                       draft={draft}
                       onSelectExtremeValue={(hiddenFunctionExtremeValue) =>
@@ -684,9 +710,7 @@ export function CreateJourney() {
                         );
                       }}
                     >
-                      {draft.creationStep < CREATION_STEP_COUNT - 1
-                        ? "Next"
-                        : "Place on the matrix"}
+                      Continue
                     </FfieButton>
                   </div>
                   )}
