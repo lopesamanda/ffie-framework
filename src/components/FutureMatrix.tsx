@@ -12,6 +12,10 @@ import {
   type PersonaSector,
 } from "@/types/future";
 import { SECTOR_COLORS } from "@/lib/journey/persona-sectors";
+import {
+  matrixAnchorFromCircleClick,
+  type MatrixAnchor,
+} from "@/components/matrix/MatrixPointInteraction";
 import { signedToUnit } from "@/lib/journey/types";
 
 const PLOT = {
@@ -41,7 +45,7 @@ function plotToSvg(x: number, y: number) {
 type FutureMatrixProps = {
   entries: FutureEntry[];
   selectedId?: string | null;
-  onSelect?: (entry: FutureEntry | null) => void;
+  onSelect?: (entry: FutureEntry | null, anchor?: MatrixAnchor) => void;
   linkToDetail?: boolean;
   highlightCountry?: FutureCountry | "all";
   highlightSector?: PersonaSector | "all";
@@ -107,14 +111,6 @@ export function FutureMatrix({
           height={(PLOT.height - PLOT.padding * 2) / 2}
           fill={QUADRANT_COLORS.fragmented}
         />
-
-        <g transform={`translate(${midX + (PLOT.width - PLOT.padding * 2) / 4 - 8}, ${PLOT.padding + (PLOT.height - PLOT.padding * 2) / 4 - 10})`} aria-hidden>
-          <path
-            d="M8 16 C8 10 4 6 4 4 C4 2 6 0 8 0 C10 0 12 2 12 4 C12 6 8 10 8 16 Z"
-            fill="#2c8a52"
-            opacity={0.85}
-          />
-        </g>
 
         <rect
           x={PLOT.padding}
@@ -246,9 +242,16 @@ export function FutureMatrix({
                   opacity: isDimmed ? 0.25 : 1,
                 }}
                 transition={{ type: "spring", stiffness: 420, damping: 28 }}
-                onClick={() => {
+                onClick={(event) => {
                   if (onSelect) {
-                    onSelect(isSelected ? null : entry);
+                    const container = event.currentTarget.closest(
+                      "[data-matrix-point-root]",
+                    ) as HTMLElement | null;
+                    const anchor = matrixAnchorFromCircleClick(
+                      event,
+                      container,
+                    );
+                    onSelect(isSelected ? null : entry, anchor ?? undefined);
                   } else if (linkToDetail) {
                     router.push(`/explore/${entry.id}`);
                   }

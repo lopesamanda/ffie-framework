@@ -4,8 +4,12 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { SegmentedControl } from "@/components/create/design/SegmentedControl";
 import { FutureConstellation } from "@/components/explore/FutureConstellation";
-import { FuturePreviewPanel } from "@/components/FuturePreviewPanel";
+import { FuturePreviewDetailContent } from "@/components/FuturePreviewPanel";
 import { FutureGrid, FutureMatrix } from "@/components/FutureMatrix";
+import {
+  MatrixPointInteraction,
+  type MatrixAnchor,
+} from "@/components/matrix/MatrixPointInteraction";
 import { researchFindingsSeed } from "@/data/research-findings-seed";
 import { ROLE_OPTIONS } from "@/lib/journey/character-options";
 import { PERSONA_SECTOR_OPTIONS } from "@/lib/journey/persona-sectors";
@@ -80,6 +84,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
   const [sector, setSector] = useState<PersonaSector | "all">("all");
   const [role, setRole] = useState<string | "all">("all");
   const [selected, setSelected] = useState<FutureEntry | null>(null);
+  const [detailAnchor, setDetailAnchor] = useState<MatrixAnchor | null>(null);
 
   const baseEntries =
     collection === "research_findings"
@@ -107,6 +112,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
   const handleCollectionChange = (next: FutureCollection) => {
     setCollection(next);
     setSelected(null);
+    setDetailAnchor(null);
     if (next === "research_findings") {
       setSector("all");
       setRole("all");
@@ -146,6 +152,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
             onChange={(value) => {
               setLens(value);
               setSelected(null);
+              setDetailAnchor(null);
             }}
             options={LENS_OPTIONS}
           />
@@ -242,47 +249,53 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
           layout={!reduceMotion}
         >
           {lens === "matrix" ? (
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-              <FutureMatrix
-                entries={filteredEntries}
-                selectedId={selected?.id}
-                onSelect={setSelected}
-                linkToDetail={false}
-                highlightCountry={country}
-                highlightSector={sector}
-                colorBy={collection === "future_commons" ? "sector" : "country"}
-              />
+            <div className="space-y-4">
+              <MatrixPointInteraction
+                open={Boolean(selected)}
+                anchor={detailAnchor}
+                previewLabel={selected?.artifact.name}
+                title={selected?.title ?? ""}
+                onClose={() => {
+                  setSelected(null);
+                  setDetailAnchor(null);
+                }}
+                childrenContent={
+                  selected ? (
+                    <FuturePreviewDetailContent entry={selected} />
+                  ) : null
+                }
+                footerLink={
+                  selected
+                    ? {
+                        href: `/explore/${selected.id}`,
+                        label: "Read the full future →",
+                      }
+                    : undefined
+                }
+              >
+                <FutureMatrix
+                  entries={filteredEntries}
+                  selectedId={selected?.id}
+                  onSelect={(entry, anchor) => {
+                    setSelected(entry);
+                    setDetailAnchor(entry ? (anchor ?? null) : null);
+                  }}
+                  linkToDetail={false}
+                  highlightCountry={country}
+                  highlightSector={sector}
+                  colorBy={
+                    collection === "future_commons" ? "sector" : "country"
+                  }
+                />
+              </MatrixPointInteraction>
 
-              <aside className="rounded-[12px] border border-ffie-line bg-ffie-surface p-6 shadow-[0_2px_8px_rgba(35,19,82,0.04)] lg:sticky lg:top-6">
-                <AnimatePresence mode="wait">
-                  {selected ? (
-                    <motion.div
-                      key={selected.id}
-                      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
-                      transition={fadeTransition}
-                    >
-                      <FuturePreviewPanel entry={selected} />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="empty"
-                      initial={reduceMotion ? false : { opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={reduceMotion ? undefined : { opacity: 0 }}
-                      className="max-w-prose space-y-3 text-sm text-ffie-muted"
-                    >
-                      <p className="font-medium text-ffie-ink">Select a future</p>
-                      <p>
-                        Click a point on the matrix to read an excerpt and
-                        reflection question — or switch to Constellation for an
-                        atlas-style wander.
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </aside>
+              {!selected && (
+                <p className="max-w-prose text-sm text-ffie-muted">
+                  Click a point on the matrix to read an excerpt and reflection
+                  question — or switch to Constellation for an atlas-style
+                  wander.
+                </p>
+              )}
             </div>
           ) : lens === "constellation" ? (
             <FutureConstellation

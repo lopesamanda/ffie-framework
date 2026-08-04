@@ -10,12 +10,12 @@ import { excerptAtWordBoundary } from "@/lib/text-excerpt";
 
 const SIDEBAR_EXCERPT = 220;
 
-export function FuturePreviewPanel({ entry }: { entry: FutureEntry }) {
+export function FuturePreviewDetailContent({ entry }: { entry: FutureEntry }) {
   const excerpt = excerptAtWordBoundary(entry.narrative, SIDEBAR_EXCERPT);
   const justPublished = isRecentlyPublished(entry);
 
   return (
-    <div className="space-y-4">
+    <>
       <div className="flex flex-wrap items-center gap-2">
         <span
           className="rounded-full px-2.5 py-1 text-xs font-medium uppercase tracking-wide text-white"
@@ -38,14 +38,13 @@ export function FuturePreviewPanel({ entry }: { entry: FutureEntry }) {
         )}
       </div>
 
-      <div>
-        <h2 className="text-xl font-semibold tracking-tight">{entry.title}</h2>
-        <p className="mt-1 text-sm text-ffie-muted">
-          {entry.character.name} · {entry.artifact.name}
-        </p>
-      </div>
+      <p className="text-sm text-ffie-muted">
+        {entry.character.name} · {entry.artifact.name}
+      </p>
 
-      <p className={`max-w-prose text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
+      <p
+        className={`max-w-prose text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}
+      >
         {excerpt}
       </p>
 
@@ -54,6 +53,18 @@ export function FuturePreviewPanel({ entry }: { entry: FutureEntry }) {
       >
         {entry.reflectionQuestion}
       </blockquote>
+    </>
+  );
+}
+
+export function FuturePreviewPanel({ entry }: { entry: FutureEntry }) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-semibold tracking-tight">{entry.title}</h2>
+      </div>
+
+      <FuturePreviewDetailContent entry={entry} />
 
       <Link
         href={`/explore/${entry.id}`}

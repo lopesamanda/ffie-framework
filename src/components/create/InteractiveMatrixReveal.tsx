@@ -1,6 +1,10 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import {
+  matrixAnchorFromCircleClick,
+  type MatrixAnchor,
+} from "@/components/matrix/MatrixPointInteraction";
 import { QUADRANT_DESCRIPTIONS } from "@/lib/journey/matrix-copy";
 import {
   formatQuadrantLabel,
@@ -34,8 +38,8 @@ export function InteractiveMatrixReveal({
   interactive?: boolean;
   /** Initial reveal — passes anchor coords for card zoom origin. */
   onDotClick?: (anchor: { x: number; y: number }) => void;
-  /** Post-reveal — e.g. scroll to quadrant copy beside the matrix. */
-  onPositionDotClick?: () => void;
+  /** Post-reveal — opens anchored detail card / bottom sheet at the dot. */
+  onPositionDotClick?: (anchor: MatrixAnchor) => void;
   prominent?: boolean;
   stageRef?: React.RefObject<HTMLElement | null>;
   hidePlacementCaption?: boolean;
@@ -54,6 +58,11 @@ export function InteractiveMatrixReveal({
   const handleDotActivate = (
     event: React.MouseEvent<SVGCircleElement>,
   ) => {
+    const container = event.currentTarget.closest(
+      "[data-matrix-point-root]",
+    ) as HTMLElement | null;
+    const matrixAnchor = matrixAnchorFromCircleClick(event, container);
+
     if (interactive && onDotClick) {
       const dotRect = event.currentTarget.getBoundingClientRect();
       const stageRect =
@@ -68,7 +77,9 @@ export function InteractiveMatrixReveal({
       return;
     }
 
-    onPositionDotClick?.();
+    if (matrixAnchor) {
+      onPositionDotClick?.(matrixAnchor);
+    }
   };
 
   const dotClickable = interactive || Boolean(onPositionDotClick);
@@ -251,7 +262,7 @@ export function InteractiveMatrixReveal({
             tabIndex={dotClickable ? 0 : undefined}
             aria-label={
               onPositionDotClick
-                ? "Scroll to scenario description for this placement"
+                ? "View scenario description for this placement"
                 : undefined
             }
           />
