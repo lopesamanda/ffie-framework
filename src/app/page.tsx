@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { ArtifactMarquee } from "@/components/home/ArtifactMarquee";
 import { CursorLens } from "@/components/home/CursorLens";
+import { ExploreMatrixCta } from "@/components/home/ExploreMatrixCta";
 import { HomeClosingCta, HomeHero } from "@/components/home/HomeHero";
 import { HomeFrameworkSection } from "@/components/home/HomeFrameworkSection";
-import { MatrixThumbnailPreview } from "@/components/home/MatrixThumbnailPreview";
 import { ScrollRevealSection } from "@/components/motion/ScrollRevealSection";
 import { buildArtifactMarqueeItems } from "@/lib/artifact-marquee-items";
 import { getPublishedSubmissions } from "@/lib/submissions";
@@ -41,15 +40,8 @@ export default async function HomePage() {
             <ArtifactMarquee items={marqueeItems} variant="single" />
           </div>
 
-          <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
-            <Link
-              href="/explore"
-              data-cursor-lens
-              className="inline-flex items-center justify-center rounded-lg border border-ffie-accent bg-ffie-accent-soft px-6 py-3 text-sm font-semibold text-ffie-accent transition hover:border-ffie-accent/80 hover:bg-ffie-accent/10"
-            >
-              Explore the Matrix →
-            </Link>
-            <MatrixThumbnailPreview className="h-[88px] w-[88px] sm:h-[96px] sm:w-[96px]" />
+          <div className="mt-8">
+            <ExploreMatrixCta />
           </div>
         </div>
       </section>

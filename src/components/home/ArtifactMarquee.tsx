@@ -11,20 +11,36 @@ type ArtifactMarqueeProps = {
   className?: string;
   /** Single row (Home) or dual opposing lanes (Explore). */
   variant?: "single" | "dual";
-  /** When true, lane speed reacts to page scroll progress (dual variant). */
   scrollLinked?: boolean;
 };
 
-function MarqueeItem({ item }: { item: ArtifactMarqueeItem }) {
+function MarqueeItem({
+  item,
+  exploreInteractive = false,
+}: {
+  item: ArtifactMarqueeItem;
+  exploreInteractive?: boolean;
+}) {
   const isRemote = item.imageSrc.startsWith("http");
 
   return (
     <Link
       href={item.href}
       data-cursor-lens
-      className="group flex w-[168px] shrink-0 flex-col gap-2.5 transition-transform duration-300 hover:-translate-y-0.5 hover:scale-[1.03] sm:w-[188px]"
+      style={{ ["--register-accent" as string]: item.accentColor }}
+      className={`group flex w-[168px] shrink-0 flex-col gap-2.5 sm:w-[188px] ${
+        exploreInteractive
+          ? "transition-[transform] duration-300 [perspective:800px] hover:-translate-y-1 hover:scale-[1.04]"
+          : "transition-transform duration-300 hover:-translate-y-0.5 hover:scale-[1.03]"
+      }`}
     >
-      <div className="overflow-hidden rounded-lg border border-ffie-line/70 bg-ffie-surface shadow-sm transition-shadow duration-300 group-hover:shadow-md">
+      <div
+        className={`overflow-hidden rounded-lg border-2 bg-ffie-surface transition-[border-color,box-shadow] duration-300 ${
+          exploreInteractive
+            ? "border-ffie-line/60 group-hover:border-[color:var(--register-accent)] group-hover:shadow-[0_10px_24px_rgba(35,19,82,0.14)]"
+            : "border-ffie-line/70 shadow-sm group-hover:shadow-md"
+        }`}
+      >
         <div className="relative aspect-[4/3] bg-ffie-bg">
           {isRemote ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -44,9 +60,7 @@ function MarqueeItem({ item }: { item: ArtifactMarqueeItem }) {
           )}
         </div>
       </div>
-      <p className="truncate px-0.5 text-xs font-semibold text-ffie-ink">
-        {item.name}
-      </p>
+      <p className="truncate px-0.5 text-xs font-semibold text-ffie-ink">{item.name}</p>
     </Link>
   );
 }
@@ -73,8 +87,6 @@ function SingleMarqueeRow({ items }: { items: ArtifactMarqueeItem[] }) {
       className="relative overflow-hidden py-2"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
     >
       <div
         className="flex w-max gap-4 ffie-marquee-track"
@@ -92,14 +104,17 @@ function MarqueeLane({
   items,
   direction,
   speed,
+  hovered,
 }: {
   items: ArtifactMarqueeItem[];
   direction: "left" | "right";
   speed: number;
+  hovered: boolean;
 }) {
   const reduceMotion = useReducedMotion();
   const doubled = [...items, ...items];
-  const duration = Math.max(28, 52 - speed * 18);
+  const baseDuration = Math.max(28, 52 - speed * 18);
+  const duration = hovered ? baseDuration * 2.2 : baseDuration;
 
   if (items.length === 0) return null;
 
@@ -125,7 +140,11 @@ function MarqueeLane({
         }
       >
         {doubled.map((item, index) => (
-          <MarqueeItem key={`${item.id}-${index}`} item={item} />
+          <MarqueeItem
+            key={`${item.id}-${index}`}
+            item={item}
+            exploreInteractive
+          />
         ))}
       </motion.div>
     </div>
@@ -143,6 +162,7 @@ export function ArtifactMarquee({
     [],
     [],
   ]);
+  const [hovered, setHovered] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -179,12 +199,18 @@ export function ArtifactMarquee({
   const [laneA, laneB] = laneSplit;
 
   return (
-    <div ref={sectionRef} className={`space-y-3 ${className}`}>
-      <MarqueeLane items={laneA} direction="left" speed={speed} />
+    <div
+      ref={sectionRef}
+      className={`space-y-3 ${className}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <MarqueeLane items={laneA} direction="left" speed={speed} hovered={hovered} />
       <MarqueeLane
         items={laneB.length > 0 ? laneB : laneA}
         direction="right"
         speed={speed}
+        hovered={hovered}
       />
     </div>
   );

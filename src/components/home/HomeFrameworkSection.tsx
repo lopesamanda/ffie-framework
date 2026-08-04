@@ -10,9 +10,15 @@ const PHASE_ICONS = ["◎", "⌖", "◉", "▣", "↗"] as const;
 
 function PhaseTimeline({
   activeIndex,
+  scrollIndex,
+  allRevealed,
+  onSelectPhase,
   reduceMotion,
 }: {
   activeIndex: number;
+  scrollIndex: number;
+  allRevealed: boolean;
+  onSelectPhase: (index: number) => void;
   reduceMotion: boolean | null;
 }) {
   return (
@@ -21,14 +27,22 @@ function PhaseTimeline({
       aria-label="Five-phase framework progression"
     >
       {FFIE_PHASES.map((phase, index) => {
-        const isVisible = index <= activeIndex;
+        const isVisible = index <= scrollIndex;
         const isActive = index === activeIndex;
         const isPast = index < activeIndex;
+        const isClickable = allRevealed && isVisible;
 
         return (
-          <motion.div
+          <motion.button
             key={phase.phase}
-            className="flex min-w-0 flex-1 flex-col items-center gap-2 text-center"
+            type="button"
+            disabled={!isClickable}
+            onClick={() => isClickable && onSelectPhase(index)}
+            aria-current={isActive ? "step" : undefined}
+            aria-label={`Phase ${phase.phase}: ${phase.name}`}
+            className={`flex min-w-0 flex-1 flex-col items-center gap-2 text-center ${
+              isClickable ? "cursor-pointer" : "cursor-default"
+            }`}
             initial={false}
             animate={
               reduceMotion
@@ -44,16 +58,16 @@ function PhaseTimeline({
                   }
             }
             transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={isClickable && !reduceMotion ? { scale: isActive ? 1.04 : 0.9 } : undefined}
           >
             <span
-              className={`flex size-11 shrink-0 items-center justify-center rounded-full border text-lg sm:size-14 sm:text-xl ${
+              className={`flex size-11 shrink-0 items-center justify-center rounded-full border text-lg transition sm:size-14 sm:text-xl ${
                 isActive
                   ? "border-ffie-accent bg-ffie-accent-soft text-ffie-accent"
                   : isPast
                     ? "border-ffie-line/80 bg-ffie-surface text-ffie-muted"
                     : "border-ffie-line bg-ffie-surface text-ffie-muted"
-              }`}
-              aria-hidden
+              } ${isClickable && !isActive ? "hover:border-ffie-accent/40" : ""}`}
             >
               {PHASE_ICONS[index]}
             </span>
@@ -64,7 +78,7 @@ function PhaseTimeline({
             >
               {phase.name}
             </span>
-          </motion.div>
+          </motion.button>
         );
       })}
     </div>
@@ -74,27 +88,33 @@ function PhaseTimeline({
 function StickyFrameworkExplainer() {
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
-  const [displayIndex, setDisplayIndex] = useState(0);
+  const [scrollIndex, setScrollIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
-  const activeIndex = useTransform(
+  const activeIndexMotion = useTransform(
     scrollYProgress,
     [0, 1],
     [0, FFIE_PHASES.length - 1],
   );
 
   useEffect(() => {
-    return activeIndex.on("change", (value) => {
-      setDisplayIndex(
-        Math.min(FFIE_PHASES.length - 1, Math.max(0, Math.round(value))),
+    return activeIndexMotion.on("change", (value) => {
+      const next = Math.min(
+        FFIE_PHASES.length - 1,
+        Math.max(0, Math.round(value)),
       );
+      setScrollIndex(next);
+      setSelectedIndex(null);
     });
-  }, [activeIndex]);
+  }, [activeIndexMotion]);
 
+  const displayIndex = selectedIndex ?? scrollIndex;
+  const allRevealed = scrollIndex >= FFIE_PHASES.length - 1;
   const phase = FFIE_PHASES[displayIndex] ?? FFIE_PHASES[0]!;
 
   return (
@@ -122,8 +142,19 @@ function StickyFrameworkExplainer() {
                 {phase.description}
               </p>
             </motion.div>
+            {allRevealed && (
+              <p className="text-xs text-ffie-muted">
+                Click any phase above to revisit its description.
+              </p>
+            )}
           </div>
-          <PhaseTimeline activeIndex={displayIndex} reduceMotion={reduceMotion} />
+          <PhaseTimeline
+            activeIndex={displayIndex}
+            scrollIndex={scrollIndex}
+            allRevealed={allRevealed}
+            onSelectPhase={setSelectedIndex}
+            reduceMotion={reduceMotion}
+          />
         </div>
       </div>
     </section>
