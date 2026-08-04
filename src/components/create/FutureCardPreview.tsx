@@ -448,11 +448,6 @@ export function FutureCardPreview({
               seal={revealAnimated}
               sealDelay={sealDelay}
             />
-            {sectorLabel && (
-              <span className="rounded-full border border-ffie-line bg-ffie-bg px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-ffie-muted">
-                {sectorLabel}
-              </span>
-            )}
             {draft.location && (
               <span className="text-xs text-ffie-muted">
                 {draft.location} · {FUTURE_HORIZON_LABEL}
@@ -583,14 +578,14 @@ export function FutureCardPreview({
           (artifactHeading || capabilityName || visualDirectionSrc) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <div
-              className={`${sectionGap} flex flex-col gap-4 rounded-2xl border p-4 sm:flex-row sm:items-start`}
+              className={`${sectionGap} flex flex-col gap-4 rounded-2xl border p-4 md:flex-row md:items-start md:gap-6 lg:p-5`}
               style={{
                 borderColor: `color-mix(in srgb, ${quadrantAccent} 18%, transparent)`,
                 backgroundColor: `color-mix(in srgb, ${quadrantWash} 24%, white)`,
               }}
             >
               {visualDirectionSrc && (
-                <div className="mx-auto w-full max-w-[140px] shrink-0 overflow-hidden rounded-xl border bg-ffie-bg/30 sm:mx-0 sm:w-32 md:w-36"
+                <div className="mx-auto w-full max-w-[160px] shrink-0 overflow-hidden rounded-xl border bg-ffie-bg/30 md:mx-0 md:w-40 lg:w-44"
                   style={{
                     borderColor: `color-mix(in srgb, ${quadrantAccent} 20%, transparent)`,
                   }}
@@ -642,7 +637,7 @@ export function FutureCardPreview({
           hiddenFunctionDisplay ||
           capabilityName) && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
-            <div className={`${isFinalCard ? sectionGap : "mt-4"} space-y-4 text-sm`}>
+            <div className={`${isFinalCard ? sectionGap : "mt-4"} grid gap-4 text-sm ${isFinalCard ? "md:grid-cols-2" : ""}`}>
               {!isFinalCard && capabilityName && (
                 <ArtifactDetailPanel label="AI FUNCTION" panelClassName="bg-ffie-bg/70">
                   <p className={`text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
