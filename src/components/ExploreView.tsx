@@ -259,7 +259,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
         <p className="mb-3 px-2 text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
           Artifacts in the commons
         </p>
-        <ArtifactMarquee items={marqueeItems} />
+        <ArtifactMarquee items={marqueeItems} variant="dual" />
       </div>
 
       <AnimatePresence mode="wait" initial={false}>

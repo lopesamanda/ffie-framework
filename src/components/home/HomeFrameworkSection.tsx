@@ -8,7 +8,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const PHASE_ICONS = ["◎", "⌖", "◉", "▣", "↗"] as const;
 
-function PhaseVisual({
+function PhaseTimeline({
   activeIndex,
   reduceMotion,
 }: {
@@ -16,38 +16,49 @@ function PhaseVisual({
   reduceMotion: boolean | null;
 }) {
   return (
-    <div className="relative flex h-56 items-center justify-center md:h-72">
+    <div
+      className="flex w-full items-end justify-between gap-1 px-1 sm:gap-2"
+      aria-label="Five-phase framework progression"
+    >
       {FFIE_PHASES.map((phase, index) => {
+        const isVisible = index <= activeIndex;
         const isActive = index === activeIndex;
-        const offset = (index - activeIndex) * 28;
+        const isPast = index < activeIndex;
+
         return (
           <motion.div
             key={phase.phase}
-            className="absolute flex flex-col items-center gap-2"
+            className="flex min-w-0 flex-1 flex-col items-center gap-2 text-center"
+            initial={false}
             animate={
               reduceMotion
-                ? { opacity: isActive ? 1 : 0.25, scale: isActive ? 1 : 0.82, x: offset }
+                ? {
+                    opacity: isVisible ? (isActive ? 1 : 0.5) : 0,
+                    scale: isActive ? 1 : isPast ? 0.85 : 0.75,
+                    y: isVisible ? 0 : 12,
+                  }
                 : {
-                    opacity: isActive ? 1 : 0.28,
-                    scale: isActive ? 1 : 0.78,
-                    x: offset,
-                    y: isActive ? 0 : 12,
+                    opacity: isVisible ? (isActive ? 1 : 0.48) : 0,
+                    scale: isActive ? 1 : isPast ? 0.84 : 0.72,
+                    y: isVisible ? 0 : 16,
                   }
             }
             transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           >
             <span
-              className={`flex size-14 items-center justify-center rounded-full border text-xl ${
+              className={`flex size-11 shrink-0 items-center justify-center rounded-full border text-lg sm:size-14 sm:text-xl ${
                 isActive
                   ? "border-ffie-accent bg-ffie-accent-soft text-ffie-accent"
-                  : "border-ffie-line bg-ffie-surface text-ffie-muted"
+                  : isPast
+                    ? "border-ffie-line/80 bg-ffie-surface text-ffie-muted"
+                    : "border-ffie-line bg-ffie-surface text-ffie-muted"
               }`}
               aria-hidden
             >
               {PHASE_ICONS[index]}
             </span>
             <span
-              className={`text-xs font-semibold uppercase tracking-[0.1em] ${
+              className={`max-w-[4.5rem] text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] sm:max-w-none sm:text-xs sm:tracking-[0.1em] ${
                 isActive ? "text-ffie-accent" : "text-ffie-muted"
               }`}
             >
@@ -78,7 +89,9 @@ function StickyFrameworkExplainer() {
 
   useEffect(() => {
     return activeIndex.on("change", (value) => {
-      setDisplayIndex(Math.min(FFIE_PHASES.length - 1, Math.max(0, Math.round(value))));
+      setDisplayIndex(
+        Math.min(FFIE_PHASES.length - 1, Math.max(0, Math.round(value))),
+      );
     });
   }, [activeIndex]);
 
@@ -110,7 +123,7 @@ function StickyFrameworkExplainer() {
               </p>
             </motion.div>
           </div>
-          <PhaseVisual activeIndex={displayIndex} reduceMotion={reduceMotion} />
+          <PhaseTimeline activeIndex={displayIndex} reduceMotion={reduceMotion} />
         </div>
       </div>
     </section>
