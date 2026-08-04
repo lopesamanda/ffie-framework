@@ -171,18 +171,38 @@ export function FutureRevealStage({
             </div>
           </div>
 
-          <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
-            <div className="min-w-0 flex-1">
+          <div className="mx-auto w-full max-w-7xl space-y-8">
+            <div
+              className="flex items-center justify-center gap-1.5 py-1"
+              aria-hidden
+            >
+              {[
+                "#1e40af",
+                "#6e52c4",
+                "#991b1b",
+                "#92400e",
+              ].flatMap((color) =>
+                Array.from({ length: 4 }, (_, i) => (
+                  <span
+                    key={`${color}-${i}`}
+                    className="size-[3px] rounded-full opacity-45"
+                    style={{ backgroundColor: color }}
+                  />
+                )),
+              )}
+            </div>
+
+            <div>
               <h3 className="font-display text-base font-semibold text-ffie-ink">
                 How can you work with this future?
               </h3>
-              <div className="mt-4">
+              <div className="mt-5">
                 <FutureWorkActionsGrid reduceMotion={reduceMotion} />
               </div>
             </div>
 
             {actionFooter && (
-              <div className="w-full shrink-0 lg:max-w-md">{actionFooter}</div>
+              <div className="w-full max-w-md lg:ml-auto">{actionFooter}</div>
             )}
           </div>
 

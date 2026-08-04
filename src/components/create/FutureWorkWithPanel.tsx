@@ -20,23 +20,78 @@ export const FUTURE_WORK_ACTIONS = [
     title: "Backcast it",
     description:
       "What decisions made today would lead here? Use it to open a strategy conversation.",
+    icon: "backcast",
   },
   {
     title: "Pre-mortem it",
     description:
       "Treat the Weakness as a risk you're designing against before it happens.",
+    icon: "premortem",
   },
   {
     title: "Bring it to a workshop",
     description:
       "Print or project the card and have your team debate what they'd change or achieve in the roadmap.",
+    icon: "workshop",
   },
   {
     title: "Start a conversation",
     description:
       "Share it with a colleague and ask if any part of it feels familiar.",
+    icon: "conversation",
   },
 ] as const;
+
+type WorkIconId = (typeof FUTURE_WORK_ACTIONS)[number]["icon"];
+
+function WorkActionIcon({ id }: { id: WorkIconId }) {
+  const common = {
+    width: 20,
+    height: 20,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.6,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true as const,
+  };
+
+  switch (id) {
+    case "backcast":
+      return (
+        <svg {...common}>
+          <path d="M4 12h12" />
+          <path d="M10 6l-6 6 6 6" />
+          <path d="M20 5v14" />
+        </svg>
+      );
+    case "premortem":
+      return (
+        <svg {...common}>
+          <path d="M12 3v4" />
+          <path d="M12 17v4" />
+          <circle cx="12" cy="12" r="5" />
+          <path d="M12 10v2l1.5 1.5" />
+        </svg>
+      );
+    case "workshop":
+      return (
+        <svg {...common}>
+          <rect x="3" y="5" width="18" height="12" rx="1.5" />
+          <path d="M8 21h8" />
+          <path d="M12 17v4" />
+        </svg>
+      );
+    case "conversation":
+      return (
+        <svg {...common}>
+          <path d="M5 6h10a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" />
+          <path d="M15 9h3a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1v2l-3-2" />
+        </svg>
+      );
+  }
+}
 
 export function FutureWorkActionsGrid({
   reduceMotion,
@@ -44,16 +99,45 @@ export function FutureWorkActionsGrid({
   reduceMotion: boolean | null;
 }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
       {FUTURE_WORK_ACTIONS.map((action, index) => (
-        <WorkActionCard
+        <motion.div
           key={action.title}
-          title={action.title}
-          description={action.description}
-          index={index}
-          reduceMotion={reduceMotion}
-          setCardRef={() => undefined}
-        />
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : {
+                  duration: 0.42,
+                  ease: [0.16, 1, 0.3, 1],
+                  delay: 0.28 + index * 0.07,
+                }
+          }
+          className={`flex flex-col gap-3 px-0 py-4 sm:px-5 sm:py-1 ${
+            index > 0
+              ? "border-t border-ffie-line/60 sm:border-t-0 sm:border-l"
+              : ""
+          }`}
+        >
+          <span
+            className="inline-flex size-7 items-center justify-center rounded-full border border-ffie-line bg-ffie-surface text-[11px] font-semibold tracking-wide text-ffie-ink"
+            aria-hidden
+          >
+            {index + 1}
+          </span>
+          <span className="text-ffie-accent">
+            <WorkActionIcon id={action.icon} />
+          </span>
+          <h4 className={`${ffieCardTitle} text-sm ${FFIE_CARD_TEXT}`}>
+            {action.title}
+          </h4>
+          <p
+            className={`${ffieCardDescription} not-italic leading-snug ${FFIE_CARD_TEXT}`}
+          >
+            {action.description}
+          </p>
+        </motion.div>
       ))}
     </div>
   );

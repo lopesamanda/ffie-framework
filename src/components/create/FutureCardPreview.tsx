@@ -193,46 +193,104 @@ function QuadrantAmbientField({
   );
 }
 
+/** Slight rotation/offset per tag for a fanned hand-of-cards stack. */
+const FAN_TRANSFORMS = [
+  "rotate(-6deg) translateY(4px)",
+  "rotate(-2deg) translateY(0px)",
+  "rotate(2deg) translateY(2px)",
+  "rotate(5deg) translateY(5px)",
+  "rotate(8deg) translateY(3px)",
+] as const;
+
 function DrawnCardTags({
   hand,
   finalOnly = false,
   className = "mt-3",
-  dividerColor,
+  fanned = false,
 }: {
   hand: CardHand;
   finalOnly?: boolean;
   className?: string;
-  dividerColor?: string;
+  /** Overlapping fan stack instead of a flat inline row. */
+  fanned?: boolean;
 }) {
   const cards: NarrativeCard[] = finalOnly
     ? [hand.benefit, hand.risk, hand.trust, hand.barrier]
     : [hand.risk, hand.benefit, hand.trust, hand.barrier, hand.transversal];
 
+  if (!fanned) {
+    return (
+      <div className={`flex flex-wrap gap-1.5 ${className}`}>
+        {cards.map((card) => {
+          const style = CATEGORY_STYLES[card.category];
+          return (
+            <span
+              key={card.id}
+              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+              style={{
+                borderColor: style.border,
+                backgroundColor: style.bg,
+                color: style.text,
+              }}
+            >
+              {card.name}
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`flex flex-wrap gap-1.5 ${className}`}
-      style={
-        dividerColor
-          ? { borderTopColor: dividerColor, borderTopWidth: 1, paddingTop: 12 }
-          : undefined
-      }
-    >
-      {cards.map((card) => {
+    <div className={`relative flex items-end pl-1 ${className}`}>
+      {cards.map((card, index) => {
         const style = CATEGORY_STYLES[card.category];
         return (
           <span
             key={card.id}
-            className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+            className="relative rounded-lg border px-2.5 py-1.5 text-[11px] font-medium shadow-[0_2px_6px_rgba(35,19,82,0.08)]"
             style={{
               borderColor: style.border,
               backgroundColor: style.bg,
               color: style.text,
+              zIndex: index + 1,
+              marginLeft: index === 0 ? 0 : -10,
+              transform: FAN_TRANSFORMS[index] ?? FAN_TRANSFORMS[FAN_TRANSFORMS.length - 1],
             }}
           >
             {card.name}
           </span>
         );
       })}
+    </div>
+  );
+}
+
+/** Thin dotted row using FFIE quadrant palette — not a hard rule. */
+function QuadrantTextureDivider({
+  className = "",
+}: {
+  className?: string;
+}) {
+  const colors = [
+    QUADRANT_TEXT_COLORS.techno_optimist,
+    QUADRANT_TEXT_COLORS.feminist_preferred,
+    QUADRANT_TEXT_COLORS.dominant_dystopian,
+    QUADRANT_TEXT_COLORS.fragmented,
+  ];
+
+  return (
+    <div
+      className={`flex items-center justify-center gap-1.5 py-1 ${className}`}
+      aria-hidden
+    >
+      {Array.from({ length: 16 }, (_, index) => (
+        <span
+          key={index}
+          className="size-[3px] rounded-full opacity-45"
+          style={{ backgroundColor: colors[index % colors.length] }}
+        />
+      ))}
     </div>
   );
 }
@@ -464,23 +522,29 @@ export function FutureCardPreview({
           </Wrap>
         )}
 
+        {isFinalCard && (synthesisLine || artifactHeading || capabilityName || visualDirectionSrc) && (
+          <div className={`${sectionGap} mb-2`}>
+            <QuadrantTextureDivider />
+          </div>
+        )}
+
         {isFinalCard && synthesisLine && (
           <Wrap {...(revealAnimated ? nextReveal() : {})}>
             <div
-              className={`${sectionGap} rounded-2xl border px-5 py-4`}
+              className="mt-8 mb-10 w-full rounded-2xl border px-6 py-7 md:px-8 md:py-8"
               style={{
                 borderColor: `color-mix(in srgb, ${quadrantAccent} 35%, transparent)`,
                 backgroundColor: `color-mix(in srgb, ${quadrantWash} 72%, white)`,
               }}
             >
               <p
-                className={`text-sm font-medium italic leading-relaxed ${FFIE_CARD_TEXT}`}
+                className={`text-base font-medium italic leading-relaxed md:text-[1.05rem] md:leading-[1.65] ${FFIE_CARD_TEXT}`}
                 style={{ color: quadrantAccent }}
               >
                 {synthesisLine}
               </p>
               {synthesisTensionsLine && (
-                <p className={`mt-2.5 text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
+                <p className={`mt-3 text-xs leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
                   {synthesisTensionsLine}
                 </p>
               )}
@@ -488,8 +552,8 @@ export function FutureCardPreview({
                 <DrawnCardTags
                   hand={draft.cardHand}
                   finalOnly
-                  className="mt-0"
-                  dividerColor={`color-mix(in srgb, ${quadrantAccent} 28%, transparent)`}
+                  fanned
+                  className="mt-5 pt-1"
                 />
               )}
             </div>
@@ -634,35 +698,52 @@ export function FutureCardPreview({
         )}
 
         {artifactValues.length > 0 && (
-          <div className={`${isFinalCard ? "mt-8" : "mt-3"} flex flex-wrap gap-2 pb-1`}>
-            {artifactValues.map((value) => {
-              const isLinked =
-                value.toLowerCase() ===
-                draft.hiddenFunctionExtremeValue.trim().toLowerCase();
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  onMouseEnter={() => isLinked && setHighlightedValue(value)}
-                  onMouseLeave={() => setHighlightedValue(null)}
-                  onClick={() =>
-                    isLinked &&
-                    setHighlightedValue((current) =>
-                      current === value ? null : value,
-                    )
-                  }
-                  onFocus={() => isLinked && setHighlightedValue(value)}
-                  onBlur={() => setHighlightedValue(null)}
-                  className={`rounded-full border px-2.5 py-0.5 text-xs transition ${
-                    highlightedValue === value
-                      ? "border-ffie-accent bg-ffie-accent-soft text-ffie-accent"
-                      : "border-ffie-line bg-ffie-bg text-ffie-ink"
-                  }`}
-                >
-                  {value}
-                </button>
-              );
-            })}
+          <div
+            className={`${isFinalCard ? "mt-6" : "mt-3"} ${
+              isFinalCard
+                ? "rounded-2xl border border-ffie-line/60 bg-ffie-surface/80 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]"
+                : ""
+            }`}
+          >
+            {isFinalCard && (
+              <p className={`${ffieCardSectionLabel} text-ffie-muted`}>
+                Values shaping this artifact
+              </p>
+            )}
+            <div
+              className={`${isFinalCard ? "mt-3 flex flex-col gap-2" : "flex flex-wrap gap-2 pb-1"}`}
+            >
+              {artifactValues.map((value) => {
+                const isLinked =
+                  value.toLowerCase() ===
+                  draft.hiddenFunctionExtremeValue.trim().toLowerCase();
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onMouseEnter={() => isLinked && setHighlightedValue(value)}
+                    onMouseLeave={() => setHighlightedValue(null)}
+                    onClick={() =>
+                      isLinked &&
+                      setHighlightedValue((current) =>
+                        current === value ? null : value,
+                      )
+                    }
+                    onFocus={() => isLinked && setHighlightedValue(value)}
+                    onBlur={() => setHighlightedValue(null)}
+                    className={`rounded-full border px-2.5 py-0.5 text-xs transition ${
+                      isFinalCard ? "w-full justify-start text-left" : ""
+                    } ${
+                      highlightedValue === value
+                        ? "border-ffie-accent bg-ffie-accent-soft text-ffie-accent"
+                        : "border-ffie-line bg-ffie-bg text-ffie-ink"
+                    }`}
+                  >
+                    {value}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
 
