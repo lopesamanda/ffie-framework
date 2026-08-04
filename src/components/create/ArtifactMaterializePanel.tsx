@@ -24,7 +24,7 @@ export function ArtifactMaterializePanel({ draft }: { draft: JourneyDraft }) {
   return (
     <div
       id="bring-it-to-life"
-      className="mt-8 space-y-5 rounded-xl border border-ffie-line bg-ffie-surface/60 p-5"
+      className="mt-8 space-y-4 rounded-xl border border-ffie-line bg-ffie-surface/60 p-5"
     >
       <div className="space-y-2">
         <p className="text-sm font-medium text-ffie-ink">
@@ -42,19 +42,15 @@ export function ArtifactMaterializePanel({ draft }: { draft: JourneyDraft }) {
         </FfieButton>
         {copyError && <p className="text-xs text-red-700">{copyError}</p>}
       </div>
+
+      <pre className="max-h-56 overflow-auto rounded-lg border border-ffie-line bg-ffie-bg p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-ffie-muted">
+        {prompt}
+      </pre>
+
       <p className="text-xs leading-relaxed text-ffie-muted">
         Paste this into any AI image tool you like, and feel free to adjust it
         to fit what you&apos;re going for.
       </p>
-
-      <details className="group">
-        <summary className="cursor-pointer text-xs font-medium text-ffie-accent">
-          Preview prompt text
-        </summary>
-        <pre className="mt-2 max-h-48 overflow-auto rounded-lg border border-ffie-line bg-ffie-bg p-3 text-[11px] leading-relaxed whitespace-pre-wrap text-ffie-muted">
-          {prompt}
-        </pre>
-      </details>
     </div>
   );
 }

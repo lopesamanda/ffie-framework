@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { SegmentedControl } from "@/components/create/design/SegmentedControl";
+import { ArtifactMarquee } from "@/components/home/ArtifactMarquee";
 import { FutureConstellation } from "@/components/explore/FutureConstellation";
 import { FuturePreviewDetailContent } from "@/components/FuturePreviewPanel";
 import { FutureGrid, FutureMatrix } from "@/components/FutureMatrix";
@@ -12,6 +13,7 @@ import {
   type MatrixAnchor,
 } from "@/components/matrix/MatrixPointInteraction";
 import { researchFindingsSeed } from "@/data/research-findings-seed";
+import { buildArtifactMarqueeItems } from "@/lib/artifact-marquee-items";
 import { ROLE_OPTIONS } from "@/lib/journey/character-options";
 import { PERSONA_SECTOR_OPTIONS } from "@/lib/journey/persona-sectors";
 import {
@@ -115,6 +117,11 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
   }, [baseEntries, country, scenario, sector, role]);
 
   const contentKey = `${collection}-${lens}-${country}-${scenario}-${sector}-${role}`;
+
+  const marqueeItems = useMemo(
+    () => buildArtifactMarqueeItems(futureCommons),
+    [futureCommons],
+  );
 
   const handleCollectionChange = (next: FutureCollection) => {
     setCollection(next);
@@ -246,6 +253,13 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="-mx-2 overflow-hidden rounded-xl border border-ffie-line/50 bg-ffie-bg/40 px-2 py-4">
+        <p className="mb-3 px-2 text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+          Artifacts in the commons
+        </p>
+        <ArtifactMarquee items={marqueeItems} />
       </div>
 
       <AnimatePresence mode="wait" initial={false}>

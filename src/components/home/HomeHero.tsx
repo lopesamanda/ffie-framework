@@ -1,100 +1,14 @@
 "use client";
 
-import { useRef } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-  type MotionStyle,
-} from "framer-motion";
-import { QUADRANT_COLORS } from "@/types/future";
+import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
+import { HeroReactiveCanvas } from "@/components/home/HeroReactiveCanvas";
+import { HomeTarotDeck } from "@/components/home/HomeTarotDeck";
 
 const HEADLINE =
   "Explore futures. Create your own. See where power and care collide.";
 const HEADLINE_WORDS = HEADLINE.split(" ");
 const WORD_STAGGER_S = 0.05;
-
-const AMBIENT_BLOBS = [
-  {
-    color: QUADRANT_COLORS.techno_optimist,
-    top: "6%",
-    left: "4%",
-    size: "min(44vw, 400px)",
-    drift: { x: [0, 18, -10, 0], y: [0, -14, 8, 0] },
-    duration: 32,
-  },
-  {
-    color: QUADRANT_COLORS.feminist_preferred,
-    top: "10%",
-    right: "6%",
-    size: "min(46vw, 420px)",
-    drift: { x: [0, -12, 16, 0], y: [0, 10, -12, 0] },
-    duration: 36,
-  },
-  {
-    color: QUADRANT_COLORS.dominant_dystopian,
-    bottom: "12%",
-    left: "8%",
-    size: "min(40vw, 360px)",
-    drift: { x: [0, 10, -14, 0], y: [0, 12, -8, 0] },
-    duration: 30,
-  },
-  {
-    color: QUADRANT_COLORS.fragmented,
-    bottom: "8%",
-    right: "4%",
-    size: "min(42vw, 380px)",
-    drift: { x: [0, -16, 12, 0], y: [0, -8, 14, 0] },
-    duration: 34,
-  },
-] as const;
-
-function AmbientMatrixField({ reduceMotion }: { reduceMotion: boolean }) {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden ffie-grain">
-      <div
-        className="absolute inset-0"
-        style={{
-          background: [
-            "radial-gradient(ellipse 90% 75% at 50% 35%, color-mix(in srgb, var(--color-ffie-accent) 14%, transparent) 0%, transparent 68%)",
-            "radial-gradient(ellipse 60% 50% at 72% 58%, color-mix(in srgb, var(--color-ffie-accent-soft) 55%, transparent) 0%, transparent 72%)",
-          ].join(", "),
-        }}
-      />
-      {AMBIENT_BLOBS.map((blob, index) => (
-        <motion.div
-          key={index}
-          className="absolute rounded-full blur-3xl"
-          style={{
-            backgroundColor: blob.color,
-            opacity: 0.28,
-            width: blob.size,
-            height: blob.size,
-            top: "top" in blob ? blob.top : undefined,
-            left: "left" in blob ? blob.left : undefined,
-            right: "right" in blob ? blob.right : undefined,
-            bottom: "bottom" in blob ? blob.bottom : undefined,
-          }}
-          animate={
-            reduceMotion
-              ? undefined
-              : { x: [...blob.drift.x], y: [...blob.drift.y] }
-          }
-          transition={
-            reduceMotion
-              ? undefined
-              : {
-                  duration: blob.duration,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }
-          }
-        />
-      ))}
-    </div>
-  );
-}
 
 function KineticHeadline({ reduceMotion }: { reduceMotion: boolean }) {
   return (
@@ -119,58 +33,65 @@ function KineticHeadline({ reduceMotion }: { reduceMotion: boolean }) {
   );
 }
 
-export function HomeHero() {
-  const sectionRef = useRef<HTMLElement>(null);
+export function HomeClosingCta() {
   const reduceMotion = useReducedMotion();
-  const motionEnabled = !reduceMotion;
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-
-  const backgroundOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.12]);
-  const backgroundY = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const foregroundY = useTransform(scrollYProgress, [0, 1], [0, -56]);
-  const foregroundOpacity = useTransform(scrollYProgress, [0, 0.95], [1, 0.88]);
-
-  const backgroundMotionStyle: MotionStyle | undefined = motionEnabled
-    ? { opacity: backgroundOpacity, y: backgroundY }
-    : undefined;
-
-  const foregroundMotionStyle: MotionStyle | undefined = motionEnabled
-    ? { y: foregroundY, opacity: foregroundOpacity }
-    : undefined;
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative overflow-hidden pb-4 md:pb-6"
-    >
-      <motion.div
-        className="absolute inset-0"
-        style={backgroundMotionStyle}
-      >
-        <AmbientMatrixField reduceMotion={!motionEnabled} />
-      </motion.div>
+    <section className="relative overflow-hidden border-t border-ffie-line/60 py-20 md:py-28">
+      <HeroReactiveCanvas className="opacity-70" />
+      <div className="relative mx-auto max-w-3xl px-6 text-center">
+        <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-accent">
+          Your turn
+        </p>
+        <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ffie-ink md:text-4xl">
+          Draw cards. Build a future. Place it on the matrix.
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-ffie-muted">
+          A guided journey from narrative tension to a shareable diegetic prototype
+          — embodied, materialized, and ready for debate.
+        </p>
+        <motion.div
+          className="mt-8"
+          whileHover={reduceMotion ? undefined : { scale: 1.02 }}
+          whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+        >
+          <Link
+            href="/create"
+            data-cursor-lens
+            className="inline-flex items-center justify-center rounded-lg bg-ffie-accent px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-ffie-accent/90"
+          >
+            Start creating →
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
-      <motion.div
-        className="relative mx-auto max-w-6xl px-6 py-10 md:py-14"
-        style={foregroundMotionStyle}
-      >
+export function HomeHero() {
+  const reduceMotion = useReducedMotion() ?? false;
+
+  return (
+    <section className="relative overflow-hidden pb-6 md:pb-10">
+      <HeroReactiveCanvas />
+      <div className="ffie-grain pointer-events-none absolute inset-0" aria-hidden />
+
+      <div className="relative mx-auto max-w-6xl px-6 py-10 md:py-14">
         <div className="max-w-prose">
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-ffie-accent">
             Feminist Foresight in Innovation Ecosystems
           </p>
-          <KineticHeadline reduceMotion={!motionEnabled} />
+          <KineticHeadline reduceMotion={reduceMotion} />
           <p className="mt-5 text-lg leading-relaxed text-ffie-muted">
             FFIE is a research-based method for exploring AI&apos;s impact on
             innovation ecosystems. Build a persona, design an artifact they use,
             and place it on the Critical Feminist Matrix to see what future it
-            creates. Try it yourself instead of just reading about it.
+            creates.
           </p>
         </div>
-      </motion.div>
+
+        <HomeTarotDeck />
+      </div>
     </section>
   );
 }

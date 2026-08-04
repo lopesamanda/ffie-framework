@@ -808,7 +808,7 @@ export function CreateJourney() {
                         bringToLifeActive={showMaterialize}
                         downloading={downloadingSummary}
                         submitting={submitting}
-                        layout="inline"
+                        layout="full"
                       />
                     }
                   >
