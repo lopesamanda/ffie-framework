@@ -63,7 +63,7 @@ export function FutureRevealStage({
   }, [anchor, cardRevealed]);
 
   return (
-    <div ref={stageRef} className="space-y-10">
+    <div ref={stageRef} className="space-y-8">
       {!cardRevealed && (
         <div className="mx-auto max-w-xl space-y-6">
           <InteractiveMatrixReveal
@@ -100,8 +100,8 @@ export function FutureRevealStage({
       )}
 
       {cardRevealed && (
-        <div className="space-y-10">
-          <div className="w-full">
+        <div className="space-y-8">
+          <div className="mx-auto w-full max-w-2xl">
             <MatrixPointInteraction
               open={quadrantDetailOpen}
               anchor={quadrantAnchor}
@@ -126,7 +126,7 @@ export function FutureRevealStage({
                   setQuadrantAnchor(nextAnchor);
                   setQuadrantDetailOpen(true);
                 }}
-                className="w-full max-w-3xl mx-auto"
+                className="w-full"
               />
             </MatrixPointInteraction>
 
@@ -135,28 +135,31 @@ export function FutureRevealStage({
             </p>
           </div>
 
-          <motion.div
-            ref={cardRef}
-            className="w-full"
-            style={{ transformOrigin }}
-            initial={reduceMotion ? false : { scale: 0.06, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={
-              reduceMotion
-                ? { duration: 0 }
-                : { duration: 0.52, ease: [0.16, 1, 0.3, 1] }
-            }
-          >
-            <FutureCardPreview
-              draft={draft}
-              id={cardId}
-              revealAnimated={!reduceMotion}
-              showCommonsNarrative
-              showCardTags
-            />
-          </motion.div>
+          <div className="mx-auto w-full max-w-xl">
+            <motion.div
+              ref={cardRef}
+              className="px-1 sm:px-0"
+              style={{ transformOrigin }}
+              initial={reduceMotion ? false : { scale: 0.06, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { duration: 0.52, ease: [0.16, 1, 0.3, 1] }
+              }
+            >
+              <FutureCardPreview
+                draft={draft}
+                id={cardId}
+                compact
+                revealAnimated={!reduceMotion}
+                showCommonsNarrative
+                showCardTags
+              />
+            </motion.div>
+          </div>
 
-          <div className="w-full space-y-8">
+          <div className="mx-auto w-full max-w-7xl space-y-8">
             <div
               className="flex items-center justify-center gap-1.5 py-1"
               aria-hidden
@@ -181,7 +184,9 @@ export function FutureRevealStage({
               </div>
             </div>
 
-            {actionFooter && <div className="w-full">{actionFooter}</div>}
+            {actionFooter && (
+              <div className="w-full max-w-md lg:ml-auto">{actionFooter}</div>
+            )}
           </div>
 
           {children}

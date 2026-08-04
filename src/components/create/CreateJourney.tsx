@@ -728,22 +728,22 @@ export function CreateJourney() {
                   {draft.outputStep === 0 ? (
                     <div className="w-full min-w-0 space-y-5">
                       <p className="text-sm text-ffie-muted">
-                        Two questions place this future on the Critical Feminist
-                        Matrix.
+                        Two scales place this future on the Critical Feminist
+                        Matrix — every answer leans toward one pole or the other.
                       </p>
                       <MatrixScaleQuestion
-                        question="In the world you imagined, does this technology mostly extract something from the people who use it — time, data, autonomy — or give something back?"
-                        lowLabel="Extracts"
-                        highLabel="Gives back"
+                        question="System Logic — where does this future sit?"
+                        lowLabel="Extractive"
+                        highLabel="Emancipatory"
                         value={draft.systemLogicScore}
                         onChange={(systemLogicScore: MatrixScaleScore) =>
                           update({ systemLogicScore })
                         }
                       />
                       <MatrixScaleQuestion
-                        question="Who decides how this technology is used in that future — a person or company at the top, or the community that lives with it, together?"
-                        lowLabel="Centralized decision"
-                        highLabel="Collective decision"
+                        question="Power Organization — who holds the power?"
+                        lowLabel="Hierarchical"
+                        highLabel="Collective Care"
                         value={draft.powerOrgScore}
                         onChange={(powerOrgScore: MatrixScaleScore) =>
                           update({ powerOrgScore })
@@ -808,7 +808,7 @@ export function CreateJourney() {
                         bringToLifeActive={showMaterialize}
                         downloading={downloadingSummary}
                         submitting={submitting}
-                        layout="full"
+                        layout="inline"
                       />
                     }
                   >
@@ -816,7 +816,7 @@ export function CreateJourney() {
                       <ArtifactMaterializePanel draft={draft} />
                     </div>
                     {showPublish && (
-                      <div className="mx-auto w-full max-w-2xl space-y-4 rounded-xl border border-ffie-line bg-ffie-surface p-4 sm:p-5">
+                      <div className="mx-auto max-w-md space-y-4 rounded-xl border border-ffie-line bg-ffie-surface p-4 lg:mx-0">
                         <label className="flex items-start gap-3">
                           <input
                             type="checkbox"

@@ -1,6 +1,5 @@
 import type { JourneyDraft } from "@/lib/journey/types";
 import {
-  phraseAfterSubject,
   pronounsForSelection,
   verbFor,
   type CharacterPronouns,
@@ -67,7 +66,7 @@ export function buildFinalCardNarrative(
           ? `it changed the way ${p.subject} could ${abilityImproved}`
           : null,
         habitChanged
-          ? `it also changed the way ${p.subject} ${phraseAfterSubject(p, habitChanged)}`
+          ? `it also changed the way ${p.subject} ${habitChanged}`
           : null,
       ]
         .filter(Boolean)
