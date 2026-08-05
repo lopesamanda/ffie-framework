@@ -53,6 +53,8 @@ export type CardHand = {
   transversal: NarrativeCard;
 };
 
+export const PUBLISH_FLOW_VERSION = 2;
+
 export type JourneyDraft = {
   sessionId: string;
   stage: JourneyStage;
@@ -140,6 +142,11 @@ export type JourneyDraft = {
   narrative: string;
   /** Horizon year for storage (current year + 10); user-facing copy uses FUTURE_HORIZON_LABEL. */
   futureYear: number;
+  /**
+   * Publish ritual schema version.
+   * v1 = 4-step flow (main); v2 = 5-step flow with Anchor screen (home-redesign).
+   */
+  publishFlowVersion: number;
 };
 
 export { CHARACTER_VALUES } from "@/lib/journey/character-options";
@@ -407,6 +414,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     title: "",
     narrative: "",
     futureYear: getFutureHorizonYear(),
+    publishFlowVersion: PUBLISH_FLOW_VERSION,
   };
 }
 
@@ -482,6 +490,18 @@ export function loadDraft(): JourneyDraft | null {
       hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",
       artifactGoalPitch: parsed.artifactGoalPitch ?? "",
     };
+
+    const publishFlowVersion = parsed.publishFlowVersion ?? 1;
+    if (
+      draft.stage === "output" &&
+      publishFlowVersion < PUBLISH_FLOW_VERSION &&
+      draft.outputStep === 3
+    ) {
+      // v1 step 3 was Anchored confirmation; v2 step 3 is Anchor screen.
+      draft.outputStep = 4;
+    }
+    draft.publishFlowVersion = PUBLISH_FLOW_VERSION;
+
     draft.cardHand = hydrateWorkshopHand(
       parsed.cardHand as CardHand | null | undefined,
     );
