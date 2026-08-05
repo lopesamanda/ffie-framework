@@ -54,7 +54,34 @@ export function oracleDrawTitle(): string {
 }
 
 export function matrixPlacementTitle(): string {
-  return "Where does it belong?";
+  return "Matrix Calibration";
+}
+
+export function livePreviewTitle(): string {
+  return "It exists now.";
+}
+
+export function groundItTitle(): string {
+  return "Ground it.";
+}
+
+export function anchoredTitle(): string {
+  return "Anchored.";
+}
+
+export function outputStepTitle(step: number): string {
+  switch (step) {
+    case 0:
+      return livePreviewTitle();
+    case 1:
+      return matrixPlacementTitle();
+    case 2:
+      return groundItTitle();
+    case 3:
+      return anchoredTitle();
+    default:
+      return futureRevealTitle();
+  }
 }
 
 export function futureRevealTitle(): string {
