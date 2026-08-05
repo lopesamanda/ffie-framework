@@ -11,22 +11,22 @@ import { FfieButton } from "@/components/create/design/FfieButton";
 import { RegisterDeckExpandedRow } from "@/components/register/RegisterDeckExpandedRow";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
-import { TimeTravelTransition } from "@/components/create/design/TimeTravelTransition";
-import { FutureRevealStage } from "@/components/create/FutureRevealStage";
-import { FutureOutputActionFooter } from "@/components/create/FutureOutputNextSteps";
+import { AnchoredConfirmationScreen } from "@/components/create/AnchoredConfirmationScreen";
+import { AnchorScreen } from "@/components/create/AnchorScreen";
+import { GroundItScreen } from "@/components/create/GroundItScreen";
+import { LivePreviewScreen } from "@/components/create/LivePreviewScreen";
+import { MatrixCalibrationScreen } from "@/components/create/MatrixCalibrationScreen";
 import {
   FutureSummaryExport,
   FUTURE_SUMMARY_EXPORT_HEIGHT,
   FUTURE_SUMMARY_EXPORT_WIDTH,
 } from "@/components/create/FutureSummaryExport";
 import { PhaseSweepOverlay } from "@/components/motion/PhaseSweepOverlay";
-import { ArtifactMaterializePanel } from "@/components/create/ArtifactMaterializePanel";
 import {
   OracleDrawRecap,
   OracleDrawReflectionPrompt,
 } from "@/components/create/design/OracleDrawRecap";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
-import { MatrixScaleQuestion } from "@/components/create/MatrixScaleQuestion";
 import {
   CharacterEmbodyStep,
 } from "@/components/create/CharacterEmbodyStep";
@@ -57,8 +57,7 @@ import {
 import {
   creationProgressSubtitle,
   creationScreenTitle,
-  futureRevealTitle,
-  matrixPlacementTitle,
+  outputStepTitle,
   oracleDrawTitle,
 } from "@/lib/create-journey-titles";
 import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
@@ -106,8 +105,6 @@ export function CreateJourney() {
   const [oraclePhase, setOraclePhase] = useState<"fan" | "reflection">("fan");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [showMaterialize, setShowMaterialize] = useState(false);
-  const [showPublish, setShowPublish] = useState(false);
   const [downloadingSummary, setDownloadingSummary] = useState(false);
   const [phaseSweep, setPhaseSweep] = useState<{
     id: string;
@@ -117,20 +114,22 @@ export function CreateJourney() {
   phaseSweepRef.current = phaseSweep;
   const [oracleSituateStarted, setOracleSituateStarted] = useState(false);
   const [shuffleNotice, setShuffleNotice] = useState(false);
-  const materializeRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const sessionId = getOrCreateSessionId();
     const saved = loadDraft();
     const initial = saved ?? createInitialDraft(sessionId);
-    setDraft(initial);
+    const normalized =
+      initial.stage === "discovery"
+        ? { ...initial, stage: "output" as const, outputStep: 4 }
+        : initial;
+    setDraft(normalized);
     setOracleSituateStarted(
-      initial.stage === "reflection" ||
-        initial.stage === "creation" ||
-        initial.stage === "output" ||
-        initial.stage === "discovery" ||
-        Boolean(initial.cardHand),
+      normalized.stage === "reflection" ||
+        normalized.stage === "creation" ||
+        normalized.stage === "output" ||
+        Boolean(normalized.cardHand),
     );
   }, []);
 
@@ -255,7 +254,7 @@ export function CreateJourney() {
     update({ title, narrative });
 
     if (!draft.submitToCommons) {
-      goTo("discovery", { title, narrative });
+      goTo("output", { outputStep: 4, title, narrative });
       return;
     }
 
@@ -307,7 +306,15 @@ export function CreateJourney() {
             : [],
           drawSynthesis: draft.drawSynthesis,
           drawSynthesisTensions: draft.drawSynthesisTensions,
-          reflectionText: draft.reflectionText.trim(),
+          reflectionText: [
+            draft.reflectionText.trim(),
+            draft.closingReflection.trim(),
+            draft.situatedKnowledge.trim()
+              ? `Situated knowledge: ${draft.situatedKnowledge.trim()}`
+              : "",
+          ]
+            .filter(Boolean)
+            .join("\n\n"),
           imageDataUrl: draft.imageDataUrl,
           submitToCommons: true,
         }),
@@ -323,7 +330,8 @@ export function CreateJourney() {
         throw new Error(result.error ?? "Submission failed");
       }
 
-      goTo("discovery", {
+      goTo("output", {
+        outputStep: 4,
         title,
         narrative,
         submittedId: result.id ?? null,
@@ -393,8 +401,7 @@ export function CreateJourney() {
       : undefined;
 
   const oracleStageTitle = oracleDrawTitle();
-  const outputTitle =
-    draft.outputStep === 0 ? matrixPlacementTitle() : futureRevealTitle();
+  const outputTitle = outputStepTitle(draft.outputStep);
 
   const stageMotionKey =
     draft.stage === "creation"
@@ -423,7 +430,7 @@ export function CreateJourney() {
               exit={
                 reduceMotion ? undefined : { opacity: 0, y: -12, scale: 0.99 }
               }
-              transition={{ duration: 0.32, ease: "easeOut" }}
+              transition={{ duration: 0.48, ease: "easeOut" }}
             >
               {draft.stage === "entry" && (
                 <CreateStageShell stage="entry" headerMode="entry" variant="cover">
@@ -721,145 +728,78 @@ export function CreateJourney() {
                   phaseContext={phaseContext}
                   subtitle=""
                 >
-                  {draft.outputStep === 0 ? (
-                    <div className="w-full min-w-0 space-y-5">
-                      <p className="text-sm text-ffie-muted">
-                        Two questions place this future on the Critical Feminist
-                        Matrix.
-                      </p>
-                      <MatrixScaleQuestion
-                        question="In the world you imagined, does this technology mostly extract something from the people who use it — time, data, autonomy — or give something back?"
-                        lowLabel="Extracts"
-                        highLabel="Gives back"
-                        value={draft.systemLogicScore}
-                        onChange={(systemLogicScore: MatrixScaleScore) =>
-                          update({ systemLogicScore })
-                        }
-                      />
-                      <MatrixScaleQuestion
-                        question="Who decides how this technology is used in that future — a person or company at the top, or the community that lives with it, together?"
-                        lowLabel="Centralized decision"
-                        highLabel="Collective decision"
-                        value={draft.powerOrgScore}
-                        onChange={(powerOrgScore: MatrixScaleScore) =>
-                          update({ powerOrgScore })
-                        }
-                      />
-                      <FfieButton
-                        disabled={
+                  {draft.outputStep === 0 && (
+                    <LivePreviewScreen
+                      draft={draft}
+                      onContinue={() => update({ outputStep: 1 })}
+                    />
+                  )}
+
+                  {draft.outputStep === 1 && (
+                    <MatrixCalibrationScreen
+                      draft={draft}
+                      onSystemLogicChange={(systemLogicScore: MatrixScaleScore) =>
+                        update({ systemLogicScore })
+                      }
+                      onPowerOrgChange={(powerOrgScore: MatrixScaleScore) =>
+                        update({ powerOrgScore })
+                      }
+                      onContinue={() => {
+                        if (
                           draft.systemLogicScore == null ||
                           draft.powerOrgScore == null
+                        ) {
+                          return;
                         }
-                        onClick={() => {
-                          if (
-                            draft.systemLogicScore == null ||
-                            draft.powerOrgScore == null
-                          ) {
-                            return;
-                          }
-                          const placement = computePlacementFromMatrixScales(
-                            draft.systemLogicScore,
-                            draft.powerOrgScore,
-                          );
-                          const title = buildTitle(
-                            draft.artifactName,
-                            draft.characterName,
-                          );
-                          const nextDraft = {
-                            ...draft,
-                            ...placement,
-                            title,
-                          };
-                          const narrative = buildNarrative(nextDraft);
-                          update({
-                            ...placement,
-                            title,
-                            narrative,
-                            outputStep: 1,
-                          });
-                        }}
-                      >
-                        See your future
-                      </FfieButton>
-                    </div>
-                  ) : (
-                  <TimeTravelTransition
-                    startYear={new Date().getFullYear()}
-                    endYear={draft.futureYear}
-                  >
-                  <FutureRevealStage
-                    draft={draft}
-                    cardId="future-output-card"
-                    actionFooter={
-                      <FutureOutputActionFooter
-                        onBringToLife={() => {
-                          setShowMaterialize(true);
-                          materializeRef.current?.scrollIntoView({
-                            behavior: reduceMotion ? "auto" : "smooth",
-                            block: "start",
-                          });
-                        }}
-                        onDownload={handleDownloadSummary}
-                        onPublish={() => setShowPublish((open) => !open)}
-                        bringToLifeActive={showMaterialize}
-                        downloading={downloadingSummary}
-                        submitting={submitting}
-                        layout="full"
-                      />
-                    }
-                  >
-                    <div ref={materializeRef}>
-                      <ArtifactMaterializePanel draft={draft} />
-                    </div>
-                    {showPublish && (
-                      <div className="mx-auto max-w-md space-y-4 rounded-xl border border-ffie-line bg-ffie-surface p-4 lg:mx-0">
-                        <label className="flex items-start gap-3">
-                          <input
-                            type="checkbox"
-                            checked={draft.submitToCommons}
-                            onChange={(e) =>
-                              update({ submitToCommons: e.target.checked })
-                            }
-                            className="mt-1 accent-ffie-accent"
-                          />
-                          <span className="text-sm text-ffie-muted">
-                            Submit this diegetic prototype to the Future
-                            Commons for moderation. If approved, it will
-                            appear alongside Research Findings — always
-                            labeled as community-created.
-                          </span>
-                        </label>
-                        {submitError && (
-                          <p className="text-sm text-red-700">{submitError}</p>
-                        )}
-                        <FfieButton
-                          disabled={
-                            submitting ||
-                            !draft.placementJustification.trim() ||
-                            !draft.submitToCommons
-                          }
-                          onClick={handleFinishOutput}
-                        >
-                          {submitting
-                            ? "Submitting…"
-                            : "Submit for moderation"}
-                        </FfieButton>
-                      </div>
-                    )}
-                    <p className="text-center">
-                      <button
-                        type="button"
-                        className="text-sm text-ffie-muted underline-offset-2 hover:text-ffie-ink hover:underline"
-                        onClick={() => {
-                          update({ submitToCommons: false });
-                          void handleFinishOutput();
-                        }}
-                      >
-                        Continue without publishing →
-                      </button>
-                    </p>
-                  </FutureRevealStage>
-                  </TimeTravelTransition>
+                        const placement = computePlacementFromMatrixScales(
+                          draft.systemLogicScore,
+                          draft.powerOrgScore,
+                        );
+                        const title = buildTitle(
+                          draft.artifactName,
+                          draft.characterName,
+                        );
+                        const nextDraft = {
+                          ...draft,
+                          ...placement,
+                          title,
+                        };
+                        const narrative = buildNarrative(nextDraft);
+                        update({
+                          ...placement,
+                          title,
+                          narrative,
+                          outputStep: 2,
+                        });
+                      }}
+                    />
+                  )}
+
+                  {draft.outputStep === 2 && (
+                    <GroundItScreen
+                      draft={draft}
+                      onUpdate={update}
+                      onContinue={() => update({ outputStep: 3 })}
+                    />
+                  )}
+
+                  {draft.outputStep === 3 && (
+                    <AnchorScreen
+                      draft={draft}
+                      submitting={submitting}
+                      submitError={submitError}
+                      onAnchor={() => void handleFinishOutput()}
+                      onLookAgain={() => update({ outputStep: 0 })}
+                    />
+                  )}
+
+                  {draft.outputStep === 4 && (
+                    <AnchoredConfirmationScreen
+                      draft={draft}
+                      onDownload={handleDownloadSummary}
+                      downloading={downloadingSummary}
+                      onCreateAnother={handleCreateAnotherFuture}
+                    />
                   )}
                 </CreateStageShell>
               )}

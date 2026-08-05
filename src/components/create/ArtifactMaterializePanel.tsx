@@ -5,7 +5,13 @@ import { FfieButton } from "@/components/create/design/FfieButton";
 import { copyToClipboard } from "@/lib/copy-to-clipboard";
 import { buildAiImagePrompt, type JourneyDraft } from "@/lib/journey/types";
 
-export function ArtifactMaterializePanel({ draft }: { draft: JourneyDraft }) {
+export function ArtifactMaterializePanel({
+  draft,
+  embedded = false,
+}: {
+  draft: JourneyDraft;
+  embedded?: boolean;
+}) {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState<string | null>(null);
   const prompt = buildAiImagePrompt(draft);
@@ -24,17 +30,19 @@ export function ArtifactMaterializePanel({ draft }: { draft: JourneyDraft }) {
   return (
     <div
       id="bring-it-to-life"
-      className="mt-8 space-y-4 rounded-xl border border-ffie-line bg-ffie-surface/60 p-5"
+      className={`space-y-4 ${embedded ? "" : "mt-8 rounded-xl border border-ffie-line bg-ffie-surface/60 p-5"}`}
     >
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-ffie-ink">
-          Bring it to life (optional)
-        </p>
-        <p className="text-sm leading-relaxed text-ffie-muted">
-          Copy a ready-made image prompt into your external AI tool — nothing
-          gets uploaded back into FFIE.
-        </p>
-      </div>
+      {!embedded && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-ffie-ink">
+            Bring it to life (optional)
+          </p>
+          <p className="text-sm leading-relaxed text-ffie-muted">
+            Copy a ready-made image prompt into your external AI tool — nothing
+            gets uploaded back into FFIE.
+          </p>
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-3">
         <FfieButton variant="secondary" onClick={handleCopyPrompt}>

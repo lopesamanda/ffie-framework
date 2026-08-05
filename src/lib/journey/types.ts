@@ -58,7 +58,7 @@ export type JourneyDraft = {
   stage: JourneyStage;
   orientationStep: number;
   creationStep: number;
-  /** 0 = Likert placement, 1 = matrix reveal & share */
+  /** 0 = live preview, 1 = calibration, 2 = ground it, 3 = anchor, 4 = confirmation */
   outputStep: number;
   /** Sub-step within Embody the future (0–3). */
   embodySubStep: number;
@@ -119,6 +119,8 @@ export type JourneyDraft = {
   imageDataUrl: string | null;
   /** Optional closing reflection on the final Future card. */
   closingReflection: string;
+  /** Optional place, community, or lineage grounding for the publish ritual. */
+  situatedKnowledge: string;
   /** System Logic scale — Extractive (1) ↔ Emancipatory (6) */
   systemLogicScore: MatrixScaleScore | null;
   /** Power Organization scale — Hierarchical (1) ↔ Collective Care (6) */
@@ -231,6 +233,26 @@ export function computePlacementFromMatrixScales(
       `System Logic (Extractive→Emancipatory): ${systemLogic}/6.`,
       `Power Organization (Hierarchical→Collective Care): ${powerOrg}/6.`,
     ].join(" "),
+  };
+}
+
+/** Live preview placement — no jitter, for calibration UI. */
+export function computePlacementPreview(
+  systemLogic: MatrixScaleScore,
+  powerOrg: MatrixScaleScore,
+): {
+  position: { x: number; y: number };
+  quadrant: FutureQuadrant;
+  powerPosition: PowerPosition;
+} {
+  const x = matrixScaleToSigned(systemLogic);
+  const y = matrixScaleToSigned(powerOrg);
+  const powerPosition: PowerPosition = powerOrg <= 3 ? "hegemonic" : "marginalized";
+
+  return {
+    position: { x, y },
+    quadrant: quadrantFromPosition(x, y),
+    powerPosition,
   };
 }
 
@@ -374,6 +396,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     artifactValueOther: "",
     imageDataUrl: null,
     closingReflection: "",
+    situatedKnowledge: "",
     systemLogicScore: null,
     powerOrgScore: null,
     position: { x: 0, y: 0 },
@@ -453,6 +476,7 @@ export function loadDraft(): JourneyDraft | null {
       personaSector: parsed.personaSector ?? "",
       personaSectorCustom: parsed.personaSectorCustom ?? "",
       closingReflection: parsed.closingReflection ?? "",
+      situatedKnowledge: parsed.situatedKnowledge ?? "",
       imageDataUrl: parsed.imageDataUrl ?? null,
       hiddenFunctionExtremeValue: parsed.hiddenFunctionExtremeValue ?? "",
       hiddenFunctionCompletion: parsed.hiddenFunctionCompletion ?? "",

@@ -36,6 +36,7 @@ export type SubmissionRow = {
   image_url: string | null;
   draw_synthesis: string | null;
   draw_synthesis_tensions: string | null;
+  reflection_text: string | null;
   created_at: string;
 };
 
@@ -56,7 +57,14 @@ const ADMIN_LIST_SELECT =
   "id, status, title, narrative, character_name, artifact_name, quadrant, power_position, location, created_at";
 
 const PUBLIC_SELECT =
-  "id, status, title, narrative, reflection_question, location, year, character_name, character_age, character_role, persona_sector, character_ai_function, character_desire, character_fear, character_values, artifact_name, artifact_public_promise, artifact_hidden_function, artifact_values, tension, quadrant, power_position, position_x, position_y, image_url, draw_synthesis, draw_synthesis_tensions, created_at";
+  "id, status, title, narrative, reflection_question, reflection_text, location, year, character_name, character_age, character_role, persona_sector, character_ai_function, character_desire, character_fear, character_values, artifact_name, artifact_public_promise, artifact_hidden_function, artifact_values, tension, quadrant, power_position, position_x, position_y, image_url, draw_synthesis, draw_synthesis_tensions, created_at";
+
+function parseGroundedIn(reflectionText: string | null): string | undefined {
+  if (!reflectionText) return undefined;
+  const match = reflectionText.match(/Situated knowledge:\s*(.+?)(?:\n\n|$)/is);
+  const value = match?.[1]?.trim();
+  return value || undefined;
+}
 
 /** Infer Brazil/Portugal from free-text location for matrix colouring. */
 export function inferCountry(location: string): FutureCountry {
@@ -112,6 +120,7 @@ export function mapSubmissionToFutureEntry(row: SubmissionRow): FutureEntry {
     drawSynthesis: row.draw_synthesis ?? undefined,
     drawSynthesisTensions: row.draw_synthesis_tensions ?? undefined,
     publishedAt: row.created_at,
+    groundedIn: parseGroundedIn(row.reflection_text),
   };
 }
 

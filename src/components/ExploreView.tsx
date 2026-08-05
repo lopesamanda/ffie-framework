@@ -22,7 +22,9 @@ import {
 } from "@/components/matrix/MatrixPointInteraction";
 import { researchFindingsSeed } from "@/data/research-findings-seed";
 import { buildArtifactMarqueeItems } from "@/lib/artifact-marquee-items";
+import { EXPLORE_COPY } from "@/lib/publish-ritual-copy";
 import {
+  QUADRANT_LABELS,
   type FutureCollection,
   type FutureCountry,
   type FutureEntry,
@@ -31,6 +33,7 @@ import {
 } from "@/types/future";
 
 type BrowseLens = "matrix" | "constellation" | "grid";
+type CommonsSort = "newest" | "quadrant" | "register";
 
 type ExploreViewProps = {
   futureCommons?: FutureEntry[];
@@ -72,6 +75,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
   const [scenario, setScenario] = useState<FutureQuadrant | "all">("all");
   const [sector, setSector] = useState<PersonaSector | "all">("all");
   const [role, setRole] = useState<string | "all">("all");
+  const [commonsSort, setCommonsSort] = useState<CommonsSort>("newest");
   const [selected, setSelected] = useState<FutureEntry | null>(null);
   const [detailAnchor, setDetailAnchor] = useState<MatrixAnchor | null>(null);
 
@@ -95,6 +99,27 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
       return true;
     });
   }, [baseEntries, country, scenario, sector, role]);
+
+  const sortedEntries = useMemo(() => {
+    const entries = [...filteredEntries];
+    if (collection !== "future_commons") return entries;
+    if (commonsSort === "newest") {
+      entries.sort((a, b) =>
+        (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""),
+      );
+    } else if (commonsSort === "quadrant") {
+      entries.sort((a, b) =>
+        QUADRANT_LABELS[a.quadrant].localeCompare(QUADRANT_LABELS[b.quadrant]),
+      );
+    } else {
+      entries.sort((a, b) =>
+        (a.character.sector ?? a.title).localeCompare(
+          b.character.sector ?? b.title,
+        ),
+      );
+    }
+    return entries;
+  }, [collection, commonsSort, filteredEntries]);
 
   const lensKey = `${collection}-${lens}`;
 
@@ -165,6 +190,24 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
             onSectorChange={setSector}
             onRoleChange={setRole}
           />
+
+          {collection === "future_commons" && (
+            <div className="mt-4">
+              <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+                Sort
+              </p>
+              <SegmentedControl
+                ariaLabel="Sort futures"
+                value={commonsSort}
+                onChange={(value) => setCommonsSort(value as CommonsSort)}
+                options={[
+                  { value: "newest", label: EXPLORE_COPY.sortOptions[0] },
+                  { value: "quadrant", label: EXPLORE_COPY.sortOptions[1] },
+                  { value: "register", label: EXPLORE_COPY.sortOptions[2] },
+                ]}
+              />
+            </div>
+          )}
         </div>
 
         <div className="-mx-2 overflow-hidden rounded-xl border border-ffie-line/50 bg-ffie-bg/40 px-2 py-4">
@@ -221,7 +264,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
                           }
                         >
                           <FutureMatrix
-                            entries={filteredEntries}
+                            entries={sortedEntries}
                             selectedId={selected?.id}
                             onSelect={(entry, anchor) => {
                               setSelected(entry);
@@ -253,7 +296,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
               ) : lens === "constellation" ? (
                 <>
                   <FutureConstellation
-                    entries={filteredEntries}
+                    entries={sortedEntries}
                     emptyMessage={
                       collection === "future_commons" && baseEntries.length === 0
                         ? FUTURE_COMMONS_EMPTY
@@ -271,7 +314,7 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
                 </p>
               ) : (
                 <>
-                  <FutureGrid entries={filteredEntries} sharedLayout />
+                  <FutureGrid entries={sortedEntries} sharedLayout />
                   <BuildYourOwnCta />
                 </>
               )}

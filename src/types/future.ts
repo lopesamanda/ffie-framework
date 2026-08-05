@@ -63,6 +63,8 @@ export type FutureEntry = {
   drawSynthesisTensions?: string;
   /** ISO timestamp when published (Future Commons). */
   publishedAt?: string;
+  /** Optional creator-named grounding from the publish ritual. */
+  groundedIn?: string;
 };
 
 export const QUADRANT_LABELS: Record<FutureQuadrant, string> = {
