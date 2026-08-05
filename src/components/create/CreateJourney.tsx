@@ -8,16 +8,19 @@ import { toPng } from "html-to-image";
 import { CreateStageShell } from "@/components/create/design/CreateStageShell";
 import { CreateEntryCover } from "@/components/create/design/CreateEntryCover";
 import { FfieButton } from "@/components/create/design/FfieButton";
-import {
-  CategoryRegisterTiles,
-  EnvironmentalBanner,
-} from "@/components/create/design/CategoryRegisterTiles";
+import { RegisterDeckExpandedRow } from "@/components/register/RegisterDeckExpandedRow";
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { AnchoredConfirmationScreen } from "@/components/create/AnchoredConfirmationScreen";
 import { GroundItScreen } from "@/components/create/GroundItScreen";
 import { LivePreviewScreen } from "@/components/create/LivePreviewScreen";
 import { MatrixCalibrationScreen } from "@/components/create/MatrixCalibrationScreen";
+import {
+  FutureSummaryExport,
+  FUTURE_SUMMARY_EXPORT_HEIGHT,
+  FUTURE_SUMMARY_EXPORT_WIDTH,
+} from "@/components/create/FutureSummaryExport";
+import { PhaseSweepOverlay } from "@/components/motion/PhaseSweepOverlay";
 import {
   OracleDrawRecap,
   OracleDrawReflectionPrompt,
@@ -441,8 +444,7 @@ export function CreateJourney() {
                   title={oracleStageTitle}
                   phaseContext={phaseContext}
                 >
-                  <CategoryRegisterTiles />
-                  <EnvironmentalBanner />
+                  <RegisterDeckExpandedRow />
                   <p className="mt-2 text-sm text-ffie-muted">
                     About 10 minutes, five short moments.
                   </p>

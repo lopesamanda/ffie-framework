@@ -22,20 +22,23 @@ export function FutureOutputActionFooter({
   submitting = false,
   layout = "default",
 }: FutureOutputActionFooterProps & {
-  layout?: "default" | "sidebar" | "inline";
+  layout?: "default" | "sidebar" | "inline" | "full";
 }) {
   const buttonGrid =
     layout === "sidebar"
       ? "grid-cols-1 sm:grid-cols-3 lg:grid-cols-1"
-      : layout === "inline"
-        ? "grid-cols-1 sm:grid-cols-3"
-        : "grid-cols-1 sm:grid-cols-3";
+      : "grid-cols-1 sm:grid-cols-3";
+
+  const widthClass =
+    layout === "full" || layout === "inline"
+      ? "w-full"
+      : layout === "sidebar"
+        ? "mt-6 w-full lg:max-w-sm"
+        : "mt-6 lg:max-w-sm";
 
   return (
     <div
-      className={`rounded-xl border border-ffie-line/80 bg-ffie-bg/70 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] sm:px-5 ${
-        layout === "inline" ? "w-full" : "mt-6 lg:max-w-sm"
-      }`}
+      className={`rounded-xl border border-ffie-line/80 bg-ffie-bg/70 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] sm:px-5 ${widthClass}`}
     >
       <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
         Next steps

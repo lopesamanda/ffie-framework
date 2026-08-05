@@ -159,7 +159,7 @@ export function FutureRevealStage({
             </motion.div>
           </div>
 
-          <div className="mx-auto w-full max-w-7xl space-y-8">
+          <div className="w-full space-y-8 pt-2">
             <div
               className="flex items-center justify-center gap-1.5 py-1"
               aria-hidden
@@ -175,7 +175,7 @@ export function FutureRevealStage({
               )}
             </div>
 
-            <div>
+            <div className="w-full">
               <h3 className="font-display text-base font-semibold text-ffie-ink">
                 How can you work with this future?
               </h3>
@@ -184,9 +184,7 @@ export function FutureRevealStage({
               </div>
             </div>
 
-            {actionFooter && (
-              <div className="w-full max-w-md lg:ml-auto">{actionFooter}</div>
-            )}
+            {actionFooter && <div className="w-full">{actionFooter}</div>}
           </div>
 
           {children}
