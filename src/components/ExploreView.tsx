@@ -2,9 +2,18 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import {
+  AnimatePresence,
+  LayoutGroup,
+  motion,
+  useReducedMotion,
+} from "framer-motion";
 import { SegmentedControl } from "@/components/create/design/SegmentedControl";
+import { ExploreFilterConsole } from "@/components/explore/ExploreFilterConsole";
 import { FutureConstellation } from "@/components/explore/FutureConstellation";
+import { MatrixAxisBackdrop } from "@/components/explore/MatrixAxisBackdrop";
+import { ArtifactMarquee } from "@/components/home/ArtifactMarquee";
+import { CursorLens } from "@/components/home/CursorLens";
 import { FuturePreviewDetailContent } from "@/components/FuturePreviewPanel";
 import { FutureGrid, FutureMatrix } from "@/components/FutureMatrix";
 import {
@@ -12,10 +21,8 @@ import {
   type MatrixAnchor,
 } from "@/components/matrix/MatrixPointInteraction";
 import { researchFindingsSeed } from "@/data/research-findings-seed";
-import { ROLE_OPTIONS } from "@/lib/journey/character-options";
-import { PERSONA_SECTOR_OPTIONS } from "@/lib/journey/persona-sectors";
+import { buildArtifactMarqueeItems } from "@/lib/artifact-marquee-items";
 import {
-  QUADRANT_LABELS,
   type FutureCollection,
   type FutureCountry,
   type FutureEntry,
@@ -52,34 +59,9 @@ const LENS_OPTIONS: { value: BrowseLens; label: string }[] = [
 ];
 
 const fadeTransition = {
-  duration: 0.28,
+  duration: 0.32,
   ease: [0.16, 1, 0.3, 1] as const,
 };
-
-function FilterChip({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-        active
-          ? "border-ffie-accent bg-ffie-accent-soft text-ffie-accent"
-          : "border-ffie-line bg-ffie-surface text-ffie-muted hover:border-ffie-accent/30 hover:text-ffie-ink"
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
 
 export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
   const reduceMotion = useReducedMotion();
@@ -114,7 +96,12 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
     });
   }, [baseEntries, country, scenario, sector, role]);
 
-  const contentKey = `${collection}-${lens}-${country}-${scenario}-${sector}-${role}`;
+  const lensKey = `${collection}-${lens}`;
+
+  const marqueeItems = useMemo(
+    () => buildArtifactMarqueeItems(futureCommons),
+    [futureCommons],
+  );
 
   const handleCollectionChange = (next: FutureCollection) => {
     setCollection(next);
@@ -128,238 +115,185 @@ export function ExploreView({ futureCommons = [] }: ExploreViewProps) {
   };
 
   return (
-    <div className="space-y-8">
-      <p className="max-w-prose text-base leading-relaxed text-ffie-ink">
-        {EPISTEMIC_ENTRY}
-      </p>
-
-      <div className="space-y-4 border-b border-ffie-line pb-6">
-        <SegmentedControl
-          ariaLabel="Collection"
-          value={collection}
-          onChange={handleCollectionChange}
-          options={[
-            { value: "research_findings", label: "Research Findings" },
-            { value: "future_commons", label: "Future Commons" },
-          ]}
-        />
-
-        <p className="max-w-prose text-sm leading-relaxed text-ffie-muted">
-          {COLLECTION_COPY[collection]}
+    <>
+      <CursorLens />
+      <div className="space-y-8">
+        <p className="max-w-prose text-base leading-relaxed text-ffie-ink">
+          {EPISTEMIC_ENTRY}
         </p>
-      </div>
 
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-2">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-            Primary lens
-          </p>
+        <div className="space-y-4 border-b border-ffie-line pb-6">
           <SegmentedControl
-            ariaLabel="Browse lens"
-            value={lens}
-            onChange={(value) => {
-              setLens(value);
-              setSelected(null);
-              setDetailAnchor(null);
-            }}
-            options={LENS_OPTIONS}
+            ariaLabel="Collection"
+            value={collection}
+            onChange={handleCollectionChange}
+            options={[
+              { value: "research_findings", label: "Research Findings" },
+              { value: "future_commons", label: "Future Commons" },
+            ]}
+          />
+          <p className="max-w-prose text-sm leading-relaxed text-ffie-muted">
+            {COLLECTION_COPY[collection]}
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+              Primary lens
+            </p>
+            <SegmentedControl
+              ariaLabel="Browse lens"
+              value={lens}
+              onChange={(value) => {
+                setLens(value);
+                setSelected(null);
+                setDetailAnchor(null);
+              }}
+              options={LENS_OPTIONS}
+            />
+          </div>
+
+          <ExploreFilterConsole
+            country={country}
+            scenario={scenario}
+            sector={sector}
+            role={role}
+            showRole={collection === "future_commons"}
+            onCountryChange={setCountry}
+            onScenarioChange={setScenario}
+            onSectorChange={setSector}
+            onRoleChange={setRole}
           />
         </div>
 
-        <div className="space-y-2">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-            Filters
+        <div className="-mx-2 overflow-hidden rounded-xl border border-ffie-line/50 bg-ffie-bg/40 px-2 py-4">
+          <p className="mb-3 px-2 text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+            Artifacts in the commons
           </p>
-          <div className="flex flex-wrap gap-2">
-            <FilterChip
-              label="All countries"
-              active={country === "all"}
-              onClick={() => setCountry("all")}
-            />
-            <FilterChip
-              label="Brazil"
-              active={country === "Brazil"}
-              onClick={() =>
-                setCountry((c) => (c === "Brazil" ? "all" : "Brazil"))
-              }
-            />
-            <FilterChip
-              label="Portugal"
-              active={country === "Portugal"}
-              onClick={() =>
-                setCountry((c) => (c === "Portugal" ? "all" : "Portugal"))
-              }
-            />
-            <span className="mx-1 hidden h-6 w-px self-center bg-ffie-line sm:inline" />
-            <FilterChip
-              label="All scenarios"
-              active={scenario === "all"}
-              onClick={() => setScenario("all")}
-            />
-            {(Object.entries(QUADRANT_LABELS) as [FutureQuadrant, string][]).map(
-              ([key, label]) => (
-                <FilterChip
-                  key={key}
-                  label={label.replace(" Future", "")}
-                  active={scenario === key}
-                  onClick={() =>
-                    setScenario((current) => (current === key ? "all" : key))
-                  }
-                />
-              ),
-            )}
-            <span className="mx-1 hidden h-6 w-px self-center bg-ffie-line sm:inline" />
-            <FilterChip
-              label="All sectors"
-              active={sector === "all"}
-              onClick={() => setSector("all")}
-            />
-            {PERSONA_SECTOR_OPTIONS.map((option) => (
-              <FilterChip
-                key={option}
-                label={option}
-                active={sector === option}
-                onClick={() =>
-                  setSector((current) => (current === option ? "all" : option))
-                }
-              />
-            ))}
-          </div>
-          {collection === "future_commons" && (
-            <div className="flex flex-wrap gap-2 pt-2">
-              <span className="mx-1 hidden h-6 w-px self-center bg-ffie-line sm:inline" />
-              <FilterChip
-                label="All roles"
-                active={role === "all"}
-                onClick={() => setRole("all")}
-              />
-              {ROLE_OPTIONS.map((option) => (
-                <FilterChip
-                  key={option}
-                  label={option}
-                  active={role === option}
-                  onClick={() =>
-                    setRole((current) => (current === option ? "all" : option))
-                  }
-                />
-              ))}
-            </div>
-          )}
+          <ArtifactMarquee items={marqueeItems} variant="dual" />
         </div>
-      </div>
 
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={contentKey}
-          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
-          transition={fadeTransition}
-          layout={!reduceMotion}
-        >
-          {lens === "matrix" ? (
-            filteredEntries.length === 0 ? (
-              <p className="rounded-2xl border border-dashed border-ffie-line p-10 text-center text-sm text-ffie-muted">
-                {collection === "future_commons" && baseEntries.length === 0
-                  ? FUTURE_COMMONS_EMPTY
-                  : NO_FILTER_MATCH}
-              </p>
-            ) : (
-            <div className="space-y-4">
-              <MatrixPointInteraction
-                open={Boolean(selected)}
-                anchor={detailAnchor}
-                previewLabel={selected?.artifact.name}
-                title={selected?.title ?? ""}
-                onClose={() => {
-                  setSelected(null);
-                  setDetailAnchor(null);
-                }}
-                childrenContent={
-                  selected ? (
-                    <FuturePreviewDetailContent entry={selected} />
-                  ) : null
-                }
-                footerLink={
-                  selected
-                    ? {
-                        href: `/explore/${selected.id}`,
-                        label: "Read the full future →",
-                      }
-                    : undefined
-                }
-              >
-                <FutureMatrix
-                  entries={filteredEntries}
-                  selectedId={selected?.id}
-                  onSelect={(entry, anchor) => {
-                    setSelected(entry);
-                    setDetailAnchor(entry ? (anchor ?? null) : null);
-                  }}
-                  linkToDetail={false}
-                  highlightCountry={country}
-                  highlightSector={sector}
-                  colorBy={
-                    collection === "future_commons" ? "sector" : "country"
-                  }
-                />
-              </MatrixPointInteraction>
+        <LayoutGroup id="explore-browse">
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.div
+              key={lensKey}
+              layout
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={reduceMotion ? undefined : { opacity: 0 }}
+              transition={fadeTransition}
+              className="space-y-4"
+            >
+              {lens === "matrix" ? (
+                filteredEntries.length === 0 ? (
+                  <p className="rounded-2xl border border-dashed border-ffie-line p-10 text-center text-sm text-ffie-muted">
+                    {collection === "future_commons" && baseEntries.length === 0
+                      ? FUTURE_COMMONS_EMPTY
+                      : NO_FILTER_MATCH}
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="relative overflow-hidden rounded-2xl border border-ffie-line bg-ffie-surface p-4 shadow-sm">
+                      <MatrixAxisBackdrop />
+                      <div className="relative z-10">
+                        <MatrixPointInteraction
+                          open={Boolean(selected)}
+                          anchor={detailAnchor}
+                          previewLabel={selected?.artifact.name}
+                          title={selected?.title ?? ""}
+                          onClose={() => {
+                            setSelected(null);
+                            setDetailAnchor(null);
+                          }}
+                          childrenContent={
+                            selected ? (
+                              <FuturePreviewDetailContent entry={selected} />
+                            ) : null
+                          }
+                          footerLink={
+                            selected
+                              ? {
+                                  href: `/explore/${selected.id}`,
+                                  label: "Read the full future →",
+                                }
+                              : undefined
+                          }
+                        >
+                          <FutureMatrix
+                            entries={filteredEntries}
+                            selectedId={selected?.id}
+                            onSelect={(entry, anchor) => {
+                              setSelected(entry);
+                              setDetailAnchor(entry ? (anchor ?? null) : null);
+                            }}
+                            linkToDetail={false}
+                            highlightCountry={country}
+                            highlightSector={sector}
+                            colorBy={
+                              collection === "future_commons" ? "sector" : "country"
+                            }
+                            sharedLayout
+                            idleFloat
+                          />
+                        </MatrixPointInteraction>
+                      </div>
+                    </div>
 
-              {!selected && (
-                <p className="max-w-prose text-sm text-ffie-muted">
-                  Click a point on the matrix to read an excerpt and reflection
-                  question — or switch to Constellation for an atlas-style
-                  wander.
+                    {!selected && (
+                      <p className="max-w-prose text-sm text-ffie-muted">
+                        Click a point on the matrix to read an excerpt — or switch
+                        to Constellation for an atlas-style wander.
+                      </p>
+                    )}
+
+                    <BuildYourOwnCta />
+                  </div>
+                )
+              ) : lens === "constellation" ? (
+                <>
+                  <FutureConstellation
+                    entries={filteredEntries}
+                    emptyMessage={
+                      collection === "future_commons" && baseEntries.length === 0
+                        ? FUTURE_COMMONS_EMPTY
+                        : NO_FILTER_MATCH
+                    }
+                    sharedLayout
+                  />
+                  {filteredEntries.length > 0 && <BuildYourOwnCta />}
+                </>
+              ) : filteredEntries.length === 0 ? (
+                <p className="rounded-2xl border border-dashed border-ffie-line p-10 text-center text-sm text-ffie-muted">
+                  {collection === "future_commons" && baseEntries.length === 0
+                    ? FUTURE_COMMONS_EMPTY
+                    : NO_FILTER_MATCH}
                 </p>
+              ) : (
+                <>
+                  <FutureGrid entries={filteredEntries} sharedLayout />
+                  <BuildYourOwnCta />
+                </>
               )}
+            </motion.div>
+          </AnimatePresence>
+        </LayoutGroup>
+      </div>
+    </>
+  );
+}
 
-              <div className="flex flex-col gap-3 border-t border-ffie-line pt-6 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-ffie-muted">
-                  Seen a future that feels close to home?
-                </p>
-                <Link
-                  href="/create"
-                  className="inline-flex w-fit rounded-full bg-ffie-accent px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
-                >
-                  Build your own →
-                </Link>
-              </div>
-            </div>
-            )
-          ) : lens === "constellation" ? (
-            <FutureConstellation
-              entries={filteredEntries}
-              emptyMessage={
-                collection === "future_commons" && baseEntries.length === 0
-                  ? FUTURE_COMMONS_EMPTY
-                  : NO_FILTER_MATCH
-              }
-            />
-          ) : filteredEntries.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-ffie-line p-10 text-center text-sm text-ffie-muted">
-              {collection === "future_commons" && baseEntries.length === 0
-                ? FUTURE_COMMONS_EMPTY
-                : NO_FILTER_MATCH}
-            </p>
-          ) : (
-            <FutureGrid entries={filteredEntries} />
-          )}
-
-          {lens !== "matrix" && filteredEntries.length > 0 && (
-            <div className="flex flex-col gap-3 border-t border-ffie-line pt-8 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-ffie-muted">
-                Seen a future that feels close to home?
-              </p>
-              <Link
-                href="/create"
-                className="inline-flex w-fit rounded-full bg-ffie-accent px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
-              >
-                Build your own →
-              </Link>
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+function BuildYourOwnCta() {
+  return (
+    <div className="flex flex-col gap-3 border-t border-ffie-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-sm text-ffie-muted">Seen a future that feels close to home?</p>
+      <Link
+        href="/create"
+        data-cursor-lens
+        className="inline-flex w-fit rounded-full bg-ffie-accent px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+      >
+        Build your own →
+      </Link>
     </div>
   );
 }

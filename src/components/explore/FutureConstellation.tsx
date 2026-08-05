@@ -23,6 +23,7 @@ type FutureConstellationProps = {
   entries: FutureEntry[];
   emptyMessage?: string;
   className?: string;
+  sharedLayout?: boolean;
 };
 
 /** Loose atlas-style constellation browse — shared by Explore and Create Discovery. */
@@ -30,6 +31,7 @@ export function FutureConstellation({
   entries,
   emptyMessage = "No futures to show yet.",
   className = "",
+  sharedLayout = false,
 }: FutureConstellationProps) {
   const reduceMotion = useReducedMotion();
 
@@ -58,7 +60,8 @@ export function FutureConstellation({
         return (
           <motion.div
             key={entry.id}
-            layout={!reduceMotion}
+            layout={sharedLayout && !reduceMotion}
+            layoutId={sharedLayout ? `explore-artifact-${entry.id}` : undefined}
             initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: pos.scale }}
             exit={reduceMotion ? undefined : { opacity: 0, scale: 0.95 }}

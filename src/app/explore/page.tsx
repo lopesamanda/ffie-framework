@@ -23,12 +23,9 @@ export default async function ExplorePage() {
           Explore Futures
         </h1>
         <p className="mt-4 text-base leading-relaxed text-ffie-muted">
-          Horizontal axis — System Logic:{" "}
-          <span className="text-ffie-ink">Extractive ↔ Emancipatory</span>.
-          Vertical axis — Power Organization:{" "}
-          <span className="text-ffie-ink">Hierarchical ↔ Collective Care</span>.
-          The matrix is the primary lens; country and scenario refine what you
-          see.
+          Browse validated research prototypes and community futures on the matrix
+          below — filter by country, scenario, or sector, then switch between
+          Matrix, Constellation, and Grid views.
         </p>
       </header>
 

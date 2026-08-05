@@ -51,6 +51,10 @@ type FutureMatrixProps = {
   highlightSector?: PersonaSector | "all";
   /** Dot colour: country (research) or sector (Future Commons). */
   colorBy?: "country" | "sector";
+  /** Shared layout ids for cross-view transitions on Explore. */
+  sharedLayout?: boolean;
+  /** Gentle idle float on matrix dots. */
+  idleFloat?: boolean;
 };
 
 function dotColor(entry: FutureEntry, colorBy: "country" | "sector"): string {
@@ -68,6 +72,8 @@ export function FutureMatrix({
   highlightCountry = "all",
   highlightSector = "all",
   colorBy = "country",
+  sharedLayout = false,
+  idleFloat = false,
 }: FutureMatrixProps) {
   const router = useRouter();
   const midX = PLOT.width / 2;
@@ -216,7 +222,7 @@ export function FutureMatrix({
           Collective Care
         </text>
 
-        {entries.map((entry) => {
+        {entries.map((entry, index) => {
           const unit = toUnitPlotPosition(entry);
           const { cx, cy } = plotToSvg(unit.x, unit.y);
           const isSelected = selectedId === entry.id;
@@ -225,10 +231,14 @@ export function FutureMatrix({
             (highlightSector !== "all" &&
               entry.character.sector !== highlightSector);
           const color = dotColor(entry, colorBy);
+          const floatDuration = 3.2 + (index % 5) * 0.35;
 
           const point = (
             <>
               <motion.circle
+                layoutId={
+                  sharedLayout ? `explore-artifact-${entry.id}` : undefined
+                }
                 cx={cx}
                 cy={cy}
                 r={isSelected ? 14 : 10}
@@ -236,12 +246,24 @@ export function FutureMatrix({
                 stroke={isSelected ? "#6e52c4" : "#ffffff"}
                 strokeWidth={isSelected ? 3 : 2}
                 className={onSelect || linkToDetail ? "cursor-pointer" : ""}
+                data-cursor-lens={onSelect || linkToDetail ? true : undefined}
                 initial={false}
                 animate={{
                   scale: isSelected ? 1.08 : 1,
                   opacity: isDimmed ? 0.25 : 1,
+                  cy: idleFloat ? [cy, cy - 2.5, cy] : cy,
                 }}
-                transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                transition={{
+                  scale: { type: "spring", stiffness: 420, damping: 28 },
+                  opacity: { duration: 0.2 },
+                  cy: idleFloat
+                    ? {
+                        duration: floatDuration,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }
+                    : { duration: 0 },
+                }}
                 onClick={(event) => {
                   if (onSelect) {
                     const container = event.currentTarget.closest(
@@ -328,7 +350,13 @@ export function FutureMatrix({
   );
 }
 
-export function FutureGrid({ entries }: { entries: FutureEntry[] }) {
+export function FutureGrid({
+  entries,
+  sharedLayout = false,
+}: {
+  entries: FutureEntry[];
+  sharedLayout?: boolean;
+}) {
   if (entries.length === 0) {
     return (
       <p className="rounded-2xl border border-dashed border-ffie-line p-10 text-center text-sm text-ffie-muted">
@@ -341,11 +369,16 @@ export function FutureGrid({ entries }: { entries: FutureEntry[] }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {entries.map((entry) => (
-        <FutureCommonsCard
+        <motion.div
           key={entry.id}
-          entry={entry}
-          className="transition hover:border-ffie-accent/30 hover:shadow-[0_4px_16px_rgba(35,19,82,0.08)]"
-        />
+          layout={sharedLayout}
+          layoutId={sharedLayout ? `explore-artifact-${entry.id}` : undefined}
+        >
+          <FutureCommonsCard
+            entry={entry}
+            className="transition hover:border-ffie-accent/30 hover:shadow-[0_4px_16px_rgba(35,19,82,0.08)]"
+          />
+        </motion.div>
       ))}
     </div>
   );
