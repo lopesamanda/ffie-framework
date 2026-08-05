@@ -2,6 +2,7 @@ import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
 import { possessiveStoryHeading } from "@/lib/journey/future-card-copy";
 import type { CharacterPronounId } from "@/lib/journey/embody-flow";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
+import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 export const CREATION_STEP_LABELS = [
@@ -53,20 +54,29 @@ export function oracleDrawTitle(): string {
   return "The Draw.";
 }
 
-export function matrixPlacementTitle(): string {
-  return "Matrix Calibration";
+export function livePreviewTitle(): string {
+  return PUBLISH_RITUAL.livePreview.heading;
 }
 
-export function livePreviewTitle(): string {
-  return "It exists now.";
+export function matrixPlacementTitle(): string {
+  return PUBLISH_RITUAL.calibration.heading;
 }
 
 export function groundItTitle(): string {
-  return "Ground it.";
+  return PUBLISH_RITUAL.groundIt.heading;
+}
+
+export function anchorTitle(): string {
+  return PUBLISH_RITUAL.anchor.heading;
 }
 
 export function anchoredTitle(): string {
-  return "Anchored.";
+  return PUBLISH_RITUAL.confirmation.heading;
+}
+
+/** @deprecated Use livePreviewTitle for step 0 */
+export function futureRevealTitle(): string {
+  return livePreviewTitle();
 }
 
 export function outputStepTitle(step: number): string {
@@ -78,12 +88,10 @@ export function outputStepTitle(step: number): string {
     case 2:
       return groundItTitle();
     case 3:
+      return anchorTitle();
+    case 4:
       return anchoredTitle();
     default:
-      return futureRevealTitle();
+      return livePreviewTitle();
   }
-}
-
-export function futureRevealTitle(): string {
-  return "It exists now.";
 }

@@ -58,7 +58,7 @@ export type JourneyDraft = {
   stage: JourneyStage;
   orientationStep: number;
   creationStep: number;
-  /** 0 = Likert placement, 1 = matrix reveal & share */
+  /** 0 = live preview, 1 = calibration, 2 = ground it, 3 = anchor, 4 = confirmation */
   outputStep: number;
   /** Sub-step within Embody the future (0–3). */
   embodySubStep: number;
@@ -119,7 +119,7 @@ export type JourneyDraft = {
   imageDataUrl: string | null;
   /** Optional closing reflection on the final Future card. */
   closingReflection: string;
-  /** Optional situated knowledge attribution on Ground It. */
+  /** Optional place, community, or lineage grounding for the publish ritual. */
   situatedKnowledge: string;
   /** System Logic scale — Extractive (1) ↔ Emancipatory (6) */
   systemLogicScore: MatrixScaleScore | null;

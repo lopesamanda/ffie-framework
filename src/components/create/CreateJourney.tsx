@@ -12,6 +12,7 @@ import { RegisterDeckExpandedRow } from "@/components/register/RegisterDeckExpan
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { AnchoredConfirmationScreen } from "@/components/create/AnchoredConfirmationScreen";
+import { AnchorScreen } from "@/components/create/AnchorScreen";
 import { GroundItScreen } from "@/components/create/GroundItScreen";
 import { LivePreviewScreen } from "@/components/create/LivePreviewScreen";
 import { MatrixCalibrationScreen } from "@/components/create/MatrixCalibrationScreen";
@@ -121,7 +122,7 @@ export function CreateJourney() {
     const initial = saved ?? createInitialDraft(sessionId);
     const normalized =
       initial.stage === "discovery"
-        ? { ...initial, stage: "output" as const, outputStep: 3 }
+        ? { ...initial, stage: "output" as const, outputStep: 4 }
         : initial;
     setDraft(normalized);
     setOracleSituateStarted(
@@ -253,7 +254,7 @@ export function CreateJourney() {
     update({ title, narrative });
 
     if (!draft.submitToCommons) {
-      goTo("output", { outputStep: 3, title, narrative });
+      goTo("output", { outputStep: 4, title, narrative });
       return;
     }
 
@@ -330,7 +331,7 @@ export function CreateJourney() {
       }
 
       goTo("output", {
-        outputStep: 3,
+        outputStep: 4,
         title,
         narrative,
         submittedId: result.id ?? null,
@@ -429,7 +430,7 @@ export function CreateJourney() {
               exit={
                 reduceMotion ? undefined : { opacity: 0, y: -12, scale: 0.99 }
               }
-              transition={{ duration: 0.32, ease: "easeOut" }}
+              transition={{ duration: 0.48, ease: "easeOut" }}
             >
               {draft.stage === "entry" && (
                 <CreateStageShell stage="entry" headerMode="entry" variant="cover">
@@ -777,18 +778,22 @@ export function CreateJourney() {
                   {draft.outputStep === 2 && (
                     <GroundItScreen
                       draft={draft}
-                      submitting={submitting}
-                      submitError={submitError}
                       onUpdate={update}
-                      onPublish={handleFinishOutput}
-                      onContinuePrivate={() => {
-                        update({ submitToCommons: false });
-                        void handleFinishOutput();
-                      }}
+                      onContinue={() => update({ outputStep: 3 })}
                     />
                   )}
 
                   {draft.outputStep === 3 && (
+                    <AnchorScreen
+                      draft={draft}
+                      submitting={submitting}
+                      submitError={submitError}
+                      onAnchor={() => void handleFinishOutput()}
+                      onLookAgain={() => update({ outputStep: 0 })}
+                    />
+                  )}
+
+                  {draft.outputStep === 4 && (
                     <AnchoredConfirmationScreen
                       draft={draft}
                       onDownload={handleDownloadSummary}

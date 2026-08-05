@@ -24,6 +24,8 @@ type LivePositionMiniMatrixProps = {
   systemLogicScore: MatrixScaleScore | null;
   powerOrgScore: MatrixScaleScore | null;
   className?: string;
+  /** When true, dot uses a spring settle (anchor ritual). */
+  settling?: boolean;
 };
 
 function ambientTone(
@@ -43,6 +45,7 @@ export function LivePositionMiniMatrix({
   systemLogicScore,
   powerOrgScore,
   className = "",
+  settling = false,
 }: LivePositionMiniMatrixProps) {
   const reduceMotion = useReducedMotion();
   const x =
@@ -60,12 +63,8 @@ export function LivePositionMiniMatrix({
       <motion.div
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-2xl blur-2xl"
-        animate={
-          reduceMotion
-            ? { backgroundColor: blobColor }
-            : { backgroundColor: [blobColor, blobColor] }
-        }
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        animate={{ backgroundColor: blobColor }}
+        transition={{ duration: settling ? 0.9 : 0.8, ease: "easeOut" }}
       />
       <svg
         viewBox={`0 0 ${PLOT.width} ${PLOT.height}`}
@@ -132,8 +131,12 @@ export function LivePositionMiniMatrix({
           fill="#6e52c4"
           stroke="#fff"
           strokeWidth={2}
-          animate={{ cx, cy }}
-          transition={{ type: "spring", stiffness: 320, damping: 28 }}
+          animate={{ cx, cy, scale: settling && !reduceMotion ? [1, 1.15, 1] : 1 }}
+          transition={
+            settling
+              ? { type: "spring", stiffness: 180, damping: 22, mass: 1.2 }
+              : { type: "spring", stiffness: 320, damping: 28 }
+          }
         />
       </svg>
       <p className="mt-2 text-center text-[10px] text-ffie-muted">

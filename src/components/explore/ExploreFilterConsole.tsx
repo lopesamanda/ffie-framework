@@ -3,6 +3,8 @@
 import type { ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
+import { SpeculativeTooltip } from "@/components/SpeculativeTooltip";
+import { EXPLORE_COPY } from "@/lib/publish-ritual-copy";
 import {
   QUADRANT_LABELS,
   type FutureCountry,
@@ -134,7 +136,9 @@ export function ExploreFilterConsole({
       aria-label="Explore filters"
     >
       <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-        Navigation console
+        <SpeculativeTooltip term="intersectionalLenses">
+          {EXPLORE_COPY.filtersLabel}
+        </SpeculativeTooltip>
       </p>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <FilterModule icon="⌖" label="Country" summary={countrySummary}>

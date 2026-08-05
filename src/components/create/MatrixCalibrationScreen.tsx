@@ -6,6 +6,7 @@ import {
   MatrixScaleSlider,
   percentTowardHigh,
 } from "@/components/create/MatrixScaleSlider";
+import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 import {
   computePlacementPreview,
   formatQuadrantLabel,
@@ -26,6 +27,7 @@ export function MatrixCalibrationScreen({
   onPowerOrgChange,
   onContinue,
 }: MatrixCalibrationScreenProps) {
+  const copy = PUBLISH_RITUAL.calibration;
   const canContinue =
     draft.systemLogicScore != null && draft.powerOrgScore != null;
 
@@ -43,9 +45,7 @@ export function MatrixCalibrationScreen({
 
   return (
     <div className="w-full min-w-0 space-y-6">
-      <p className="text-sm text-ffie-muted">
-        Two questions place this future on the Critical Feminist Matrix.
-      </p>
+      <p className="text-sm text-ffie-muted">{copy.subtitle}</p>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_minmax(200px,240px)] lg:items-start">
         <div className="space-y-5">
@@ -97,7 +97,7 @@ export function MatrixCalibrationScreen({
       )}
 
       <FfieButton disabled={!canContinue} onClick={onContinue}>
-        See your future
+        {copy.continue}
       </FfieButton>
     </div>
   );

@@ -1,7 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import { FfieButton } from "@/components/create/design/FfieButton";
 import { SegmentedControl } from "@/components/create/design/SegmentedControl";
+import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
+import { pickReflectivePrompt } from "@/lib/reflective-prompts";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 const FIELD =
@@ -9,22 +12,21 @@ const FIELD =
 
 type GroundItScreenProps = {
   draft: JourneyDraft;
-  submitting: boolean;
-  submitError: string | null;
   onUpdate: (patch: Partial<JourneyDraft>) => void;
-  onPublish: () => void;
-  onContinuePrivate: () => void;
+  onContinue: () => void;
 };
 
 export function GroundItScreen({
   draft,
-  submitting,
-  submitError,
   onUpdate,
-  onPublish,
-  onContinuePrivate,
+  onContinue,
 }: GroundItScreenProps) {
+  const copy = PUBLISH_RITUAL.groundIt;
   const visibility = draft.submitToCommons ? "publish" : "private";
+  const reflectivePrompt = useMemo(
+    () => pickReflectivePrompt(draft.sessionId),
+    [draft.sessionId],
+  );
 
   return (
     <div className="w-full max-w-xl space-y-8">
@@ -37,21 +39,19 @@ export function GroundItScreen({
             onUpdate({ submitToCommons: value === "publish" })
           }
           options={[
-            { value: "publish", label: "Publish to Future Commons" },
-            { value: "private", label: "Keep private" },
+            { value: "publish", label: copy.visibilityPublic },
+            { value: "private", label: copy.visibilityPrivate },
           ]}
         />
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-ffie-ink" htmlFor="closing-reflection">
-          Reflection (optional)
+        <label className="text-sm font-medium text-ffie-ink" htmlFor="reflective-prompt">
+          Reflective prompt (optional)
         </label>
-        <p className="text-xs text-ffie-muted">
-          What does placing this future here make you think or feel?
-        </p>
+        <p className="text-xs text-ffie-muted">{reflectivePrompt}</p>
         <textarea
-          id="closing-reflection"
+          id="reflective-prompt"
           rows={4}
           value={draft.closingReflection}
           onChange={(event) =>
@@ -66,19 +66,16 @@ export function GroundItScreen({
             className="text-xs text-ffie-accent underline-offset-2 hover:underline"
             onClick={() => onUpdate({ closingReflection: "" })}
           >
-            Skip this
+            {copy.skip}
           </button>
         )}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium text-ffie-ink" htmlFor="situated-knowledge">
-          Situated Knowledge (optional)
+          {copy.attributionLabel}
         </label>
-        <p className="text-xs text-ffie-muted">
-          Is this future grounded in a specific place, community, or lineage of
-          knowledge? Name it here, if you&apos;d like.
-        </p>
+        <p className="text-xs text-ffie-muted">{copy.attributionHint}</p>
         <textarea
           id="situated-knowledge"
           rows={3}
@@ -87,7 +84,7 @@ export function GroundItScreen({
             onUpdate({ situatedKnowledge: event.target.value })
           }
           className={FIELD}
-          placeholder="e.g., a workshop in Recife, a conversation with…"
+          placeholder={copy.attributionPlaceholder}
         />
         {!draft.situatedKnowledge.trim() && (
           <button
@@ -95,24 +92,14 @@ export function GroundItScreen({
             className="text-xs text-ffie-accent underline-offset-2 hover:underline"
             onClick={() => onUpdate({ situatedKnowledge: "" })}
           >
-            Skip this
+            {copy.skip}
           </button>
         )}
       </div>
 
       <div className="space-y-3 border-t border-ffie-line pt-6">
-        <p className="text-xs leading-relaxed text-ffie-muted">
-          This artifact is speculative fiction, not personal data. Nothing about
-          you is published — only what you chose to imagine.
-        </p>
-        {submitError && <p className="text-sm text-red-700">{submitError}</p>}
-        {draft.submitToCommons ? (
-          <FfieButton disabled={submitting} onClick={onPublish}>
-            {submitting ? "Publishing…" : "Publish"}
-          </FfieButton>
-        ) : (
-          <FfieButton onClick={onContinuePrivate}>Continue</FfieButton>
-        )}
+        <p className="text-xs leading-relaxed text-ffie-muted">{copy.consentNote}</p>
+        <FfieButton onClick={onContinue}>{copy.continue}</FfieButton>
       </div>
     </div>
   );

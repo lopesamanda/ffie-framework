@@ -42,6 +42,12 @@ export function FutureDetailContent({ entry }: { entry: FutureEntry }) {
             {entry.character.name} — {entry.character.role}, {entry.country},{" "}
             {entry.year}
           </p>
+          {entry.groundedIn && (
+            <p className="mt-1 text-xs text-ffie-muted">
+              Grounded in:{" "}
+              <span className="font-medium text-ffie-ink">{entry.groundedIn}</span>
+            </p>
+          )}
           <h1 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
             {entry.title}
           </h1>

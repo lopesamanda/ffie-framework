@@ -9,6 +9,7 @@ import { FutureWorkActionsGrid } from "@/components/create/FutureWorkWithPanel";
 import { InteractiveMatrixReveal } from "@/components/create/InteractiveMatrixReveal";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import { copyToClipboard } from "@/lib/copy-to-clipboard";
+import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 type AnchoredConfirmationScreenProps = {
@@ -27,6 +28,7 @@ export function AnchoredConfirmationScreen({
   const reduceMotion = useReducedMotion();
   const [showMaterialize, setShowMaterialize] = useState(false);
   const [copied, setCopied] = useState(false);
+  const copy = PUBLISH_RITUAL.confirmation;
 
   const commonsUrl =
     typeof window !== "undefined" && draft.submittedId
@@ -40,6 +42,8 @@ export function AnchoredConfirmationScreen({
     setCopied(true);
     window.setTimeout(() => setCopied(false), 2200);
   };
+
+  const artifactLabel = draft.artifactName.trim() || draft.title.trim() || "Your future";
 
   return (
     <div className="w-full space-y-10">
@@ -61,30 +65,27 @@ export function AnchoredConfirmationScreen({
       </div>
 
       <div className="space-y-4 text-center lg:text-left">
-        {draft.submittedId ? (
-          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-accent">
-            Published to Future Commons
-          </p>
-        ) : (
-          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-ffie-muted">
-            Kept private
-          </p>
-        )}
         <h2 className="font-display text-2xl font-bold tracking-tight text-ffie-ink md:text-3xl">
-          {draft.submittedId
-            ? "Your future is now part of the Commons."
-            : "Your future is anchored."}
+          {copy.heading}
         </h2>
         <p className="max-w-prose text-sm leading-relaxed text-ffie-muted">
           {draft.submittedId
-            ? "It will appear on the matrix after moderation. You can share it, download it, or bring the artifact to life with an external image tool."
-            : "Download it, share a link to your local copy, or bring the artifact to life with an external image tool."}
+            ? copy.subtitlePublished(artifactLabel)
+            : copy.subtitlePrivate(artifactLabel)}
         </p>
+        {draft.situatedKnowledge.trim() && (
+          <p className="text-xs text-ffie-muted">
+            Grounded in:{" "}
+            <span className="font-medium text-ffie-ink">
+              {draft.situatedKnowledge.trim()}
+            </span>
+          </p>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-2.5">
         <Link href={commonsUrl} className="inline-flex">
-          <FfieButton variant="primary">View it live</FfieButton>
+          <FfieButton variant="primary">{copy.viewCommons}</FfieButton>
         </Link>
         <FfieButton
           variant={showMaterialize ? "primary" : "secondary"}
@@ -96,10 +97,10 @@ export function AnchoredConfirmationScreen({
             });
           }}
         >
-          Bring it to life
+          {copy.bringToLife}
         </FfieButton>
         <FfieButton variant="secondary" onClick={handleCopyLink}>
-          {copied ? "Link copied" : "Copy share link"}
+          {copied ? "Link copied" : copy.shareExternal}
         </FfieButton>
         <FfieButton variant="secondary" onClick={onDownload} disabled={downloading}>
           {downloading ? "Preparing…" : "Download this future"}
@@ -131,6 +132,7 @@ export function AnchoredConfirmationScreen({
             <motion.div
               initial={reduceMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
               className="mt-4"
             >
               <ArtifactMaterializePanel draft={draft} embedded />

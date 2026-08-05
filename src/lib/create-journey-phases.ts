@@ -37,7 +37,7 @@ export function getCreatePhaseEyebrow(
   phase: CreateFfiePhase,
   options?: { outputStep?: number },
 ): string {
-  if (phase === "SHARE" && options?.outputStep === 3) return "YOUR FUTURE";
+  if (phase === "SHARE" && options?.outputStep === 4) return "YOUR FUTURE";
   return phase;
 }
 
@@ -53,7 +53,7 @@ export function getActivePhaseSubStepCount(phase: CreateFfiePhase): number {
     case "MATERIALIZE":
       return 4;
     case "SHARE":
-      return 4;
+      return 5;
     default:
       return 1;
   }

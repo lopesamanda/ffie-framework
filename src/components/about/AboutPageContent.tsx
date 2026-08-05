@@ -5,6 +5,7 @@ import { ScrollRevealSection } from "@/components/motion/ScrollRevealSection";
 import { PhaseTimelineExplainer } from "@/components/create/design/PhaseTimelineExplainer";
 import { QuadrantPill } from "@/components/create/design/QuadrantPill";
 import { ABOUT_SECTIONS, FOUR_FUTURES } from "@/data/about-content";
+import { DictionaryOfCriticalFutures } from "@/components/about/DictionaryOfCriticalFutures";
 import {
   FFIE_INSTITUTIONAL_AFFILIATION,
   FFIE_OPEN_ACCESS_STATEMENT,
@@ -22,6 +23,7 @@ const NAV_SECTIONS = [
   ABOUT_SECTIONS.why,
   ABOUT_SECTIONS.credibility,
   ABOUT_SECTIONS.access,
+  { id: "dictionary", title: "Dictionary" },
 ];
 
 export function AboutPageContent() {
@@ -292,6 +294,8 @@ export function AboutPageContent() {
             </p>
           </div>
         </ScrollRevealSection>
+
+        <DictionaryOfCriticalFutures />
       </div>
     </div>
   );

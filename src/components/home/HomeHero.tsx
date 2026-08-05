@@ -4,9 +4,9 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { HeroReactiveCanvas } from "@/components/home/HeroReactiveCanvas";
 import { HomeTarotDeck } from "@/components/home/HomeTarotDeck";
+import { HOME_MANIFESTO } from "@/lib/publish-ritual-copy";
 
-const HEADLINE =
-  "Explore futures. Create your own. See where power and care collide.";
+const HEADLINE = HOME_MANIFESTO.lines[0];
 const HEADLINE_WORDS = HEADLINE.split(" ");
 const WORD_STAGGER_S = 0.05;
 
@@ -60,7 +60,7 @@ export function HomeClosingCta() {
             data-cursor-lens
             className="inline-flex items-center justify-center rounded-lg bg-ffie-accent px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-ffie-accent/90"
           >
-            Start creating →
+            {HOME_MANIFESTO.primaryCta} →
           </Link>
         </motion.div>
       </div>
@@ -82,11 +82,12 @@ export function HomeHero() {
             Feminist Foresight in Innovation Ecosystems
           </p>
           <KineticHeadline reduceMotion={reduceMotion} />
-          <p className="mt-5 text-lg leading-relaxed text-ffie-muted">
-            FFIE is a research-based method for exploring AI&apos;s impact on
-            innovation ecosystems. Build a persona, design an artifact they use,
-            and place it on the Critical Feminist Matrix to see what future it
-            creates.
+          <p className="mt-5 space-y-3 text-lg leading-relaxed text-ffie-muted">
+            {HOME_MANIFESTO.lines.slice(1).map((line) => (
+              <span key={line} className="block">
+                {line}
+              </span>
+            ))}
           </p>
         </div>
 

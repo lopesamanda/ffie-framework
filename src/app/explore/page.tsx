@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ExploreView } from "@/components/ExploreView";
+import { ExplorePageHeader } from "@/components/explore/ExplorePageHeader";
 import { getPublishedSubmissions } from "@/lib/submissions";
 
 export const metadata: Metadata = {
@@ -15,19 +16,7 @@ export default async function ExplorePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
-      <header className="mb-10 max-w-3xl">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-ffie-accent">
-          Critical Feminist Matrix
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
-          Explore Futures
-        </h1>
-        <p className="mt-4 text-base leading-relaxed text-ffie-muted">
-          Browse validated research prototypes and community futures on the matrix
-          below — filter by country, scenario, or sector, then switch between
-          Matrix, Constellation, and Grid views.
-        </p>
-      </header>
+      <ExplorePageHeader />
 
       <ExploreView futureCommons={futureCommons} />
     </div>
