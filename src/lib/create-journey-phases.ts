@@ -22,7 +22,7 @@ export type CreatePhaseContext = {
 };
 
 export function getCreateFfiePhase(ctx: CreatePhaseContext): CreateFfiePhase {
-  const { stage, creationStep, outputStep, oracleSituateStarted } = ctx;
+  const { stage, creationStep, oracleSituateStarted } = ctx;
 
   if (stage === "orientation" && !oracleSituateStarted) return "UNDERSTAND";
   if (stage === "orientation" || stage === "reflection") return "SITUATE";

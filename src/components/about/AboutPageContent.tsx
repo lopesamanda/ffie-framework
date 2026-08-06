@@ -23,7 +23,7 @@ const NAV_SECTIONS = [
   ABOUT_SECTIONS.why,
   ABOUT_SECTIONS.credibility,
   ABOUT_SECTIONS.access,
-  { id: "dictionary", title: "Dictionary" },
+  { id: "dictionary", eyebrow: "Dictionary", title: "Dictionary of Critical Futures" },
 ];
 
 export function AboutPageContent() {
