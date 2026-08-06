@@ -61,7 +61,7 @@ const PUBLIC_SELECT =
 
 function parseGroundedIn(reflectionText: string | null): string | undefined {
   if (!reflectionText) return undefined;
-  const match = reflectionText.match(/Situated knowledge:\s*(.+?)(?:\n\n|$)/is);
+  const match = reflectionText.match(/Situated knowledge:\s*([\s\S]+?)(?:\n\n|$)/i);
   const value = match?.[1]?.trim();
   return value || undefined;
 }

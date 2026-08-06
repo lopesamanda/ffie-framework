@@ -18,7 +18,7 @@ export function SpeculativeTooltip({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const entry = GLOSSARY[term];
 
   useEffect(
