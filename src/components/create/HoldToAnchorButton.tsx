@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 type HoldToAnchorButtonProps = {
   onComplete: () => void;
   disabled?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
   holdingLabel?: string;
   className?: string;
 };
