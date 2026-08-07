@@ -62,15 +62,11 @@ export function matrixPlacementTitle(): string {
   return PUBLISH_RITUAL.calibration.heading;
 }
 
-export function groundItTitle(): string {
-  return PUBLISH_RITUAL.groundIt.heading;
+export function reflectTitle(): string {
+  return PUBLISH_RITUAL.reflect.heading;
 }
 
-export function anchorTitle(): string {
-  return PUBLISH_RITUAL.anchor.heading;
-}
-
-export function anchoredTitle(): string {
+export function publishedTitle(): string {
   return PUBLISH_RITUAL.confirmation.heading;
 }
 
@@ -86,12 +82,25 @@ export function outputStepTitle(step: number): string {
     case 1:
       return matrixPlacementTitle();
     case 2:
-      return groundItTitle();
+      return reflectTitle();
     case 3:
-      return anchorTitle();
-    case 4:
-      return anchoredTitle();
+      return publishedTitle();
     default:
       return livePreviewTitle();
+  }
+}
+
+export function outputStepSubtitle(step: number): string | undefined {
+  switch (step) {
+    case 0:
+      return undefined;
+    case 1:
+      return PUBLISH_RITUAL.calibration.subtitle;
+    case 2:
+      return PUBLISH_RITUAL.reflect.subtitle;
+    case 3:
+      return undefined;
+    default:
+      return undefined;
   }
 }

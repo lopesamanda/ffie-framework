@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { FfieButton } from "@/components/create/design/FfieButton";
-import { SegmentedControl } from "@/components/create/design/SegmentedControl";
+import { PublishRitualStepper } from "@/components/create/design/PublishRitualStepper";
 import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 import { pickReflectivePrompt } from "@/lib/reflective-prompts";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -13,15 +13,19 @@ const FIELD =
 type GroundItScreenProps = {
   draft: JourneyDraft;
   onUpdate: (patch: Partial<JourneyDraft>) => void;
-  onContinue: () => void;
+  onPublish: () => void;
+  submitting?: boolean;
+  submitError?: string | null;
 };
 
 export function GroundItScreen({
   draft,
   onUpdate,
-  onContinue,
+  onPublish,
+  submitting = false,
+  submitError = null,
 }: GroundItScreenProps) {
-  const copy = PUBLISH_RITUAL.groundIt;
+  const copy = PUBLISH_RITUAL.reflect;
   const visibility = draft.submitToCommons ? "publish" : "private";
   const reflectivePrompt = useMemo(
     () => pickReflectivePrompt(draft.sessionId),
@@ -30,24 +34,49 @@ export function GroundItScreen({
 
   return (
     <div className="w-full max-w-xl space-y-8">
-      <div className="space-y-3">
-        <p className="text-sm font-medium text-ffie-ink">Who can see this future?</p>
-        <SegmentedControl
-          ariaLabel="Visibility"
-          value={visibility}
-          onChange={(value) =>
-            onUpdate({ submitToCommons: value === "publish" })
-          }
-          options={[
-            { value: "publish", label: copy.visibilityPublic },
-            { value: "private", label: copy.visibilityPrivate },
-          ]}
-        />
+      <PublishRitualStepper activeStep={2} />
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {(
+          [
+            {
+              value: "publish" as const,
+              label: copy.visibilityPublic,
+              hint: copy.visibilityPublicHint,
+            },
+            {
+              value: "private" as const,
+              label: copy.visibilityPrivate,
+              hint: copy.visibilityPrivateHint,
+            },
+          ] as const
+        ).map((option) => {
+          const selected = visibility === option.value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() =>
+                onUpdate({ submitToCommons: option.value === "publish" })
+              }
+              className={`rounded-xl border px-4 py-4 text-left transition ${
+                selected
+                  ? "border-ffie-accent bg-ffie-accent-soft shadow-[0_0_0_1px_var(--color-ffie-accent)]"
+                  : "border-ffie-line bg-ffie-surface hover:border-ffie-ink/20"
+              }`}
+            >
+              <p className="text-sm font-semibold text-ffie-ink">{option.label}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-ffie-muted">
+                {option.hint}
+              </p>
+            </button>
+          );
+        })}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium text-ffie-ink" htmlFor="reflective-prompt">
-          Reflective prompt (optional)
+          {copy.reflectionLabel}
         </label>
         <p className="text-xs text-ffie-muted">{reflectivePrompt}</p>
         <textarea
@@ -58,48 +87,33 @@ export function GroundItScreen({
             onUpdate({ closingReflection: event.target.value })
           }
           className={FIELD}
-          placeholder="A sentence or two is enough."
+          placeholder={copy.reflectionPlaceholder}
         />
-        {!draft.closingReflection.trim() && (
-          <button
-            type="button"
-            className="text-xs text-ffie-accent underline-offset-2 hover:underline"
-            onClick={() => onUpdate({ closingReflection: "" })}
-          >
-            {copy.skip}
-          </button>
-        )}
+        <button
+          type="button"
+          className="text-xs text-ffie-accent underline-offset-2 hover:underline"
+          onClick={() => onUpdate({ closingReflection: "" })}
+        >
+          {copy.skip}
+        </button>
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-ffie-ink" htmlFor="situated-knowledge">
-          {copy.attributionLabel}
-        </label>
-        <p className="text-xs text-ffie-muted">{copy.attributionHint}</p>
-        <textarea
-          id="situated-knowledge"
-          rows={3}
-          value={draft.situatedKnowledge}
-          onChange={(event) =>
-            onUpdate({ situatedKnowledge: event.target.value })
-          }
-          className={FIELD}
-          placeholder={copy.attributionPlaceholder}
-        />
-        {!draft.situatedKnowledge.trim() && (
-          <button
-            type="button"
-            className="text-xs text-ffie-accent underline-offset-2 hover:underline"
-            onClick={() => onUpdate({ situatedKnowledge: "" })}
-          >
-            {copy.skip}
-          </button>
-        )}
-      </div>
+      {submitError && (
+        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+          {submitError}
+        </p>
+      )}
 
-      <div className="space-y-3 border-t border-ffie-line pt-6">
+      <div className="space-y-4 border-t border-ffie-line/60 pt-6">
         <p className="text-xs leading-relaxed text-ffie-muted">{copy.consentNote}</p>
-        <FfieButton onClick={onContinue}>{copy.continue}</FfieButton>
+        <PublishRitualStepper activeStep={2} variant="dots" />
+        <FfieButton
+          onClick={onPublish}
+          disabled={submitting}
+          iconPosition="trailing"
+        >
+          {submitting ? copy.publishing : copy.publish}
+        </FfieButton>
       </div>
     </div>
   );

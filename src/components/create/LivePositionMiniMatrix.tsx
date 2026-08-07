@@ -1,13 +1,14 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { GreenCareSymbol } from "@/components/create/design/GreenCareSymbol";
 import {
   formatQuadrantLabel,
-  matrixScaleToSigned,
+  calibrationToSigned,
   quadrantFromPosition,
   signedToUnit,
-  type MatrixScaleScore,
 } from "@/lib/journey/types";
+import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 import { QUADRANT_COLORS, QUADRANT_MATRIX_LABELS } from "@/types/future";
 
 const PLOT = { padding: 28, width: 220, height: 220 };
@@ -21,50 +22,63 @@ function plotToSvg(unitX: number, unitY: number) {
 }
 
 type LivePositionMiniMatrixProps = {
-  systemLogicScore: MatrixScaleScore | null;
-  powerOrgScore: MatrixScaleScore | null;
+  systemLogicScore: number | null;
+  powerOrgScore: number | null;
   className?: string;
-  /** When true, dot uses a spring settle (anchor ritual). */
+  /** When true, dot uses a spring settle animation. */
   settling?: boolean;
+  sticky?: boolean;
 };
 
 function ambientTone(
-  systemLogicScore: MatrixScaleScore | null,
-  powerOrgScore: MatrixScaleScore | null,
+  systemLogicScore: number | null,
+  powerOrgScore: number | null,
 ): string {
-  const x = systemLogicScore ? matrixScaleToSigned(systemLogicScore) : 0;
-  const y = powerOrgScore ? matrixScaleToSigned(powerOrgScore) : 0;
+  const x =
+    systemLogicScore != null ? calibrationToSigned(systemLogicScore) : 0;
+  const y = powerOrgScore != null ? calibrationToSigned(powerOrgScore) : 0;
   const warm = (x + y) / 2;
   if (warm > 0.35) return "rgba(110, 82, 196, 0.14)";
   if (warm < -0.35) return "rgba(200, 71, 42, 0.1)";
   return "rgba(26, 40, 112, 0.1)";
 }
 
-/** Compact live-position map for Matrix Calibration — no decorative quadrant marks. */
+/** Compact live-position map for Matrix Calibration — Figma Place frame. */
 export function LivePositionMiniMatrix({
   systemLogicScore,
   powerOrgScore,
   className = "",
   settling = false,
+  sticky = false,
 }: LivePositionMiniMatrixProps) {
   const reduceMotion = useReducedMotion();
   const x =
-    systemLogicScore != null ? matrixScaleToSigned(systemLogicScore) : 0;
-  const y = powerOrgScore != null ? matrixScaleToSigned(powerOrgScore) : 0;
+    systemLogicScore != null ? calibrationToSigned(systemLogicScore) : 0;
+  const y = powerOrgScore != null ? calibrationToSigned(powerOrgScore) : 0;
   const unit = signedToUnit(x, y);
   const { cx, cy } = plotToSvg(unit.x, unit.y);
   const midX = PLOT.width / 2;
   const midY = PLOT.height / 2;
   const quadrant = quadrantFromPosition(x, y);
   const blobColor = ambientTone(systemLogicScore, powerOrgScore);
+  const inner = PLOT.width - PLOT.padding * 2;
+  const half = inner / 2;
+  const fpX = PLOT.padding + half;
+  const fpY = PLOT.padding;
+  const label = PUBLISH_RITUAL.calibration.livePositionLabel;
 
   return (
-    <div className={`relative ${className}`}>
+    <div
+      className={`relative ${sticky ? "lg:sticky lg:top-6" : ""} ${className}`}
+    >
+      <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-ffie-muted">
+        {label}
+      </p>
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-2xl blur-2xl"
+        className="pointer-events-none absolute inset-x-0 top-6 bottom-0 rounded-2xl blur-2xl"
         animate={{ backgroundColor: blobColor }}
-        transition={{ duration: settling ? 0.9 : 0.8, ease: "easeOut" }}
+        transition={{ duration: settling ? 0.9 : 0.35, ease: "easeOut" }}
       />
       <svg
         viewBox={`0 0 ${PLOT.width} ${PLOT.height}`}
@@ -75,35 +89,43 @@ export function LivePositionMiniMatrix({
         <rect
           x={PLOT.padding}
           y={PLOT.padding}
-          width={(PLOT.width - PLOT.padding * 2) / 2}
-          height={(PLOT.height - PLOT.padding * 2) / 2}
+          width={half}
+          height={half}
           fill={QUADRANT_COLORS.techno_optimist}
           opacity={0.45}
         />
         <rect
           x={midX}
           y={PLOT.padding}
-          width={(PLOT.width - PLOT.padding * 2) / 2}
-          height={(PLOT.height - PLOT.padding * 2) / 2}
+          width={half}
+          height={half}
           fill={QUADRANT_COLORS.feminist_preferred}
           opacity={0.45}
         />
         <rect
           x={PLOT.padding}
           y={midY}
-          width={(PLOT.width - PLOT.padding * 2) / 2}
-          height={(PLOT.height - PLOT.padding * 2) / 2}
+          width={half}
+          height={half}
           fill={QUADRANT_COLORS.dominant_dystopian}
           opacity={0.45}
         />
         <rect
           x={midX}
           y={midY}
-          width={(PLOT.width - PLOT.padding * 2) / 2}
-          height={(PLOT.height - PLOT.padding * 2) / 2}
+          width={half}
+          height={half}
           fill={QUADRANT_COLORS.fragmented}
           opacity={0.45}
         />
+        <foreignObject
+          x={fpX + half * 0.28}
+          y={fpY + half * 0.22}
+          width={half * 0.44}
+          height={half * 0.44}
+        >
+          <GreenCareSymbol className="size-full text-[#2c8a52]" />
+        </foreignObject>
         <line
           x1={midX}
           y1={PLOT.padding}

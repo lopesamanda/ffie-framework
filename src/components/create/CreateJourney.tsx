@@ -12,7 +12,6 @@ import { RegisterDeckExpandedRow } from "@/components/register/RegisterDeckExpan
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { AnchoredConfirmationScreen } from "@/components/create/AnchoredConfirmationScreen";
-import { AnchorScreen } from "@/components/create/AnchorScreen";
 import { GroundItScreen } from "@/components/create/GroundItScreen";
 import { LivePreviewScreen } from "@/components/create/LivePreviewScreen";
 import { MatrixCalibrationScreen } from "@/components/create/MatrixCalibrationScreen";
@@ -58,8 +57,10 @@ import {
   creationProgressSubtitle,
   creationScreenTitle,
   outputStepTitle,
+  outputStepSubtitle,
   oracleDrawTitle,
 } from "@/lib/create-journey-titles";
+import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
 import {
   composeHiddenFunction,
@@ -89,7 +90,6 @@ import {
   type CardHand,
   type JourneyDraft,
   type JourneyStage,
-  type MatrixScaleScore,
 } from "@/lib/journey/types";
 
 const CREATION_STEP_COUNT = 5;
@@ -122,7 +122,7 @@ export function CreateJourney() {
     const initial = saved ?? createInitialDraft(sessionId);
     const normalized =
       initial.stage === "discovery"
-        ? { ...initial, stage: "output" as const, outputStep: 4 }
+        ? { ...initial, stage: "output" as const, outputStep: 3 }
         : initial;
     setDraft(normalized);
     setOracleSituateStarted(
@@ -254,7 +254,7 @@ export function CreateJourney() {
     update({ title, narrative });
 
     if (!draft.submitToCommons) {
-      goTo("output", { outputStep: 4, title, narrative });
+      goTo("output", { outputStep: 3, title, narrative });
       return;
     }
 
@@ -309,9 +309,6 @@ export function CreateJourney() {
           reflectionText: [
             draft.reflectionText.trim(),
             draft.closingReflection.trim(),
-            draft.situatedKnowledge.trim()
-              ? `Situated knowledge: ${draft.situatedKnowledge.trim()}`
-              : "",
           ]
             .filter(Boolean)
             .join("\n\n"),
@@ -331,7 +328,7 @@ export function CreateJourney() {
       }
 
       goTo("output", {
-        outputStep: 4,
+        outputStep: 3,
         title,
         narrative,
         submittedId: result.id ?? null,
@@ -402,6 +399,10 @@ export function CreateJourney() {
 
   const oracleStageTitle = oracleDrawTitle();
   const outputTitle = outputStepTitle(draft.outputStep);
+  const outputSubtitle =
+    draft.outputStep === 0
+      ? PUBLISH_RITUAL.livePreview.subtitle(draft.artifactName.trim())
+      : outputStepSubtitle(draft.outputStep) ?? "";
 
   const stageMotionKey =
     draft.stage === "creation"
@@ -726,7 +727,7 @@ export function CreateJourney() {
                   eyebrow={phaseEyebrow}
                   title={outputTitle}
                   phaseContext={phaseContext}
-                  subtitle=""
+                  subtitle={outputSubtitle}
                 >
                   {draft.outputStep === 0 && (
                     <LivePreviewScreen
@@ -738,10 +739,10 @@ export function CreateJourney() {
                   {draft.outputStep === 1 && (
                     <MatrixCalibrationScreen
                       draft={draft}
-                      onSystemLogicChange={(systemLogicScore: MatrixScaleScore) =>
+                      onSystemLogicChange={(systemLogicScore: number) =>
                         update({ systemLogicScore })
                       }
-                      onPowerOrgChange={(powerOrgScore: MatrixScaleScore) =>
+                      onPowerOrgChange={(powerOrgScore: number) =>
                         update({ powerOrgScore })
                       }
                       onContinue={() => {
@@ -779,21 +780,13 @@ export function CreateJourney() {
                     <GroundItScreen
                       draft={draft}
                       onUpdate={update}
-                      onContinue={() => update({ outputStep: 3 })}
+                      submitting={submitting}
+                      submitError={submitError}
+                      onPublish={() => void handleFinishOutput()}
                     />
                   )}
 
                   {draft.outputStep === 3 && (
-                    <AnchorScreen
-                      draft={draft}
-                      submitting={submitting}
-                      submitError={submitError}
-                      onAnchor={() => void handleFinishOutput()}
-                      onLookAgain={() => update({ outputStep: 0 })}
-                    />
-                  )}
-
-                  {draft.outputStep === 4 && (
                     <AnchoredConfirmationScreen
                       draft={draft}
                       onDownload={handleDownloadSummary}

@@ -7,7 +7,8 @@ import { ArtifactMaterializePanel } from "@/components/create/ArtifactMaterializ
 import { FfieButton } from "@/components/create/design/FfieButton";
 import { FutureWorkActionsGrid } from "@/components/create/FutureWorkWithPanel";
 import { InteractiveMatrixReveal } from "@/components/create/InteractiveMatrixReveal";
-import { FutureCardPreview } from "@/components/create/FutureCardPreview";
+import { PublishPreviewCard } from "@/components/create/PublishPreviewCard";
+import { PublishRitualStepper } from "@/components/create/design/PublishRitualStepper";
 import { copyToClipboard } from "@/lib/copy-to-clipboard";
 import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 import type { JourneyDraft } from "@/lib/journey/types";
@@ -43,11 +44,19 @@ export function AnchoredConfirmationScreen({
     window.setTimeout(() => setCopied(false), 2200);
   };
 
-  const artifactLabel = draft.artifactName.trim() || draft.title.trim() || "Your future";
+  const handleBringToLife = () => {
+    setShowMaterialize(true);
+    document.getElementById("anchored-bring-to-life")?.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  };
 
   return (
     <div className="w-full space-y-10">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)] lg:items-start">
+      <PublishRitualStepper activeStep={3} />
+
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] lg:items-start">
         <InteractiveMatrixReveal
           position={draft.position}
           hidePlacementCaption
@@ -55,91 +64,69 @@ export function AnchoredConfirmationScreen({
           prominent
           className="w-full max-w-none"
         />
-        <FutureCardPreview
-          draft={draft}
-          id="future-output-card"
-          compact
-          showCommonsNarrative
-          showCardTags
-        />
+        <PublishPreviewCard draft={draft} id="future-output-card" />
       </div>
 
-      <div className="space-y-4 text-center lg:text-left">
+      <div className="space-y-3 text-center lg:text-left">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ffie-accent">
+          {draft.submittedId ? copy.eyebrow : "Kept private"}
+        </p>
         <h2 className="font-display text-2xl font-bold tracking-tight text-ffie-ink md:text-3xl">
           {copy.heading}
         </h2>
         <p className="max-w-prose text-sm leading-relaxed text-ffie-muted">
           {draft.submittedId
-            ? copy.subtitlePublished(artifactLabel)
-            : copy.subtitlePrivate(artifactLabel)}
+            ? copy.subtitlePublished(
+                draft.artifactName.trim() || draft.title.trim() || "Your future",
+              )
+            : copy.subtitlePrivate(
+                draft.artifactName.trim() || draft.title.trim() || "Your future",
+              )}
         </p>
-        {draft.situatedKnowledge.trim() && (
-          <p className="text-xs text-ffie-muted">
-            Grounded in:{" "}
-            <span className="font-medium text-ffie-ink">
-              {draft.situatedKnowledge.trim()}
-            </span>
-          </p>
-        )}
       </div>
 
       <div className="flex flex-wrap gap-2.5">
         <Link href={commonsUrl} className="inline-flex">
-          <FfieButton variant="primary">{copy.viewCommons}</FfieButton>
+          <FfieButton variant="primary">{copy.viewLive}</FfieButton>
         </Link>
-        <FfieButton
-          variant={showMaterialize ? "primary" : "secondary"}
-          onClick={() => {
-            setShowMaterialize(true);
-            document.getElementById("anchored-next-steps")?.scrollIntoView({
-              behavior: reduceMotion ? "auto" : "smooth",
-              block: "start",
-            });
-          }}
-        >
+        <FfieButton variant="secondary" onClick={handleBringToLife}>
           {copy.bringToLife}
         </FfieButton>
         <FfieButton variant="secondary" onClick={handleCopyLink}>
-          {copied ? "Link copied" : copy.shareExternal}
+          {copied ? "Link copied" : copy.copyShareLink}
         </FfieButton>
         <FfieButton variant="secondary" onClick={onDownload} disabled={downloading}>
-          {downloading ? "Preparing…" : "Download this future"}
+          {downloading ? "Preparing…" : copy.download}
         </FfieButton>
       </div>
 
-      <div className="w-full space-y-8 border-t border-ffie-line/60 pt-8">
-        <div>
-          <h3 className="font-display text-base font-semibold text-ffie-ink">
-            How can you work with this future?
-          </h3>
-          <div className="mt-5">
-            <FutureWorkActionsGrid reduceMotion={reduceMotion} />
-          </div>
-        </div>
-
-        <div
-          id="anchored-next-steps"
-          className="rounded-xl border border-ffie-line/80 bg-ffie-bg/70 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] sm:px-5"
-        >
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
-            Next steps
-          </p>
-          <p className="mt-2 text-xs leading-relaxed text-ffie-muted">
-            Pick any option above — none depends on the others. Use this space
-            to copy a ready-made image prompt when you choose Bring it to life.
-          </p>
-          {showMaterialize && (
-            <motion.div
-              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, ease: "easeOut" }}
-              className="mt-4"
-            >
-              <ArtifactMaterializePanel draft={draft} embedded />
-            </motion.div>
-          )}
-        </div>
+      <div className="w-full space-y-6 border-t border-ffie-line/60 pt-8">
+        <h3 className="font-display text-base font-semibold text-ffie-ink">
+          {copy.workWithHeading}
+        </h3>
+        <FutureWorkActionsGrid reduceMotion={reduceMotion} />
       </div>
+
+      {showMaterialize && (
+        <motion.div
+          id="anchored-bring-to-life"
+          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="rounded-xl border border-ffie-line/80 bg-ffie-bg/70 px-4 py-5 sm:px-5"
+        >
+          <p className="text-sm font-medium text-ffie-ink">
+            Bring it to life (optional)
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-ffie-muted">
+            Copy a ready-made image prompt into your external AI tool — nothing
+            gets uploaded back into FFIE.
+          </p>
+          <div className="mt-4">
+            <ArtifactMaterializePanel draft={draft} embedded />
+          </div>
+        </motion.div>
+      )}
 
       {onCreateAnother && (
         <div className="flex flex-wrap gap-3 border-t border-ffie-line/60 pt-8">
@@ -148,6 +135,8 @@ export function AnchoredConfirmationScreen({
           </FfieButton>
         </div>
       )}
+
+      <PublishRitualStepper activeStep={3} variant="dots" className="pt-2" />
     </div>
   );
 }

@@ -20,7 +20,7 @@ import { buildFutureCommonsNarrative } from "@/lib/journey/future-commons-narrat
 import { getFutureHorizonYear } from "@/lib/journey/future-horizon";
 import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 
-/** 6-point self-report scale for matrix placement (no exact midpoint). */
+/** @deprecated Legacy 6-point scale — migrated to 0–100 continuous calibration on load. */
 export type MatrixScaleScore = 1 | 2 | 3 | 4 | 5 | 6;
 
 /** @deprecated Use MatrixScaleScore — kept for legacy session data. */
@@ -53,14 +53,14 @@ export type CardHand = {
   transversal: NarrativeCard;
 };
 
-export const PUBLISH_FLOW_VERSION = 2;
+export const PUBLISH_FLOW_VERSION = 3;
 
 export type JourneyDraft = {
   sessionId: string;
   stage: JourneyStage;
   orientationStep: number;
   creationStep: number;
-  /** 0 = live preview, 1 = calibration, 2 = ground it, 3 = anchor, 4 = confirmation */
+  /** 0 = preview, 1 = place (calibration), 2 = reflect, 3 = published */
   outputStep: number;
   /** Sub-step within Embody the future (0–3). */
   embodySubStep: number;
@@ -121,12 +121,12 @@ export type JourneyDraft = {
   imageDataUrl: string | null;
   /** Optional closing reflection on the final Future card. */
   closingReflection: string;
-  /** Optional place, community, or lineage grounding for the publish ritual. */
+  /** @deprecated Removed from publish ritual UI — kept for session migration only. */
   situatedKnowledge: string;
-  /** System Logic scale — Extractive (1) ↔ Emancipatory (6) */
-  systemLogicScore: MatrixScaleScore | null;
-  /** Power Organization scale — Hierarchical (1) ↔ Collective Care (6) */
-  powerOrgScore: MatrixScaleScore | null;
+  /** 0–100 continuous calibration toward emancipatory pole (System Logic axis). */
+  systemLogicScore: number | null;
+  /** 0–100 continuous calibration toward collective-care pole (Power Organization axis). */
+  powerOrgScore: number | null;
   /**
    * Matrix coords in signed space [-1, 1]:
    * x: Extractive (−) ↔ Emancipatory (+)
@@ -144,7 +144,7 @@ export type JourneyDraft = {
   futureYear: number;
   /**
    * Publish ritual schema version.
-   * v1 = 4-step flow (main); v2 = 5-step flow with Anchor screen (home-redesign).
+   * v1 = legacy 4-step; v2 = 5-step with Anchor screen; v3 = 4-step Preview/Place/Reflect/Published.
    */
   publishFlowVersion: number;
 };
@@ -197,7 +197,18 @@ export function signedToUnit(x: number, y: number): { x: number; y: number } {
   return { x: (x + 1) / 2, y: (y + 1) / 2 };
 }
 
-/** 6-point scale → signed −1.0 … 1.0 (1→−1, 6→+1; no exact zero). */
+/** Percent toward high pole (0 = fully low, 100 = fully high). */
+export function percentTowardHighFromCalibration(percent: number): number {
+  return Math.round(Math.min(100, Math.max(0, percent)));
+}
+
+/** Map 0–100 calibration → signed −1.0 … 1.0. */
+export function calibrationToSigned(percent: number): number {
+  const clamped = Math.min(100, Math.max(0, percent));
+  return (clamped / 100) * 2 - 1;
+}
+
+/** @deprecated Use calibrationToSigned — kept for legacy 1–6 scores. */
 export function matrixScaleToSigned(score: MatrixScaleScore): number {
   return ((score - 1) / 5) * 2 - 1;
 }
@@ -220,41 +231,43 @@ function jitter(amount = 0.03) {
  * power_position: 1–3 → hegemonic; 4–6 → marginalized
  */
 export function computePlacementFromMatrixScales(
-  systemLogic: MatrixScaleScore,
-  powerOrg: MatrixScaleScore,
+  systemLogic: number,
+  powerOrg: number,
 ): {
   position: { x: number; y: number };
   quadrant: FutureQuadrant;
   powerPosition: PowerPosition;
   placementJustification: string;
 } {
-  const x = clamp(matrixScaleToSigned(systemLogic) + jitter(), -1, 1);
-  const y = clamp(matrixScaleToSigned(powerOrg) + jitter(), -1, 1);
-  const powerPosition: PowerPosition = powerOrg <= 3 ? "hegemonic" : "marginalized";
+  const x = clamp(calibrationToSigned(systemLogic) + jitter(), -1, 1);
+  const y = clamp(calibrationToSigned(powerOrg) + jitter(), -1, 1);
+  const powerPosition: PowerPosition =
+    powerOrg <= 40 ? "hegemonic" : "marginalized";
 
   return {
     position: { x, y },
     quadrant: quadrantFromPosition(x, y),
     powerPosition,
     placementJustification: [
-      `System Logic (Extractive→Emancipatory): ${systemLogic}/6.`,
-      `Power Organization (Hierarchical→Collective Care): ${powerOrg}/6.`,
+      `System Logic (Extractive→Emancipatory): ${Math.round(systemLogic)}% emancipatory.`,
+      `Power Organization (Hierarchical→Collective Care): ${Math.round(powerOrg)}% collective.`,
     ].join(" "),
   };
 }
 
 /** Live preview placement — no jitter, for calibration UI. */
 export function computePlacementPreview(
-  systemLogic: MatrixScaleScore,
-  powerOrg: MatrixScaleScore,
+  systemLogic: number,
+  powerOrg: number,
 ): {
   position: { x: number; y: number };
   quadrant: FutureQuadrant;
   powerPosition: PowerPosition;
 } {
-  const x = matrixScaleToSigned(systemLogic);
-  const y = matrixScaleToSigned(powerOrg);
-  const powerPosition: PowerPosition = powerOrg <= 3 ? "hegemonic" : "marginalized";
+  const x = calibrationToSigned(systemLogic);
+  const y = calibrationToSigned(powerOrg);
+  const powerPosition: PowerPosition =
+    powerOrg <= 40 ? "hegemonic" : "marginalized";
 
   return {
     position: { x, y },
@@ -427,11 +440,12 @@ export function loadDraft(): JourneyDraft | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<JourneyDraft>;
     if (!parsed.sessionId) return null;
-    const coerceMatrixScale = (
+    const coerceCalibration = (
       score: number | null | undefined,
-    ): MatrixScaleScore | null => {
+    ): number | null => {
       if (score == null) return null;
-      if (score >= 1 && score <= 6) return score as MatrixScaleScore;
+      if (score >= 0 && score <= 100) return score;
+      if (score >= 1 && score <= 6) return ((score - 1) / 5) * 100;
       return null;
     };
 
@@ -445,8 +459,8 @@ export function loadDraft(): JourneyDraft | null {
       ...createInitialDraft(parsed.sessionId),
       ...parsed,
       stage,
-      systemLogicScore: coerceMatrixScale(parsed.systemLogicScore),
-      powerOrgScore: coerceMatrixScale(parsed.powerOrgScore),
+      systemLogicScore: coerceCalibration(parsed.systemLogicScore),
+      powerOrgScore: coerceCalibration(parsed.powerOrgScore),
       powerPosition: parsed.powerPosition ?? "marginalized",
       position: parsed.position ?? { x: 0, y: 0 },
       characterGender: parsed.characterGender ?? "",
@@ -492,13 +506,18 @@ export function loadDraft(): JourneyDraft | null {
     };
 
     const publishFlowVersion = parsed.publishFlowVersion ?? 1;
-    if (
-      draft.stage === "output" &&
-      publishFlowVersion < PUBLISH_FLOW_VERSION &&
-      draft.outputStep === 3
-    ) {
-      // v1 step 3 was Anchored confirmation; v2 step 3 is Anchor screen.
-      draft.outputStep = 4;
+    if (draft.stage === "output") {
+      if (publishFlowVersion < 2 && draft.outputStep === 3) {
+        // v1 step 3 was confirmation.
+        draft.outputStep = 3;
+      } else if (publishFlowVersion < 3) {
+        if (draft.outputStep === 4) {
+          draft.outputStep = 3;
+        } else if (draft.outputStep === 3) {
+          // v2 step 3 was Anchor — removed; return to Reflect.
+          draft.outputStep = 2;
+        }
+      }
     }
     draft.publishFlowVersion = PUBLISH_FLOW_VERSION;
 

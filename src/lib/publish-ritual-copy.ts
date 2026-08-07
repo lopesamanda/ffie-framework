@@ -1,47 +1,64 @@
-/** Shared microcopy for the Anchor a Future publish ritual. */
+/** Shared microcopy for the Materialize publish ritual (Preview → Place → Reflect → Published). */
+
+export const PUBLISH_RITUAL_STEPS = [
+  "Preview",
+  "Place",
+  "Reflect",
+  "Published",
+] as const;
+
+export type PublishRitualStepIndex = 0 | 1 | 2 | 3;
 
 export const PUBLISH_RITUAL = {
   livePreview: {
-    heading: "Before you anchor this future, look at it whole.",
+    heading: "Look at it whole.",
     subtitle: (artifactName: string) =>
-      `This is how ${artifactName || "your artifact"} will appear in the Commons.`,
-    continue: "Continue",
+      `This is how ${artifactName || "your artifact"} will read in the Future Commons — persona, artifact, tensions, and values together.`,
+    personaLine: (name: string, role: string) =>
+      `Imagined by ${name || "someone"}, ${role || "a future-maker"}.`,
+    continue: "Continue →",
   },
   calibration: {
-    heading: "Calibrate where this future sits.",
-    subtitle: "Two questions place it on the Living Cartography.",
-    continue: "See your future",
+    heading: "Place it on the map.",
+    subtitle:
+      "Two questions situate your future on the Living Cartography. Drag each slider anywhere along the axis — the live position updates as you go.",
+    livePositionLabel: "Live position",
+    summaryLabel: "Placement summary",
+    systemLogicLabel: "System Logic",
+    powerOrgLabel: "Power Organization",
+    quadrantLabel: "Current quadrant",
+    continue: "See your future →",
   },
-  groundIt: {
-    heading: "Ground it before you let it go.",
-    visibilityPublic: "Anchor to the Commons",
-    visibilityPrivate: "Keep it close",
-    attributionLabel: "Situated Knowledge (optional)",
-    attributionHint:
-      "Is this future grounded in a specific place, community, or lineage of knowledge? Name it here, if you'd like.",
-    attributionPlaceholder: "e.g., a workshop in Recife, a conversation with…",
+  reflect: {
+    heading: "One last thing.",
+    subtitle:
+      "Choose who can see this future, and leave a reflection if you want — or skip it.",
+    visibilityPublic: "Publish to Future Commons",
+    visibilityPublicHint:
+      "Others can find it on the Living Cartography after moderation.",
+    visibilityPrivate: "Keep private",
+    visibilityPrivateHint:
+      "Anchored for you only — nothing is sent for review.",
+    reflectionLabel: "Reflection (optional)",
+    reflectionPlaceholder: "A sentence or two is enough.",
+    skip: "Skip this",
     consentNote:
       "This artifact is speculative fiction, not personal data. Nothing about you is published — only what you chose to imagine.",
-    skip: "Skip this",
-    continue: "Continue",
-  },
-  anchor: {
-    heading: "Anchor this future?",
-    subtitle: (artifactName: string) =>
-      `Once anchored, ${artifactName || "your future"} joins the Commons — a shared, living cartography others can find, sit with, and respond to.`,
-    primary: "Anchor it",
-    secondary: "Wait, let me look again",
-    holding: "Anchoring…",
+    publish: "Publish →",
+    publishing: "Publishing…",
   },
   confirmation: {
-    heading: "Anchored.",
+    eyebrow: "Published to Future Commons",
+    heading: "Published.",
     subtitlePublished: (artifactName: string) =>
       `${artifactName || "Your future"} now lives in the Commons — one more coordinate on the map of futures being contested and imagined.`,
     subtitlePrivate: (artifactName: string) =>
-      `${artifactName || "Your future"} is anchored — kept close, not sent for moderation.`,
-    viewCommons: "View it in the Commons",
+      `${artifactName || "Your future"} is kept private — anchored for you, not sent for moderation.`,
+    viewLive: "View it live",
     bringToLife: "Bring it to life",
-    shareExternal: "Share externally",
+    copyShareLink: "Copy share link",
+    download: "Download this future",
+    workWithHeading: "How can you work with this future?",
   },
 } as const;
 

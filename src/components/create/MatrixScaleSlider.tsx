@@ -1,19 +1,18 @@
 "use client";
 
-import type { MatrixScaleScore } from "@/lib/journey/types";
 import { FFIE_CARD_TEXT } from "@/lib/card-layout";
 
 type MatrixScaleSliderProps = {
   question: string;
   lowLabel: string;
   highLabel: string;
-  value: MatrixScaleScore | null;
-  onChange: (value: MatrixScaleScore) => void;
+  value: number | null;
+  onChange: (value: number) => void;
 };
 
-/** Percent toward the high pole (6 = 100%, 1 = 0%). */
-export function percentTowardHigh(score: MatrixScaleScore): number {
-  return Math.round(((score - 1) / 5) * 100);
+/** Percent toward the high pole (0 = fully low, 100 = fully high). */
+export function percentTowardHigh(percent: number): number {
+  return Math.round(Math.min(100, Math.max(0, percent)));
 }
 
 export function MatrixScaleSlider({
@@ -24,7 +23,7 @@ export function MatrixScaleSlider({
   onChange,
 }: MatrixScaleSliderProps) {
   const questionId = `matrix-slider-${question.slice(0, 24).replace(/\W+/g, "-")}`;
-  const current = value ?? 4;
+  const current = value ?? 50;
   const towardHigh = percentTowardHigh(current);
   const towardLow = 100 - towardHigh;
 
@@ -41,16 +40,16 @@ export function MatrixScaleSlider({
       <div className="space-y-3">
         <input
           type="range"
-          min={1}
-          max={6}
+          min={0}
+          max={100}
           step={1}
           value={current}
           onChange={(event) =>
-            onChange(Number.parseInt(event.target.value, 10) as MatrixScaleScore)
+            onChange(Number.parseFloat(event.target.value))
           }
           aria-labelledby={questionId}
-          aria-valuemin={1}
-          aria-valuemax={6}
+          aria-valuemin={0}
+          aria-valuemax={100}
           aria-valuenow={current}
           className="h-2 w-full cursor-pointer appearance-none rounded-full bg-ffie-line accent-ffie-accent"
         />
