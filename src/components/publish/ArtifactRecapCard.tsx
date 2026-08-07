@@ -31,11 +31,11 @@ export function ArtifactRecapCard({ draft }: { draft: JourneyDraft }) {
   ].filter(Boolean);
 
   return (
-    <div className="rounded-[10px] border border-[#dcd7f7] bg-[#f6f4ff] px-5 py-4">
-      <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-accent">
+    <div className="rounded-[10px] border border-[#dcd7f7] bg-[#f6f4ff] px-[21px] py-[19px]">
+      <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[#6e52c4]">
         {copy.recapEyebrow}
       </p>
-      <p className="mt-2 text-xs leading-relaxed text-ffie-muted">
+      <p className="pt-2 text-xs leading-[19.2px] text-[rgba(35,19,82,0.55)]">
         {summaryParts.map((part, index) => (
           <span key={part}>
             {index === 0 ? (
@@ -49,10 +49,10 @@ export function ArtifactRecapCard({ draft }: { draft: JourneyDraft }) {
       </p>
       {values.length > 0 && (
         <>
-          <p className="mt-4 text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+          <p className="pt-3 text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
             {copy.recapValuesLabel}
           </p>
-          <ul className="mt-2 flex flex-wrap gap-1.5">
+          <ul className="flex flex-wrap gap-1.5 pt-2">
             {values.map((value) => (
               <li
                 key={value}

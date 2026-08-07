@@ -8,7 +8,11 @@ import {
   quadrantFromPosition,
   signedToUnit,
 } from "@/lib/journey/types";
-import { PUBLISH_FLOW, quadrantDisplayName, QUADRANT_ANCHORED_SUMMARIES } from "@/lib/publish-flow-copy";
+import {
+  PUBLISH_FLOW,
+  quadrantDisplayName,
+  QUADRANT_ANCHORED_SUMMARIES,
+} from "@/lib/publish-flow-copy";
 import {
   QUADRANT_COLORS,
   QUADRANT_TEXT_COLORS,
@@ -23,6 +27,8 @@ function plotToSvg(unitX: number, unitY: number) {
     cy: (1 - unitY) * PLOT.size,
   };
 }
+
+const QUADRANT_LAYOUT: {
   id: FutureQuadrant;
   corner: "tl" | "tr" | "bl" | "br";
   label: string;
@@ -37,7 +43,7 @@ function plotToSvg(unitX: number, unitY: number) {
   },
 ];
 
-const QUADRANT_LAYOUT: {
+type PublishLiveMatrixProps = {
   systemLogicScore: number | null;
   powerOrgScore: number | null;
   showSummary?: boolean;
@@ -59,7 +65,7 @@ export function PublishLiveMatrix({
     systemLogicScore != null ? calibrationToSigned(systemLogicScore) : 0;
   const y = powerOrgScore != null ? calibrationToSigned(powerOrgScore) : 0;
   const unit = signedToUnit(x, y);
-  const { cx, cy } = plotToSvg(unit.x, 1 - unit.y);
+  const { cx, cy } = plotToSvg(unit.x, unit.y);
   const quadrant = quadrantFromPosition(x, y);
   const systemPct =
     systemLogicScore != null ? Math.round(systemLogicScore) : 50;
@@ -67,37 +73,35 @@ export function PublishLiveMatrix({
   const half = PLOT.size / 2;
 
   return (
-    <div
-      className={`${sticky ? "lg:sticky lg:top-6" : ""} ${className}`}
-    >
-      <p className="mb-3.5 text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+    <div className={`${sticky ? "lg:sticky lg:top-6" : ""} ${className}`}>
+      <p className="pb-[14px] text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
         {copy.livePositionLabel}
       </p>
 
-      <div className="relative mx-auto w-full max-w-[360px]">
-        <div className="mb-1.5 flex items-center justify-center gap-1.5 pl-12 text-[9px] font-medium text-ffie-muted">
-          <span className="text-ffie-muted/70">↑</span>
+      <div className="relative mx-auto w-full max-w-[290px]">
+        <div className="mb-1.5 flex items-center justify-center gap-1.5 pl-12 text-[9px] font-medium tracking-[0.36px] text-[rgba(35,19,82,0.55)]">
+          <span className="text-[rgba(35,19,82,0.4)]">↑</span>
           <span>Collective Care</span>
         </div>
 
         <div className="flex items-center">
           <div className="flex w-12 shrink-0 items-center justify-end pr-2">
-            <span className="-rotate-90 whitespace-nowrap text-[8px] font-semibold uppercase tracking-[0.12em] text-ffie-muted/70">
+            <span className="-rotate-90 whitespace-nowrap text-[8px] font-semibold uppercase tracking-[0.12em] text-[rgba(35,19,82,0.25)]">
               Power Organization
             </span>
           </div>
 
           <div className="relative flex-1">
-            <div className="absolute -left-14 top-1/2 -translate-y-1/2 text-[9px] font-medium text-ffie-muted">
+            <div className="absolute -left-14 top-1/2 -translate-y-1/2 text-[9px] font-medium tracking-[0.36px] text-[rgba(35,19,82,0.55)]">
               Extractive ←
             </div>
-            <div className="absolute -right-16 top-1/2 -translate-y-1/2 text-[9px] font-medium text-ffie-muted">
+            <div className="absolute -right-16 top-1/2 -translate-y-1/2 text-[9px] font-medium tracking-[0.36px] text-[rgba(35,19,82,0.55)]">
               → Emancipatory
             </div>
 
             <svg
               viewBox={`0 0 ${PLOT.size} ${PLOT.size}`}
-              className="w-full rounded-lg border border-ffie-line bg-white"
+              className="w-full rounded-lg border border-[rgba(35,19,82,0.12)] bg-white"
               role="img"
               aria-label="Live matrix position"
             >
@@ -134,7 +138,7 @@ export function PublishLiveMatrix({
                       x={qx + (isLeft ? 10 : half - 10)}
                       y={qy + (isTop ? 18 : half - 8)}
                       textAnchor={isLeft ? "start" : "end"}
-                      className="select-none fill-current text-[7.5px] font-bold uppercase tracking-[0.06em]"
+                      className="select-none fill-current text-[7.5px] font-bold uppercase tracking-[0.0675em]"
                       style={{ color: QUADRANT_TEXT_COLORS[spec.id] }}
                     >
                       {spec.label}
@@ -192,30 +196,30 @@ export function PublishLiveMatrix({
           </div>
         </div>
 
-        <div className="mt-1.5 flex items-center justify-center gap-1.5 pl-12 text-[9px] font-medium text-ffie-muted">
+        <div className="mt-1.5 flex items-center justify-center gap-1.5 pl-12 pt-1.5 text-[9px] font-medium tracking-[0.36px] text-[rgba(35,19,82,0.55)]">
           <span>Hierarchical</span>
-          <span className="text-ffie-muted/70">↓</span>
+          <span className="text-[rgba(35,19,82,0.4)]">↓</span>
         </div>
-        <p className="mt-0.5 text-center text-[8px] font-semibold uppercase tracking-[0.12em] text-ffie-muted/70">
+        <p className="mt-0.5 pl-12 text-[8px] font-semibold uppercase tracking-[0.12em] text-[rgba(35,19,82,0.25)]">
           System Logic
         </p>
       </div>
 
       {showSummary && (
-        <div className="mt-3 rounded-[10px] border border-ffie-line/70 bg-white px-4 py-3">
-          <div className="flex items-center justify-between text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+        <div className="mt-3 rounded-[10px] border border-[rgba(35,19,82,0.07)] bg-white px-[15px] py-3">
+          <div className="flex items-center justify-between text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
             <span>{copy.systemLogicSummary}</span>
-            <span className="font-mono text-ffie-accent">{systemPct}%</span>
+            <span className="font-mono text-[#6e52c4]">{systemPct}%</span>
           </div>
-          <div className="mt-1 flex items-center justify-between text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+          <div className="mt-[5px] flex items-center justify-between text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
             <span>{copy.powerOrgSummary}</span>
-            <span className="font-mono text-ffie-accent">{powerPct}%</span>
+            <span className="font-mono text-[#6e52c4]">{powerPct}%</span>
           </div>
-          <div className="mt-2.5 border-t border-ffie-line/70 pt-2.5">
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-ffie-muted">
+          <div className="mt-2.5 border-t border-[rgba(35,19,82,0.07)] pt-[11px]">
+            <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
               {copy.currentQuadrant}
             </p>
-            <p className="mt-0.5 text-[11px] font-semibold text-ffie-ink">
+            <p className="mt-[3px] text-[11px] font-semibold text-ffie-ink">
               {quadrantDisplayName(quadrant)}
             </p>
             <p className="sr-only">{formatQuadrantLabel(quadrant)}</p>
@@ -245,48 +249,48 @@ export function PublishAnchoredMatrixPanel({
   const summary = QUADRANT_ANCHORED_SUMMARIES[quadrant];
 
   return (
-    <div className="flex flex-col justify-center gap-4 py-6 pl-6 pr-5 sm:pl-8">
+    <div className="flex flex-col justify-center gap-4 py-[28px] pl-[32px] pr-[28px]">
       <div>
-        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+        <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
           {copy.anchoredEyebrow}
         </p>
-        <p className="mt-2 font-display text-[19px] font-extrabold tracking-tight text-[#3a2278]">
+        <p className="mt-2 font-display text-[19px] font-extrabold leading-[22.8px] tracking-[-0.38px] text-[#3a2278]">
           {quadrantDisplayName(quadrant)}
         </p>
-        <p className="mt-2.5 max-w-sm text-[13px] leading-relaxed text-ffie-muted">
+        <p className="mt-2.5 max-w-[340px] text-[13px] leading-[22.1px] text-[rgba(35,19,82,0.55)]">
           {summary}
         </p>
       </div>
 
       <div className="space-y-3">
         <div>
-          <div className="flex items-center justify-between text-[10px]">
-            <span className="font-medium uppercase tracking-[0.12em] text-ffie-muted">
+          <div className="flex items-center justify-between text-[10px] leading-[15px]">
+            <span className="font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
               System Logic
             </span>
             <span className="font-mono text-[#3a2278]">
               Emancipatory · {systemPct}%
             </span>
           </div>
-          <div className="mt-1.5 h-1 rounded-full bg-ffie-line/70">
+          <div className="mt-[5px] h-1 rounded-full bg-[rgba(35,19,82,0.07)]">
             <div
-              className="h-1 rounded-full bg-ffie-accent"
+              className="h-1 rounded-full bg-[#6e52c4]"
               style={{ width: `${systemPct}%` }}
             />
           </div>
         </div>
         <div>
-          <div className="flex items-center justify-between text-[10px]">
-            <span className="font-medium uppercase tracking-[0.12em] text-ffie-muted">
+          <div className="flex items-center justify-between text-[10px] leading-[15px]">
+            <span className="font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
               Power Org.
             </span>
             <span className="font-mono text-[#3a2278]">
               Collective · {powerPct}%
             </span>
           </div>
-          <div className="mt-1.5 h-1 rounded-full bg-ffie-line/70">
+          <div className="mt-[5px] h-1 rounded-full bg-[rgba(35,19,82,0.07)]">
             <div
-              className="h-1 rounded-full bg-ffie-accent"
+              className="h-1 rounded-full bg-[#6e52c4]"
               style={{ width: `${powerPct}%` }}
             />
           </div>

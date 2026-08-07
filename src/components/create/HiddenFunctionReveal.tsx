@@ -25,7 +25,7 @@ export function HiddenFunctionReveal({ draft }: { draft: JourneyDraft }) {
       <button
         type="button"
         onClick={handleReveal}
-        className="w-full border-t border-ffie-line/70 bg-[#f7f5f2] px-7 py-5 text-left transition hover:bg-[#f0ede8]"
+        className="w-full border-t border-[rgba(35,19,82,0.12)] bg-[#f7f5f2] px-[28px] py-[20px] text-left transition hover:bg-[#f0ede8]"
       >
         <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
           {copy.hiddenFunctionTap}
@@ -39,7 +39,7 @@ export function HiddenFunctionReveal({ draft }: { draft: JourneyDraft }) {
       initial={reduceMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.25 }}
-      className="border-t border-ffie-line/70 bg-[#fdf1ee] px-7 py-5"
+      className="border-t border-[rgba(35,19,82,0.12)] bg-[#fdf1ee] px-[28px] py-[20px]"
     >
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#c8472a]">

@@ -140,11 +140,11 @@ export function PublishedFutureCard({
       initial={reduceMotion ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className="overflow-hidden rounded-2xl border border-ffie-line/70 bg-white shadow-[0_6px_32px_rgba(35,19,82,0.08)]"
+      className="overflow-hidden rounded-[16px] border border-[rgba(35,19,82,0.12)] bg-white shadow-[0_6px_32px_rgba(35,19,82,0.08)]"
     >
-      <div className="flex flex-col border-b border-ffie-line/70 sm:flex-row">
+      <div className="flex flex-col border-b border-[rgba(35,19,82,0.12)] sm:flex-row">
         {visualDirectionSrc && (
-          <div className="relative h-44 w-full shrink-0 bg-[#eee9fd] sm:h-auto sm:w-[172px]">
+          <div className="relative h-[172px] w-full shrink-0 bg-[#eee9fd] sm:h-[172px] sm:w-[172px]">
             <Image
               src={visualDirectionSrc}
               alt=""
@@ -153,8 +153,8 @@ export function PublishedFutureCard({
             />
           </div>
         )}
-        <div className="flex min-w-0 flex-1 flex-col justify-center px-6 py-5 sm:px-7">
-          <h3 className="font-display text-2xl font-bold leading-tight text-ffie-ink">
+        <div className="flex min-w-0 flex-1 flex-col justify-center px-7 py-6">
+          <h3 className="font-display text-2xl font-bold leading-[31.2px] tracking-[-0.48px] text-ffie-ink">
             {artifactName}
           </h3>
           {description && (
@@ -171,8 +171,8 @@ export function PublishedFutureCard({
         </div>
       </div>
 
-      <div className="grid border-b border-ffie-line/70 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <div className="border-b border-ffie-line/70 p-5 lg:border-b-0 lg:border-r">
+      <div className="grid border-b border-[rgba(35,19,82,0.12)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+        <div className="border-b border-[rgba(35,19,82,0.12)] px-7 py-7 lg:border-b-0 lg:border-r">
           <PublishLiveMatrix
             systemLogicScore={systemScore}
             powerOrgScore={powerScore}
@@ -185,8 +185,8 @@ export function PublishedFutureCard({
         />
       </div>
 
-      <div className="border-b border-ffie-line/70 px-7 pb-6 pt-6">
-        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+      <div className="border-b border-[rgba(35,19,82,0.12)] px-7 pb-[25px] pt-6">
+        <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
           {copy.personEyebrow}
         </p>
         <div className="mt-3.5 flex gap-3.5">
@@ -213,44 +213,44 @@ export function PublishedFutureCard({
         )}
       </div>
 
-      <div className="grid border-b border-ffie-line/70 sm:grid-cols-2">
-        <div className="space-y-4 border-b border-ffie-line/70 px-6 py-5 sm:border-b-0 sm:border-r">
+      <div className="grid border-b border-[rgba(35,19,82,0.12)] sm:grid-cols-2">
+        <div className="space-y-4 border-b border-[rgba(35,19,82,0.12)] px-6 py-[22px] sm:border-b-0 sm:border-r">
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+            <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
               {copy.goalLabel}
             </p>
-            <p className="mt-1.5 text-[13px] text-ffie-ink/70">{goal}</p>
+            <p className="mt-1.5 text-[13px] leading-[22.1px] text-[rgba(35,19,82,0.7)]">{goal}</p>
           </div>
-          <div className="h-px bg-ffie-line/70" />
+          <div className="h-px bg-[rgba(35,19,82,0.12)]" />
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+            <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
               {copy.makesPossibleLabel}
             </p>
-            <p className="mt-1.5 text-[13px] text-ffie-ink/70">
+            <p className="mt-1.5 text-[13px] leading-[22.1px] text-[rgba(35,19,82,0.7)]">
               {makesPossible}
             </p>
           </div>
         </div>
-        <div className="space-y-4 px-6 py-5">
+        <div className="space-y-4 px-6 py-[22px]">
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+            <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
               {copy.weaknessLabel}
             </p>
-            <p className="mt-1.5 text-[13px] text-ffie-ink/70">{weakness}</p>
+            <p className="mt-1.5 text-[13px] leading-[22.1px] text-[rgba(35,19,82,0.7)]">{weakness}</p>
           </div>
-          <div className="h-px bg-ffie-line/70" />
+          <div className="h-px bg-[rgba(35,19,82,0.12)]" />
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+            <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
               {copy.refuseLabel}
             </p>
-            <p className="mt-1.5 text-[13px] text-ffie-ink/70">{refuse}</p>
+            <p className="mt-1.5 text-[13px] leading-[22.1px] text-[rgba(35,19,82,0.7)]">{refuse}</p>
           </div>
         </div>
       </div>
 
       {quote && (
-        <div className="border-b border-ffie-line/70 bg-[#eee9fd]/40 px-7 py-7">
-          <div className="mb-4 h-0.5 w-7 rounded-full bg-ffie-accent/55" />
+        <div className="border-b border-[rgba(35,19,82,0.12)] bg-[#eee9fd]/40 px-7 pb-[25px] pt-7">
+          <div className="mb-4 h-[2.5px] w-7 rounded-full bg-[#6e52c4]/55" />
           <p className="max-w-2xl font-display text-lg font-bold leading-snug text-ffie-ink">
             “{quote.replace(/^["“]|["”]$/g, "")}”
           </p>
@@ -266,8 +266,8 @@ export function PublishedFutureCard({
       )}
 
       {artifactValues.length > 0 && (
-        <div className="border-b border-ffie-line/70 px-7 py-5">
-          <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+        <div className="border-b border-[rgba(35,19,82,0.12)] px-7 py-5">
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
             {copy.valuesLabel}
           </p>
           <ul className="mt-3 flex flex-wrap gap-1.5">

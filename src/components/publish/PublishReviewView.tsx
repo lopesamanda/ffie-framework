@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PublishFlowChrome } from "@/components/publish/PublishFlowChrome";
+import { PublishFlowFooter } from "@/components/publish/PublishFlowFooter";
 import { PublishReflectScreen } from "@/components/publish/PublishReflectScreen";
 import { usePublishDraft } from "@/hooks/usePublishDraft";
 import { buildNarrative, buildTitle } from "@/lib/journey/types";
@@ -74,12 +75,19 @@ export function PublishReviewView() {
   }
 
   return (
-    <PublishFlowChrome activeStep={2}>
+    <PublishFlowChrome
+      activeStep={2}
+      footer={
+        <PublishFlowFooter
+          activeStep={2}
+          onBack={() => router.push("/matrix")}
+        />
+      }
+    >
       <PublishReflectScreen
         draft={draft}
         onUpdate={update}
         onPublish={handlePublish}
-        onBack={() => router.push("/matrix")}
         submitting={submitting}
         submitError={submitError}
       />

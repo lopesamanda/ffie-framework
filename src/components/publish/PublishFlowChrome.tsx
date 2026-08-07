@@ -16,21 +16,21 @@ export function PublishFlowChrome({
   footer,
 }: PublishFlowChromeProps) {
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-10 md:py-14">
-      <div className="overflow-hidden rounded-2xl border border-ffie-line bg-ffie-bg shadow-[0_8px_32px_rgba(35,19,82,0.08)]">
-        <div className="border-b border-ffie-line/70 bg-white px-6 py-3 sm:px-10">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="mx-auto w-full max-w-[960px] px-6 py-7 md:py-[28px]">
+      <div className="overflow-hidden rounded-[16px] border border-[rgba(35,19,82,0.12)] bg-[#f7f5f2] shadow-[0_8px_32px_rgba(35,19,82,0.08)]">
+        <div className="border-b border-[rgba(35,19,82,0.07)] bg-white px-10 pb-[15px] pt-3">
+          <div className="flex flex-wrap items-center gap-6">
             <PublishRitualStepper activeStep={activeStep} />
-            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted/80">
+            <p className="ml-auto text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.25)]">
               {PUBLISH_FLOW.phaseLabel}
             </p>
           </div>
         </div>
 
-        <div className="bg-ffie-bg px-6 py-8 sm:px-10 sm:py-10">{children}</div>
+        <div className="bg-[#f7f5f2] px-10 pb-8 pt-10">{children}</div>
 
         {footer && (
-          <div className="border-t border-ffie-line/70 bg-white px-6 py-4 sm:px-10">
+          <div className="border-t border-[rgba(35,19,82,0.07)] bg-white px-10 pb-[14px] pt-[15px]">
             {footer}
           </div>
         )}

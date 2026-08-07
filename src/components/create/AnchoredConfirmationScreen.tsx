@@ -64,16 +64,16 @@ export function AnchoredConfirmationScreen({
   };
 
   const content = (
-    <div className="w-full space-y-8">
+    <div className="w-full">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="max-w-xl space-y-2">
-          <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+        <div className="max-w-xl">
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
             {draft.submittedId ? copy.eyebrow : copy.eyebrowPrivate}
           </p>
-          <h2 className="font-display text-[26px] font-bold tracking-tight text-ffie-ink">
+          <h2 className="pt-[10px] font-display text-[26px] font-bold leading-[33.8px] tracking-[-0.52px] text-ffie-ink">
             {draft.submittedId ? copy.heading : copy.headingPrivate}
           </h2>
-          <p className="text-sm leading-relaxed text-ffie-muted">
+          <p className="pt-2 text-sm leading-[22.4px] text-[rgba(35,19,82,0.55)]">
             {draft.submittedId
               ? copy.subtitlePublished(artifactLabel)
               : copy.subtitlePrivate(artifactLabel)}
@@ -89,9 +89,11 @@ export function AnchoredConfirmationScreen({
         />
       </div>
 
-      <PublishedFutureCard draft={draft} id="future-output-card" />
+      <div className="pt-[28px]">
+        <PublishedFutureCard draft={draft} id="future-output-card" />
+      </div>
 
-      <div className="w-full space-y-6 border-t border-ffie-line/70 pt-8">
+      <div className="w-full space-y-6 border-t border-[rgba(35,19,82,0.12)] pt-8">
         <h3 className="font-display text-base font-semibold text-ffie-ink">
           {copy.workWithHeading}
         </h3>

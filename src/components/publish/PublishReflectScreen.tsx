@@ -1,18 +1,13 @@
 "use client";
 
 import { FfieButton } from "@/components/create/design/FfieButton";
-import { PublishRitualFooter } from "@/components/create/design/PublishRitualFooter";
 import { PUBLISH_FLOW } from "@/lib/publish-flow-copy";
 import type { JourneyDraft } from "@/lib/journey/types";
-
-const FIELD =
-  "w-full rounded-[10px] border border-ffie-line bg-white px-4 py-3 text-sm text-ffie-ink outline-none focus:border-ffie-ink/30";
 
 type PublishReflectScreenProps = {
   draft: JourneyDraft;
   onUpdate: (patch: Partial<JourneyDraft>) => void;
   onPublish: () => void;
-  onBack: () => void;
   submitting?: boolean;
   submitError?: string | null;
 };
@@ -22,7 +17,6 @@ export function PublishReflectScreen({
   draft,
   onUpdate,
   onPublish,
-  onBack,
   submitting = false,
   submitError = null,
 }: PublishReflectScreenProps) {
@@ -30,21 +24,21 @@ export function PublishReflectScreen({
   const visibility = draft.submitToCommons ? "publish" : "private";
 
   return (
-    <div className="mx-auto w-full max-w-[640px] space-y-9">
+    <div className="mx-auto w-full max-w-[640px]">
       <div>
-        <h1 className="font-display text-[26px] font-bold tracking-tight text-ffie-ink">
+        <h1 className="font-display text-[26px] font-bold leading-[33.8px] tracking-[-0.52px] text-ffie-ink">
           {copy.heading}
         </h1>
-        <p className="mt-3 max-w-prose text-sm leading-relaxed text-ffie-muted">
+        <p className="pt-3 max-w-prose text-sm leading-[22.4px] text-[rgba(35,19,82,0.55)]">
           {copy.subtitle}
         </p>
       </div>
 
-      <div>
-        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+      <div className="pt-9">
+        <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
           {copy.visibilityEyebrow}
         </p>
-        <div className="mt-3.5 grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 pt-[14px] sm:grid-cols-2">
           {(
             [
               {
@@ -67,10 +61,10 @@ export function PublishReflectScreen({
                 onClick={() =>
                   onUpdate({ submitToCommons: option.value === "publish" })
                 }
-                className={`rounded-xl px-5 py-5 text-left transition ${
+                className={`rounded-[10px] px-[22px] py-5 text-left transition ${
                   selected
-                    ? "border-2 border-ffie-ink bg-ffie-ink/[0.07]"
-                    : "border border-ffie-line bg-white hover:border-ffie-ink/20"
+                    ? "border-2 border-ffie-ink bg-[rgba(35,19,82,0.07)]"
+                    : "border border-[rgba(35,19,82,0.12)] bg-white hover:border-[rgba(35,19,82,0.2)]"
                 }`}
               >
                 <div className="flex items-center gap-2.5">
@@ -78,7 +72,7 @@ export function PublishReflectScreen({
                     className={`inline-flex size-3.5 shrink-0 items-center justify-center rounded-[7px] border-2 ${
                       selected
                         ? "border-ffie-ink"
-                        : "border-ffie-ink/25"
+                        : "border-[rgba(35,19,82,0.25)]"
                     }`}
                   >
                     {selected && (
@@ -87,13 +81,13 @@ export function PublishReflectScreen({
                   </span>
                   <span
                     className={`font-display text-sm font-bold ${
-                      selected ? "text-ffie-ink" : "text-ffie-muted"
+                      selected ? "text-ffie-ink" : "text-[rgba(35,19,82,0.55)]"
                     }`}
                   >
                     {option.label}
                   </span>
                 </div>
-                <p className="mt-2 pl-6 text-xs leading-relaxed text-ffie-muted">
+                <p className="mt-2 pl-6 text-xs leading-[19.2px] text-[rgba(35,19,82,0.55)]">
                   {option.hint}
                 </p>
               </button>
@@ -102,15 +96,15 @@ export function PublishReflectScreen({
         </div>
       </div>
 
-      <div>
+      <div className="pt-10">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-ffie-muted">
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[rgba(35,19,82,0.4)]">
             {copy.reflectionEyebrow}{" "}
             <span className="opacity-60">{copy.reflectionOptional}</span>
           </p>
           <button
             type="button"
-            className="text-[11px] font-medium text-ffie-muted/70 underline underline-offset-2 hover:text-ffie-muted"
+            className="text-[11px] font-medium text-[rgba(35,19,82,0.4)] underline underline-offset-2 hover:text-[rgba(35,19,82,0.65)]"
             onClick={() => onUpdate({ closingReflection: "" })}
           >
             {copy.skip}
@@ -122,35 +116,32 @@ export function PublishReflectScreen({
           onChange={(event) =>
             onUpdate({ closingReflection: event.target.value })
           }
-          className={`mt-2.5 ${FIELD}`}
+          className="mt-2.5 w-full rounded-[10px] border border-[rgba(35,19,82,0.12)] bg-white px-[17px] py-[13px] text-sm leading-[22.4px] text-ffie-ink outline-none focus:border-[rgba(35,19,82,0.3)]"
           placeholder="..."
         />
       </div>
 
       {submitError && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+        <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
           {submitError}
         </p>
       )}
 
-      <div className="space-y-3 border-t border-ffie-line/70 pt-6">
-        <p className="text-xs leading-relaxed text-ffie-muted">
+      <div className="pt-9">
+        <p className="text-xs leading-[19.2px] text-[rgba(35,19,82,0.55)]">
           {copy.consentNote}
         </p>
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-3">
           <FfieButton
             onClick={onPublish}
             disabled={submitting}
             iconPosition="trailing"
+            className="!px-7 !py-3"
           >
             {submitting ? "Publishing…" : copy.publish}
           </FfieButton>
         </div>
       </div>
-
-      <PublishRitualFooter activeStep={2} onBack={onBack}>
-        <span aria-hidden />
-      </PublishRitualFooter>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FfieButton } from "@/components/create/design/FfieButton";
-import { PublishRitualFooter } from "@/components/create/design/PublishRitualFooter";
+import { PublishFlowFooter } from "@/components/publish/PublishFlowFooter";
 import { ArtifactRecapCard } from "@/components/publish/ArtifactRecapCard";
 import { PublishAxisSlider } from "@/components/publish/PublishAxisSlider";
 import { PublishFlowChrome } from "@/components/publish/PublishFlowChrome";
@@ -67,22 +67,20 @@ export function MatrixSelectionView() {
   }
 
   const footer = (
-    <PublishRitualFooter activeStep={1} onBack={() => router.push("/create")}>
-      <span aria-hidden />
-    </PublishRitualFooter>
+    <PublishFlowFooter activeStep={1} onBack={() => router.push("/create")} />
   );
 
   return (
     <PublishFlowChrome activeStep={1} footer={footer}>
-      <h1 className="font-display text-[26px] font-bold leading-tight tracking-tight text-ffie-ink">
+      <h1 className="font-display text-[26px] font-bold leading-[33.8px] tracking-[-0.52px] text-ffie-ink">
         {copy.heading}
       </h1>
 
-      <div className="mt-3">
+      <div className="pt-3">
         <ArtifactRecapCard draft={draft} />
       </div>
 
-      <div className="mt-9 grid gap-10 lg:grid-cols-[minmax(0,1fr)_290px] lg:items-start">
+      <div className="grid gap-10 pt-9 lg:grid-cols-[minmax(0,551px)_290px] lg:gap-x-[52px] lg:items-start">
         <div className="space-y-9">
           <PublishAxisSlider
             axis="X"
