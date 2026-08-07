@@ -1,31 +1,22 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { FfieButton } from "@/components/create/design/FfieButton";
 import { PublishRitualFooter } from "@/components/create/design/PublishRitualFooter";
-import { PublishRitualStepper } from "@/components/create/design/PublishRitualStepper";
-import { ArtifactSummaryPanel } from "@/components/publish/ArtifactSummaryPanel";
-import { NamedQuadrantMatrix } from "@/components/publish/NamedQuadrantMatrix";
-import { PublishFlowShell } from "@/components/publish/PublishFlowShell";
+import { ArtifactRecapCard } from "@/components/publish/ArtifactRecapCard";
+import { PublishAxisSlider } from "@/components/publish/PublishAxisSlider";
+import { PublishFlowChrome } from "@/components/publish/PublishFlowChrome";
+import { PublishLiveMatrix } from "@/components/publish/PublishLiveMatrix";
 import { usePublishDraft } from "@/hooks/usePublishDraft";
+import { computePlacementFromMatrixScales } from "@/lib/journey/types";
 import { hasMatrixPlacement, hasPublishableDraft } from "@/lib/publish-flow/guards";
-import {
-  activeQuadrantFromDraft,
-  placementPatchFromUnit,
-  unitFromDraft,
-} from "@/lib/publish-flow/placement";
 import { PUBLISH_FLOW } from "@/lib/publish-flow-copy";
-import { quadrantFromPosition } from "@/lib/journey/types";
-import type { FutureQuadrant } from "@/types/future";
 
 export function MatrixSelectionView() {
   const router = useRouter();
   const { draft, ready, update } = usePublishDraft();
   const copy = PUBLISH_FLOW.matrix;
-  const [hoveredQuadrant, setHoveredQuadrant] = useState<FutureQuadrant | null>(
-    null,
-  );
 
   useEffect(() => {
     if (!ready) return;
@@ -34,33 +25,34 @@ export function MatrixSelectionView() {
       return;
     }
     if (draft && !hasMatrixPlacement(draft)) {
+      const placement = computePlacementFromMatrixScales(50, 50);
       update({
-        ...placementPatchFromUnit(0.5, 0.5),
+        systemLogicScore: 50,
+        powerOrgScore: 50,
+        position: placement.position,
+        powerPosition: placement.powerPosition,
+        placementJustification: placement.placementJustification,
         outputStep: 1,
         stage: "output",
       });
     }
   }, [draft, ready, router, update]);
 
-  const unit = useMemo(
-    () => (draft ? unitFromDraft(draft) : { x: 0.5, y: 0.5 }),
-    [draft],
-  );
-
-  const activeQuadrant = draft
-    ? quadrantFromPosition(draft.position.x, draft.position.y)
-    : "feminist_preferred";
-
-  const handleSelectUnit = useCallback(
-    (unitX: number, unitY: number) => {
-      update({
-        ...placementPatchFromUnit(unitX, unitY),
-        outputStep: 1,
-        stage: "output",
-      });
-    },
-    [update],
-  );
+  const applyScores = (systemLogicScore: number, powerOrgScore: number) => {
+    const placement = computePlacementFromMatrixScales(
+      systemLogicScore,
+      powerOrgScore,
+    );
+    update({
+      systemLogicScore,
+      powerOrgScore,
+      position: placement.position,
+      powerPosition: placement.powerPosition,
+      placementJustification: placement.placementJustification,
+      outputStep: 1,
+      stage: "output",
+    });
+  };
 
   const handleContinue = () => {
     if (!draft || !hasMatrixPlacement(draft)) return;
@@ -74,44 +66,65 @@ export function MatrixSelectionView() {
     );
   }
 
-  return (
-    <PublishFlowShell
-        flowKey="matrix"
-        eyebrow={copy.eyebrow}
-        title={copy.heading}
-        subtitle={copy.subtitle}
-      >
-        <PublishRitualStepper activeStep={1} />
+  const footer = (
+    <PublishRitualFooter activeStep={1} onBack={() => router.push("/create")}>
+      <span aria-hidden />
+    </PublishRitualFooter>
+  );
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-start">
-          <NamedQuadrantMatrix
-            unitX={unit.x}
-            unitY={unit.y}
-            activeQuadrant={activeQuadrantFromDraft(draft)}
-            hoveredQuadrant={hoveredQuadrant}
-            onHoverQuadrant={setHoveredQuadrant}
-            onSelectUnit={handleSelectUnit}
+  return (
+    <PublishFlowChrome activeStep={1} footer={footer}>
+      <h1 className="font-display text-[26px] font-bold leading-tight tracking-tight text-ffie-ink">
+        {copy.heading}
+      </h1>
+
+      <div className="mt-3">
+        <ArtifactRecapCard draft={draft} />
+      </div>
+
+      <div className="mt-9 grid gap-10 lg:grid-cols-[minmax(0,1fr)_290px] lg:items-start">
+        <div className="space-y-9">
+          <PublishAxisSlider
+            axis="X"
+            eyebrow={copy.systemLogicEyebrow}
+            question={copy.systemLogicQuestion}
+            lowLabel={copy.extractsLabel}
+            highLabel={copy.givesBackLabel}
+            feedbackHigh={copy.givesBackLabel.toLowerCase()}
+            value={draft.systemLogicScore}
+            onChange={(score) =>
+              applyScores(score, draft.powerOrgScore ?? 50)
+            }
           />
-          <ArtifactSummaryPanel
-            draft={draft}
-            activeQuadrant={activeQuadrant}
-            highlightedQuadrant={hoveredQuadrant}
+          <PublishAxisSlider
+            axis="Y"
+            eyebrow={copy.powerOrgEyebrow}
+            question={copy.powerOrgQuestion}
+            lowLabel={copy.centralizedLabel}
+            highLabel={copy.collectiveLabel}
+            feedbackHigh={copy.collectiveLabel.toLowerCase()}
+            value={draft.powerOrgScore}
+            onChange={(score) =>
+              applyScores(draft.systemLogicScore ?? 50, score)
+            }
           />
+          <div className="flex justify-end pt-2">
+            <FfieButton
+              disabled={!hasMatrixPlacement(draft)}
+              onClick={handleContinue}
+              iconPosition="trailing"
+            >
+              {copy.continue}
+            </FfieButton>
+          </div>
         </div>
 
-        <PublishRitualFooter
-          activeStep={1}
-          onBack={() => router.push("/create")}
-        >
-          <FfieButton
-            disabled={!hasMatrixPlacement(draft)}
-            onClick={handleContinue}
-            iconPosition="trailing"
-            className="w-full sm:w-auto"
-          >
-            {copy.continue}
-          </FfieButton>
-        </PublishRitualFooter>
-      </PublishFlowShell>
+        <PublishLiveMatrix
+          systemLogicScore={draft.systemLogicScore}
+          powerOrgScore={draft.powerOrgScore}
+          sticky
+        />
+      </div>
+    </PublishFlowChrome>
   );
 }

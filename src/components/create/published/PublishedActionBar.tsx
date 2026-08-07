@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PublishedActionButton } from "@/components/create/published/PublishedActionButton";
-import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
+import { PUBLISH_FLOW } from "@/lib/publish-flow-copy";
 
 type PublishedActionBarProps = {
   commonsUrl: string;
@@ -11,9 +10,9 @@ type PublishedActionBarProps = {
   linkCopied: boolean;
   onDownload: () => void;
   downloading: boolean;
-  onCreateAnother?: () => void;
 };
 
+/** Figma node 61-1851 action row — matte pills, no glass. */
 export function PublishedActionBar({
   commonsUrl,
   onBringToLife,
@@ -21,36 +20,43 @@ export function PublishedActionBar({
   linkCopied,
   onDownload,
   downloading,
-  onCreateAnother,
 }: PublishedActionBarProps) {
-  const copy = PUBLISH_RITUAL.confirmation;
+  const copy = PUBLISH_FLOW.published;
 
   return (
     <div
       role="toolbar"
       aria-label="Published future actions"
-      className="flex flex-wrap gap-2.5 rounded-2xl border border-ffie-line/70 bg-ffie-surface/60 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] backdrop-blur-sm"
+      className="flex flex-wrap justify-end gap-2"
     >
       <Link
         href={commonsUrl}
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-ffie-ink px-5 py-2.5 font-display text-sm font-bold tracking-[0.01em] text-ffie-bg shadow-[0_4px_12px_rgba(35,19,82,0.22)] transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ffie-accent"
+        className="inline-flex items-center justify-center rounded-full border border-ffie-line bg-white px-4 py-2.5 text-xs font-medium text-ffie-ink transition hover:border-ffie-ink/25"
       >
         {copy.viewLive}
       </Link>
-      <PublishedActionButton onClick={onBringToLife}>
+      <button
+        type="button"
+        onClick={onBringToLife}
+        className="inline-flex items-center justify-center rounded-full bg-[#5236a8] px-4 py-2.5 text-xs font-semibold text-white transition hover:opacity-90"
+      >
         {copy.bringToLife}
-      </PublishedActionButton>
-      <PublishedActionButton onClick={onCopyLink} success={linkCopied}>
-        {linkCopied ? "Link copied" : copy.copyShareLink}
-      </PublishedActionButton>
-      <PublishedActionButton onClick={onDownload} disabled={downloading}>
+      </button>
+      <button
+        type="button"
+        onClick={onCopyLink}
+        className="inline-flex items-center justify-center rounded-full bg-ffie-ink px-4 py-2.5 text-xs font-semibold text-ffie-bg transition hover:opacity-90"
+      >
+        {linkCopied ? "Link copied" : copy.copyLink}
+      </button>
+      <button
+        type="button"
+        onClick={onDownload}
+        disabled={downloading}
+        className="inline-flex items-center justify-center rounded-full border border-ffie-line bg-white px-4 py-2.5 text-xs font-medium text-ffie-ink transition hover:border-ffie-ink/25 disabled:opacity-50"
+      >
         {downloading ? "Preparing…" : copy.download}
-      </PublishedActionButton>
-      {onCreateAnother && (
-        <PublishedActionButton onClick={onCreateAnother}>
-          {copy.createAnother}
-        </PublishedActionButton>
-      )}
+      </button>
     </div>
   );
 }

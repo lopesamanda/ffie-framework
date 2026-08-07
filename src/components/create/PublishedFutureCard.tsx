@@ -3,64 +3,71 @@
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { HiddenFunctionReveal } from "@/components/create/HiddenFunctionReveal";
-import { LivePositionMiniMatrix } from "@/components/create/LivePositionMiniMatrix";
-import { MiniQuadrantIcon } from "@/components/create/design/MiniQuadrantIcon";
+import {
+  PublishAnchoredMatrixPanel,
+  PublishLiveMatrix,
+} from "@/components/publish/PublishLiveMatrix";
 import { resolveArtifactValues } from "@/lib/journey/artifact-options";
-import {
-  FFIE_CARD_TEXT,
-  ffieCardSectionLabel,
-} from "@/lib/card-layout";
+import { pronounsForSelection } from "@/lib/journey/character-pronouns";
 import { buildFinalCardNarrative } from "@/lib/journey/future-card-copy";
-import {
-  resolveCapabilityDescription,
-  resolveCapabilityName,
-} from "@/lib/journey/future-commons-narrative";
+import { composeHiddenFunction } from "@/lib/journey/hidden-function";
 import { FUTURE_HORIZON_LABEL } from "@/lib/journey/future-horizon";
-import { buildOracleSynthesis } from "@/lib/journey/oracle-synthesis";
-import { ensureVisualDirection } from "@/lib/journey/visual-directions";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
-import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
-import type { JourneyDraft } from "@/lib/journey/types";
+import { raceEthnicityForDraft, type JourneyDraft } from "@/lib/journey/types";
+import { quadrantFromPosition } from "@/lib/journey/types";
+import { ensureVisualDirection } from "@/lib/journey/visual-directions";
+import { PUBLISH_FLOW } from "@/lib/publish-flow-copy";
+import type { CardHand } from "@/lib/journey/types";
+import type { NarrativeCard } from "@/data/narrative-cards";
+import { CATEGORY_STYLES } from "@/lib/category-styles";
 import {
-  formatQuadrantLabel,
-  quadrantFromPosition,
-} from "@/lib/journey/types";
-import {
-  QUADRANT_COLORS,
   QUADRANT_MATRIX_LABELS,
   QUADRANT_TEXT_COLORS,
 } from "@/types/future";
 
+const FAN_TRANSFORMS = ["rotate-[-1deg]", "rotate-[1deg]", "rotate-[2deg]"];
+
 function formatValueLabel(value: string): string {
+  if (value === value.toLowerCase() && value.includes(" ")) return value;
   return value
     .split(/\s+/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
 
-function InfoField({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent?: string;
-}) {
+function DrawnCardTags({ hand }: { hand: CardHand }) {
+  const cards: NarrativeCard[] = [
+    hand.risk,
+    hand.benefit,
+    hand.trust,
+    hand.barrier,
+  ];
+
   return (
-    <div className="rounded-xl border border-ffie-line/60 bg-white/50 px-3 py-2.5 backdrop-blur-sm">
-      <dt className={`${ffieCardSectionLabel} text-ffie-muted`}>{label}</dt>
-      <dd
-        className="mt-1 text-sm font-medium leading-snug text-ffie-ink"
-        style={accent ? { color: accent } : undefined}
-      >
-        {value}
-      </dd>
+    <div className="relative mt-3 flex items-end pl-1">
+      {cards.map((card, index) => {
+        const style = CATEGORY_STYLES[card.category];
+        return (
+          <span
+            key={card.id}
+            className={`relative rounded-full border px-3 py-1 text-[10px] font-semibold shadow-[0_2px_3px_rgba(35,19,82,0.1)] ${FAN_TRANSFORMS[index] ?? ""}`}
+            style={{
+              borderColor: style.border,
+              backgroundColor: style.bg,
+              color: style.text,
+              zIndex: index + 1,
+              marginLeft: index === 0 ? 0 : -10,
+            }}
+          >
+            {card.name}
+          </span>
+        );
+      })}
     </div>
   );
 }
 
-/** Full-width published future card — Figma node 61-2345. */
+/** Full-width published future card — Figma node 61-2670. */
 export function PublishedFutureCard({
   draft,
   id,
@@ -69,206 +76,214 @@ export function PublishedFutureCard({
   id?: string;
 }) {
   const reduceMotion = useReducedMotion();
+  const copy = PUBLISH_FLOW.published;
   const quadrant = quadrantFromPosition(draft.position.x, draft.position.y);
-  const quadrantWash = QUADRANT_COLORS[quadrant];
   const quadrantAccent = QUADRANT_TEXT_COLORS[quadrant];
   const visualDirectionSrc = ensureVisualDirection(draft);
-  const artifactName = draft.artifactName.trim() || draft.title.trim() || "Untitled artifact";
-  const capabilityName = resolveCapabilityName(draft.selectedAiCapability);
-  const capabilityDescription = resolveCapabilityDescription(
-    draft.selectedAiCapability,
-  );
-  const synthesisLine =
-    draft.drawSynthesis ||
-    (draft.cardHand ? buildOracleSynthesis(draft.cardHand) : "");
+  const artifactName =
+    draft.artifactName.trim() || draft.title.trim() || "Untitled artifact";
+  const description = draft.publicPromise.trim();
   const narrativeBeats = buildFinalCardNarrative(draft);
-  const speculativeNarrative =
-    draft.narrative.trim() ||
-    [...narrativeBeats, synthesisLine].filter(Boolean).join(" ");
+  const personaNarrative =
+    draft.narrative.trim() || narrativeBeats.join(" ");
   const artifactValues = resolveArtifactValues(draft).map(formatValueLabel);
   const roleLine = resolvedCharacterRole(draft.role, draft.roleCustom);
-  const sectorLabel = resolvedPersonaSector(
-    draft.personaSector,
-    draft.personaSectorCustom,
-  );
-  const territoryLine = [
-    draft.location.trim(),
-    sectorLabel || null,
-    draft.characterName.trim() || null,
-    roleLine || null,
+  const p = pronounsForSelection(draft.characterPronoun);
+  const race = raceEthnicityForDraft(draft);
+  const pronounLabel = draft.characterPronoun
+    ? `${p.subject}/${p.object}`
+    : null;
+  const quote =
+    draft.drawSynthesis.trim() ||
+    draft.combinedTension.trim() ||
+    draft.reflectionText.trim();
+
+  const systemScore =
+    draft.systemLogicScore ??
+    Math.round(((draft.position.x + 1) / 2) * 100);
+  const powerScore =
+    draft.powerOrgScore ??
+    Math.round(((draft.position.y + 1) / 2) * 100);
+
+  const goal = draft.desire.trim() || "—";
+  const weakness = draft.fear.trim() || "—";
+  const makesPossible = draft.publicPromise.trim() || "—";
+  const refuse =
+    draft.hiddenFunctionExtremeValue.trim() ||
+    artifactValues[0] ||
+    "—";
+
+  const personaMeta = [
+    draft.characterName.trim() || "Someone",
+    pronounLabel,
+    draft.characterAge ? `${draft.characterAge} years old` : null,
+    race || null,
   ]
     .filter(Boolean)
     .join(" · ");
 
-  const systemPct =
-    draft.systemLogicScore != null
-      ? Math.round(draft.systemLogicScore)
-      : Math.round(((draft.position.x + 1) / 2) * 100);
-  const powerPct =
-    draft.powerOrgScore != null
-      ? Math.round(draft.powerOrgScore)
-      : Math.round(((draft.position.y + 1) / 2) * 100);
+  const roleMeta = [
+    roleLine,
+    draft.futureYear ? String(draft.futureYear) : FUTURE_HORIZON_LABEL,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  const locationLine =
+    draft.characterCity.trim() && draft.location.trim()
+      ? `${draft.characterCity.trim()} → ${draft.location.trim()}`
+      : draft.location.trim() || draft.characterCity.trim() || null;
 
   return (
     <motion.article
       id={id}
-      initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="w-full overflow-hidden rounded-[24px] border border-ffie-line/70 bg-ffie-surface/75 p-6 shadow-[0_20px_60px_rgba(35,19,82,0.12),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-md md:p-8"
-      style={{
-        borderColor: `color-mix(in srgb, ${quadrantAccent} 28%, #e8e4f0)`,
-      }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="overflow-hidden rounded-2xl border border-ffie-line/70 bg-white shadow-[0_6px_32px_rgba(35,19,82,0.08)]"
     >
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-ffie-line/50 pb-5">
-        <div className="min-w-0 flex-1">
-          <p className={`${ffieCardSectionLabel} text-ffie-muted`}>Title</p>
-          <h3
-            className={`mt-1 font-display text-2xl font-bold leading-tight text-ffie-ink md:text-[1.85rem] ${FFIE_CARD_TEXT}`}
-          >
-            {artifactName}
-          </h3>
-          {(capabilityName || capabilityDescription) && (
-            <p className={`mt-2 max-w-3xl text-sm leading-relaxed text-ffie-muted ${FFIE_CARD_TEXT}`}>
-              {capabilityName && (
-                <span className="font-semibold text-ffie-ink">{capabilityName}</span>
-              )}
-              {capabilityDescription && (
-                <span className="mt-1 block">{capabilityDescription}</span>
-              )}
-            </p>
-          )}
-        </div>
-        <span
-          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide"
-          style={{
-            backgroundColor: quadrantWash,
-            color: quadrantAccent,
-          }}
-        >
-          <MiniQuadrantIcon quadrant={quadrant} className="size-3.5" />
-          {QUADRANT_MATRIX_LABELS[quadrant]}
-        </span>
-      </div>
-
-      {territoryLine && (
-        <div className="mt-5">
-          <p className={`${ffieCardSectionLabel} text-ffie-muted`}>
-            Territory / context
-          </p>
-          <p className={`mt-1.5 text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
-            {territoryLine}
-            {draft.futureYear ? ` · ${FUTURE_HORIZON_LABEL}` : ""}
-          </p>
-        </div>
-      )}
-
-      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_200px] lg:items-start">
-        <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <InfoField
-            label="Matrix coordinates"
-            value={`x ${draft.position.x.toFixed(2)} · y ${draft.position.y.toFixed(2)}`}
-            accent={quadrantAccent}
-          />
-          <InfoField
-            label="Quadrant"
-            value={formatQuadrantLabel(quadrant)}
-            accent={quadrantAccent}
-          />
-          <InfoField
-            label="System logic"
-            value={`${systemPct}% emancipatory`}
-          />
-          <InfoField
-            label="Power organization"
-            value={`${powerPct}% collective`}
-          />
-        </dl>
-        <LivePositionMiniMatrix
-          systemLogicScore={
-            draft.systemLogicScore ??
-            ((draft.position.x + 1) / 2) * 100
-          }
-          powerOrgScore={
-            draft.powerOrgScore ??
-            ((draft.position.y + 1) / 2) * 100
-          }
-          className="mx-auto lg:mx-0"
-        />
-      </div>
-
-      {speculativeNarrative && (
-        <div
-          className="mt-6 rounded-2xl border px-5 py-5 md:px-6"
-          style={{
-            borderColor: `color-mix(in srgb, ${quadrantAccent} 24%, transparent)`,
-            backgroundColor: `color-mix(in srgb, ${quadrantWash} 42%, white)`,
-          }}
-        >
-          <p className={`${ffieCardSectionLabel} text-ffie-muted`}>
-            Speculative narrative
-          </p>
-          <p className={`mt-3 text-sm leading-relaxed text-ffie-ink md:text-[0.95rem] md:leading-7 ${FFIE_CARD_TEXT}`}>
-            {speculativeNarrative}
-          </p>
-          {synthesisLine && synthesisLine !== speculativeNarrative && (
-            <p
-              className={`mt-4 border-t border-ffie-line/40 pt-4 text-sm font-medium italic leading-relaxed ${FFIE_CARD_TEXT}`}
-              style={{ color: quadrantAccent }}
-            >
-              {synthesisLine}
-            </p>
-          )}
-        </div>
-      )}
-
-      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <div className="flex flex-col border-b border-ffie-line/70 sm:flex-row">
         {visualDirectionSrc && (
-          <div className="overflow-hidden rounded-2xl border border-ffie-line/70 bg-ffie-bg/40">
+          <div className="relative h-44 w-full shrink-0 bg-[#eee9fd] sm:h-auto sm:w-[172px]">
             <Image
               src={visualDirectionSrc}
               alt=""
-              width={640}
-              height={360}
-              className="h-44 w-full object-cover md:h-52"
+              fill
+              className="object-cover"
             />
           </div>
         )}
-        <div
-          className="rounded-2xl border px-4 py-4"
-          style={{
-            borderColor: `color-mix(in srgb, ${quadrantAccent} 22%, transparent)`,
-            backgroundColor: `color-mix(in srgb, ${quadrantWash} 38%, white)`,
-          }}
-        >
-          <p className={`${ffieCardSectionLabel} text-ffie-accent`}>Goal</p>
-          <p className={`mt-2 text-sm leading-relaxed text-ffie-ink ${FFIE_CARD_TEXT}`}>
-            {draft.publicPromise || "—"}
-          </p>
+        <div className="flex min-w-0 flex-1 flex-col justify-center px-6 py-5 sm:px-7">
+          <h3 className="font-display text-2xl font-bold leading-tight text-ffie-ink">
+            {artifactName}
+          </h3>
+          {description && (
+            <p className="mt-2 text-sm italic leading-relaxed text-ffie-muted">
+              {description}
+            </p>
+          )}
+          <span
+            className="mt-3 inline-flex w-fit rounded-full px-3 py-1 text-[11px] font-semibold"
+            style={{ color: quadrantAccent, backgroundColor: `${quadrantAccent}18` }}
+          >
+            {QUADRANT_MATRIX_LABELS[quadrant]}
+          </span>
         </div>
       </div>
 
-      <div className="mt-5">
-        <HiddenFunctionReveal draft={draft} />
+      <div className="grid border-b border-ffie-line/70 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+        <div className="border-b border-ffie-line/70 p-5 lg:border-b-0 lg:border-r">
+          <PublishLiveMatrix
+            systemLogicScore={systemScore}
+            powerOrgScore={powerScore}
+            showSummary={false}
+          />
+        </div>
+        <PublishAnchoredMatrixPanel
+          systemLogicScore={systemScore}
+          powerOrgScore={powerScore}
+        />
       </div>
 
-      {artifactValues.length > 0 && (
-        <div className="mt-6 rounded-2xl border border-ffie-line/60 bg-ffie-surface/80 px-4 py-4">
-          <p className={`${ffieCardSectionLabel} text-ffie-muted`}>
-            Values shaping this artifact
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {artifactValues.map((value) => (
-              <span
-                key={value}
-                className="rounded-full border border-ffie-line bg-ffie-bg px-2.5 py-0.5 text-xs text-ffie-ink"
-              >
-                {value}
-              </span>
-            ))}
+      <div className="border-b border-ffie-line/70 px-7 pb-6 pt-6">
+        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+          {copy.personEyebrow}
+        </p>
+        <div className="mt-3.5 flex gap-3.5">
+          <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[20px] bg-ffie-accent font-display text-base font-extrabold text-white">
+            {(draft.characterName.trim()[0] || "?").toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-ffie-ink">{personaMeta}</p>
+            <p className="mt-1 text-[11px] text-ffie-muted/80">
+              {roleMeta}
+              {locationLine ? (
+                <>
+                  {" "}
+                  · <span className="text-ffie-muted">{locationLine}</span>
+                </>
+              ) : null}
+            </p>
           </div>
         </div>
+        {personaNarrative && (
+          <p className="mt-4 text-[13px] leading-relaxed text-ffie-ink/70">
+            {personaNarrative}
+          </p>
+        )}
+      </div>
+
+      <div className="grid border-b border-ffie-line/70 sm:grid-cols-2">
+        <div className="space-y-4 border-b border-ffie-line/70 px-6 py-5 sm:border-b-0 sm:border-r">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+              {copy.goalLabel}
+            </p>
+            <p className="mt-1.5 text-[13px] text-ffie-ink/70">{goal}</p>
+          </div>
+          <div className="h-px bg-ffie-line/70" />
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+              {copy.makesPossibleLabel}
+            </p>
+            <p className="mt-1.5 text-[13px] text-ffie-ink/70">
+              {makesPossible}
+            </p>
+          </div>
+        </div>
+        <div className="space-y-4 px-6 py-5">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+              {copy.weaknessLabel}
+            </p>
+            <p className="mt-1.5 text-[13px] text-ffie-ink/70">{weakness}</p>
+          </div>
+          <div className="h-px bg-ffie-line/70" />
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+              {copy.refuseLabel}
+            </p>
+            <p className="mt-1.5 text-[13px] text-ffie-ink/70">{refuse}</p>
+          </div>
+        </div>
+      </div>
+
+      {quote && (
+        <div className="border-b border-ffie-line/70 bg-[#eee9fd]/40 px-7 py-7">
+          <div className="mb-4 h-0.5 w-7 rounded-full bg-ffie-accent/55" />
+          <p className="max-w-2xl font-display text-lg font-bold leading-snug text-ffie-ink">
+            “{quote.replace(/^["“]|["”]$/g, "")}”
+          </p>
+          {draft.cardHand && (
+            <>
+              <p className="mt-6 text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+                {copy.cardsDrawnLabel}
+              </p>
+              <DrawnCardTags hand={draft.cardHand} />
+            </>
+          )}
+        </div>
       )}
+
+      {artifactValues.length > 0 && (
+        <div className="border-b border-ffie-line/70 px-7 py-5">
+          <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+            {copy.valuesLabel}
+          </p>
+          <ul className="mt-3 flex flex-wrap gap-1.5">
+            {artifactValues.map((value) => (
+              <li
+                key={value}
+                className="rounded-full border border-[#dcd7f7] bg-[#f6f4ff] px-3 py-1 text-[11px] font-medium text-[#3a2278]"
+              >
+                {value}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <HiddenFunctionReveal draft={draft} />
     </motion.article>
   );
 }

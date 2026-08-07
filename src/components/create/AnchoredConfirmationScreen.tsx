@@ -6,9 +6,10 @@ import { ArtifactMaterializePanel } from "@/components/create/ArtifactMaterializ
 import { PublishedActionBar } from "@/components/create/published/PublishedActionBar";
 import { PublishedFutureCard } from "@/components/create/PublishedFutureCard";
 import { FutureWorkActionsGrid } from "@/components/create/FutureWorkWithPanel";
-import { PublishRitualStepper } from "@/components/create/design/PublishRitualStepper";
+import { PublishFlowChrome } from "@/components/publish/PublishFlowChrome";
+import { FfieButton } from "@/components/create/design/FfieButton";
 import { copyToClipboard } from "@/lib/copy-to-clipboard";
-import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
+import { PUBLISH_FLOW } from "@/lib/publish-flow-copy";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 type AnchoredConfirmationScreenProps = {
@@ -16,6 +17,8 @@ type AnchoredConfirmationScreenProps = {
   onDownload: () => void;
   downloading: boolean;
   onCreateAnother?: () => void;
+  /** When true, wraps in PublishFlowChrome for standalone /published route. */
+  standalone?: boolean;
 };
 
 export function AnchoredConfirmationScreen({
@@ -23,13 +26,14 @@ export function AnchoredConfirmationScreen({
   onDownload,
   downloading,
   onCreateAnother,
+  standalone = false,
 }: AnchoredConfirmationScreenProps) {
   const reduceMotion = useReducedMotion();
   const [showMaterialize, setShowMaterialize] = useState(false);
   const [promptFocused, setPromptFocused] = useState(false);
   const [copied, setCopied] = useState(false);
   const bringToLifeRef = useRef<HTMLDivElement>(null);
-  const copy = PUBLISH_RITUAL.confirmation;
+  const copy = PUBLISH_FLOW.published;
 
   const commonsUrl =
     typeof window !== "undefined" && draft.submittedId
@@ -59,42 +63,48 @@ export function AnchoredConfirmationScreen({
     window.setTimeout(() => setPromptFocused(false), 2400);
   };
 
-  return (
+  const content = (
     <div className="w-full space-y-8">
-      <PublishRitualStepper activeStep={3} />
-
-      <div className="space-y-3 text-center lg:text-left">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ffie-accent">
-          {draft.submittedId ? copy.eyebrow : "Kept private"}
-        </p>
-        <h2 className="font-display text-2xl font-bold tracking-tight text-ffie-ink md:text-3xl">
-          {copy.heading}
-        </h2>
-        <p className="max-w-prose text-sm leading-relaxed text-ffie-muted">
-          {draft.submittedId
-            ? copy.subtitlePublished(artifactLabel)
-            : copy.subtitlePrivate(artifactLabel)}
-        </p>
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="max-w-xl space-y-2">
+          <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-ffie-muted">
+            {draft.submittedId ? copy.eyebrow : copy.eyebrowPrivate}
+          </p>
+          <h2 className="font-display text-[26px] font-bold tracking-tight text-ffie-ink">
+            {draft.submittedId ? copy.heading : copy.headingPrivate}
+          </h2>
+          <p className="text-sm leading-relaxed text-ffie-muted">
+            {draft.submittedId
+              ? copy.subtitlePublished(artifactLabel)
+              : copy.subtitlePrivate(artifactLabel)}
+          </p>
+        </div>
+        <PublishedActionBar
+          commonsUrl={commonsUrl}
+          onBringToLife={handleBringToLife}
+          onCopyLink={handleCopyLink}
+          linkCopied={copied}
+          onDownload={onDownload}
+          downloading={downloading}
+        />
       </div>
-
-      <PublishedActionBar
-        commonsUrl={commonsUrl}
-        onBringToLife={handleBringToLife}
-        onCopyLink={handleCopyLink}
-        linkCopied={copied}
-        onDownload={onDownload}
-        downloading={downloading}
-        onCreateAnother={onCreateAnother}
-      />
 
       <PublishedFutureCard draft={draft} id="future-output-card" />
 
-      <div className="w-full space-y-6 border-t border-ffie-line/60 pt-8">
+      <div className="w-full space-y-6 border-t border-ffie-line/70 pt-8">
         <h3 className="font-display text-base font-semibold text-ffie-ink">
           {copy.workWithHeading}
         </h3>
         <FutureWorkActionsGrid reduceMotion={reduceMotion} />
       </div>
+
+      {onCreateAnother && (
+        <div className="flex justify-center pt-2">
+          <FfieButton variant="secondary" onClick={onCreateAnother}>
+            {copy.createAnother}
+          </FfieButton>
+        </div>
+      )}
 
       <div ref={bringToLifeRef} className="scroll-mt-24">
         {showMaterialize ? (
@@ -102,31 +112,37 @@ export function AnchoredConfirmationScreen({
             id="anchored-bring-to-life"
             initial={reduceMotion ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className={`rounded-2xl border bg-ffie-bg/70 px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] backdrop-blur-sm sm:px-5 ${
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className={`rounded-2xl border bg-white px-4 py-5 sm:px-5 ${
               promptFocused
-                ? "border-ffie-accent ring-4 ring-ffie-accent/15"
-                : "border-ffie-line/80"
+                ? "border-ffie-accent"
+                : "border-ffie-line"
             }`}
           >
             <p className="text-sm font-medium text-ffie-ink">
-              Bring it to life (optional)
+              {copy.bringToLifeOptional}
             </p>
             <p className="mt-1 text-xs leading-relaxed text-ffie-muted">
-              Copy a ready-made image prompt into your external AI tool — nothing
-              gets uploaded back into FFIE.
+              {copy.bringToLifeHint}
             </p>
             <div className="mt-4">
-              <ArtifactMaterializePanel draft={draft} embedded highlighted={promptFocused} />
+              <ArtifactMaterializePanel
+                draft={draft}
+                embedded
+                highlighted={promptFocused}
+              />
             </div>
           </motion.div>
-        ) : (
-          <p className="text-xs text-ffie-muted">
-            Choose <span className="font-medium text-ffie-ink">Bring it to life</span>{" "}
-            above to open the generative prompt here.
-          </p>
-        )}
+        ) : null}
       </div>
     </div>
   );
+
+  if (standalone) {
+    return (
+      <PublishFlowChrome activeStep={3}>{content}</PublishFlowChrome>
+    );
+  }
+
+  return content;
 }

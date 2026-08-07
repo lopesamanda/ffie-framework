@@ -2,27 +2,21 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { GroundItScreen } from "@/components/create/GroundItScreen";
-import { PublishFlowShell } from "@/components/publish/PublishFlowShell";
+import { PublishFlowChrome } from "@/components/publish/PublishFlowChrome";
+import { PublishReflectScreen } from "@/components/publish/PublishReflectScreen";
 import { usePublishDraft } from "@/hooks/usePublishDraft";
-import {
-  buildNarrative,
-  buildTitle,
-} from "@/lib/journey/types";
+import { buildNarrative, buildTitle } from "@/lib/journey/types";
 import {
   hasMatrixPlacement,
   hasPublishableDraft,
 } from "@/lib/publish-flow/guards";
 import { submitJourneyDraft } from "@/lib/publish-flow/submit-draft";
-import { PUBLISH_FLOW } from "@/lib/publish-flow-copy";
-import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 
 export function PublishReviewView() {
   const router = useRouter();
   const { draft, ready, update } = usePublishDraft();
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const reflectCopy = PUBLISH_RITUAL.reflect;
 
   useEffect(() => {
     if (!ready) return;
@@ -80,20 +74,15 @@ export function PublishReviewView() {
   }
 
   return (
-    <PublishFlowShell
-        flowKey="review"
-        eyebrow={PUBLISH_FLOW.review.eyebrow}
-        title={reflectCopy.heading}
-        subtitle={reflectCopy.subtitle}
-      >
-        <GroundItScreen
-          draft={draft}
-          onUpdate={update}
-          onPublish={handlePublish}
-          onBack={() => router.push("/matrix")}
-          submitting={submitting}
-          submitError={submitError}
-        />
-      </PublishFlowShell>
+    <PublishFlowChrome activeStep={2}>
+      <PublishReflectScreen
+        draft={draft}
+        onUpdate={update}
+        onPublish={handlePublish}
+        onBack={() => router.push("/matrix")}
+        submitting={submitting}
+        submitError={submitError}
+      />
+    </PublishFlowChrome>
   );
 }

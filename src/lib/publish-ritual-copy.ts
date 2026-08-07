@@ -19,7 +19,7 @@ export const PUBLISH_RITUAL = {
     continue: "Continue →",
   },
   calibration: {
-    heading: "Place it on the map.",
+    heading: "Two questions place this future on the Critical Feminist Matrix.",
     subtitle:
       "Two questions situate your future on the Living Cartography. Drag each slider anywhere along the axis — the live position updates as you go.",
     livePositionLabel: "Live position",
@@ -27,36 +27,36 @@ export const PUBLISH_RITUAL = {
     systemLogicLabel: "System Logic",
     powerOrgLabel: "Power Organization",
     quadrantLabel: "Current quadrant",
-    continue: "See your future →",
+    continue: "See your future",
   },
   reflect: {
-    heading: "One last thing.",
+    heading: "Last thing.",
     subtitle:
-      "Choose who can see this future, and leave a reflection if you want — or skip it.",
+      "Choose who can see your future, then optionally tell others why it matters to you.",
     visibilityPublic: "Publish to Future Commons",
     visibilityPublicHint:
-      "Others can find it on the Living Cartography after moderation.",
+      "Discoverable by anyone exploring the Matrix. Can be debated and remixed.",
     visibilityPrivate: "Keep private",
-    visibilityPrivateHint:
-      "Anchored for you only — nothing is sent for review.",
-    reflectionLabel: "Reflection (optional)",
-    reflectionPlaceholder: "A sentence or two is enough.",
+    visibilityPrivateHint: "Only visible to you. You can publish any time later.",
+    reflectionLabel: "Why does this future matter to you?",
+    reflectionOptional: "(optional)",
+    reflectionPlaceholder: "...",
     skip: "Skip this",
     consentNote:
       "This artifact is speculative fiction, not personal data. Nothing about you is published — only what you chose to imagine.",
-    publish: "Publish →",
+    publish: "Publish",
     publishing: "Publishing…",
   },
   confirmation: {
     eyebrow: "Published to Future Commons",
-    heading: "Published.",
+    heading: "Your future lives in the Commons.",
     subtitlePublished: (artifactName: string) =>
-      `${artifactName || "Your future"} now lives in the Commons — one more coordinate on the map of futures being contested and imagined.`,
+      `${artifactName} is now discoverable and open to debate. Everything below is what others will find.`,
     subtitlePrivate: (artifactName: string) =>
-      `${artifactName || "Your future"} is kept private — anchored for you, not sent for moderation.`,
-    viewLive: "View it live",
-    bringToLife: "Bring it to life",
-    copyShareLink: "Copy share link",
+      `${artifactName} is kept private — nothing is sent for moderation.`,
+    viewLive: "View live",
+    bringToLife: "Bring to life",
+    copyShareLink: "Copy link",
     download: "Download this future",
     createAnother: "Create another future",
     workWithHeading: "How can you work with this future?",
