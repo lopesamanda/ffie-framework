@@ -8,9 +8,11 @@ import { buildAiImagePrompt, type JourneyDraft } from "@/lib/journey/types";
 export function ArtifactMaterializePanel({
   draft,
   embedded = false,
+  highlighted = false,
 }: {
   draft: JourneyDraft;
   embedded?: boolean;
+  highlighted?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState<string | null>(null);
@@ -51,7 +53,13 @@ export function ArtifactMaterializePanel({
         {copyError && <p className="text-xs text-red-700">{copyError}</p>}
       </div>
 
-      <pre className="max-h-56 overflow-auto rounded-lg border border-ffie-line bg-ffie-bg p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-ffie-muted">
+      <pre
+        className={`max-h-56 overflow-auto rounded-lg border bg-ffie-bg p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-ffie-muted transition ${
+          highlighted
+            ? "border-ffie-accent ring-2 ring-ffie-accent/20"
+            : "border-ffie-line"
+        }`}
+      >
         {prompt}
       </pre>
 

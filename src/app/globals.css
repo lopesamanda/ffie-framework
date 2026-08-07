@@ -65,3 +65,45 @@ body {
     animation: none;
   }
 }
+
+@keyframes published-glitch-shift {
+  0% {
+    transform: translate(0, 0);
+    filter: hue-rotate(0deg);
+  }
+  20% {
+    transform: translate(-2px, 1px);
+    filter: hue-rotate(18deg);
+  }
+  40% {
+    transform: translate(2px, -1px);
+    filter: hue-rotate(-12deg);
+  }
+  60% {
+    transform: translate(-1px, -1px);
+    filter: hue-rotate(8deg);
+  }
+  80% {
+    transform: translate(1px, 1px);
+    filter: hue-rotate(-6deg);
+  }
+  100% {
+    transform: translate(0, 0);
+    filter: hue-rotate(0deg);
+  }
+}
+
+.published-glitch-mask {
+  animation: published-glitch-shift 0.65s steps(2, end);
+}
+
+.published-glitch-text {
+  animation: published-glitch-shift 0.45s steps(2, end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .published-glitch-mask,
+  .published-glitch-text {
+    animation: none;
+  }
+}

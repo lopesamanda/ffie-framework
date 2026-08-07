@@ -58,6 +58,7 @@ export const PUBLISH_RITUAL = {
     bringToLife: "Bring it to life",
     copyShareLink: "Copy share link",
     download: "Download this future",
+    createAnother: "Create another future",
     workWithHeading: "How can you work with this future?",
   },
 } as const;
