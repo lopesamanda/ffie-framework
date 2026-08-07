@@ -7,7 +7,7 @@ import { ArtifactMaterializePanel } from "@/components/create/ArtifactMaterializ
 import { FfieButton } from "@/components/create/design/FfieButton";
 import { FutureWorkActionsGrid } from "@/components/create/FutureWorkWithPanel";
 import { InteractiveMatrixReveal } from "@/components/create/InteractiveMatrixReveal";
-import { PublishPreviewCard } from "@/components/create/PublishPreviewCard";
+import { PublishedFutureCard } from "@/components/create/PublishedFutureCard";
 import { PublishRitualStepper } from "@/components/create/design/PublishRitualStepper";
 import { copyToClipboard } from "@/lib/copy-to-clipboard";
 import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
@@ -46,26 +46,28 @@ export function AnchoredConfirmationScreen({
 
   const handleBringToLife = () => {
     setShowMaterialize(true);
-    document.getElementById("anchored-bring-to-life")?.scrollIntoView({
-      behavior: reduceMotion ? "auto" : "smooth",
-      block: "start",
+    window.requestAnimationFrame(() => {
+      document.getElementById("anchored-bring-to-life")?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
     });
   };
+
+  const artifactLabel =
+    draft.artifactName.trim() || draft.title.trim() || "Your future";
 
   return (
     <div className="w-full space-y-10">
       <PublishRitualStepper activeStep={3} />
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] lg:items-start">
-        <InteractiveMatrixReveal
-          position={draft.position}
-          hidePlacementCaption
-          hideQuadrantCopy
-          prominent
-          className="w-full max-w-none"
-        />
-        <PublishPreviewCard draft={draft} id="future-output-card" />
-      </div>
+      <InteractiveMatrixReveal
+        position={draft.position}
+        hidePlacementCaption
+        hideQuadrantCopy
+        prominent
+        className="w-full max-w-none"
+      />
 
       <div className="space-y-3 text-center lg:text-left">
         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ffie-accent">
@@ -76,14 +78,12 @@ export function AnchoredConfirmationScreen({
         </h2>
         <p className="max-w-prose text-sm leading-relaxed text-ffie-muted">
           {draft.submittedId
-            ? copy.subtitlePublished(
-                draft.artifactName.trim() || draft.title.trim() || "Your future",
-              )
-            : copy.subtitlePrivate(
-                draft.artifactName.trim() || draft.title.trim() || "Your future",
-              )}
+            ? copy.subtitlePublished(artifactLabel)
+            : copy.subtitlePrivate(artifactLabel)}
         </p>
       </div>
+
+      <PublishedFutureCard draft={draft} id="future-output-card" />
 
       <div className="flex flex-wrap gap-2.5">
         <Link href={commonsUrl} className="inline-flex">
@@ -107,6 +107,14 @@ export function AnchoredConfirmationScreen({
         <FutureWorkActionsGrid reduceMotion={reduceMotion} />
       </div>
 
+      {onCreateAnother && (
+        <div className="flex justify-center lg:justify-start">
+          <FfieButton variant="secondary" onClick={onCreateAnother}>
+            Create another future
+          </FfieButton>
+        </div>
+      )}
+
       {showMaterialize && (
         <motion.div
           id="anchored-bring-to-life"
@@ -127,16 +135,6 @@ export function AnchoredConfirmationScreen({
           </div>
         </motion.div>
       )}
-
-      {onCreateAnother && (
-        <div className="flex flex-wrap gap-3 border-t border-ffie-line/60 pt-8">
-          <FfieButton variant="secondary" onClick={onCreateAnother}>
-            Create another future
-          </FfieButton>
-        </div>
-      )}
-
-      <PublishRitualStepper activeStep={3} variant="dots" className="pt-2" />
     </div>
   );
 }

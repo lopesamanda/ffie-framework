@@ -7,6 +7,7 @@ import {
   MatrixScaleSlider,
   percentTowardHigh,
 } from "@/components/create/MatrixScaleSlider";
+import { PublishRitualFooter } from "@/components/create/design/PublishRitualFooter";
 import { PublishRitualStepper } from "@/components/create/design/PublishRitualStepper";
 import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 import {
@@ -20,6 +21,7 @@ type MatrixCalibrationScreenProps = {
   onSystemLogicChange: (score: number) => void;
   onPowerOrgChange: (score: number) => void;
   onContinue: () => void;
+  onBack?: () => void;
 };
 
 export function MatrixCalibrationScreen({
@@ -27,6 +29,7 @@ export function MatrixCalibrationScreen({
   onSystemLogicChange,
   onPowerOrgChange,
   onContinue,
+  onBack,
 }: MatrixCalibrationScreenProps) {
   const copy = PUBLISH_RITUAL.calibration;
   const canContinue =
@@ -104,12 +107,11 @@ export function MatrixCalibrationScreen({
         </div>
       )}
 
-      <div className="space-y-4 border-t border-ffie-line/60 pt-6">
-        <PublishRitualStepper activeStep={1} variant="dots" />
-        <FfieButton disabled={!canContinue} onClick={onContinue} iconPosition="trailing">
+      <PublishRitualFooter activeStep={1} onBack={onBack}>
+        <FfieButton disabled={!canContinue} onClick={onContinue} iconPosition="trailing" className="w-full sm:w-auto">
           {copy.continue}
         </FfieButton>
-      </div>
+      </PublishRitualFooter>
     </div>
   );
 }

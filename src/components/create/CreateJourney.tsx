@@ -745,6 +745,7 @@ export function CreateJourney() {
                       onPowerOrgChange={(powerOrgScore: number) =>
                         update({ powerOrgScore })
                       }
+                      onBack={() => update({ outputStep: 0 })}
                       onContinue={() => {
                         if (
                           draft.systemLogicScore == null ||
@@ -782,6 +783,7 @@ export function CreateJourney() {
                       onUpdate={update}
                       submitting={submitting}
                       submitError={submitError}
+                      onBack={() => update({ outputStep: 1 })}
                       onPublish={() => void handleFinishOutput()}
                     />
                   )}

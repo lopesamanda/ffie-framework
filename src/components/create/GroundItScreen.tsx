@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { FfieButton } from "@/components/create/design/FfieButton";
+import { PublishRitualFooter } from "@/components/create/design/PublishRitualFooter";
 import { PublishRitualStepper } from "@/components/create/design/PublishRitualStepper";
 import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
 import { pickReflectivePrompt } from "@/lib/reflective-prompts";
@@ -14,6 +15,7 @@ type GroundItScreenProps = {
   draft: JourneyDraft;
   onUpdate: (patch: Partial<JourneyDraft>) => void;
   onPublish: () => void;
+  onBack: () => void;
   submitting?: boolean;
   submitError?: string | null;
 };
@@ -22,6 +24,7 @@ export function GroundItScreen({
   draft,
   onUpdate,
   onPublish,
+  onBack,
   submitting = false,
   submitError = null,
 }: GroundItScreenProps) {
@@ -33,7 +36,7 @@ export function GroundItScreen({
   );
 
   return (
-    <div className="w-full max-w-xl space-y-8">
+    <div className="w-full space-y-8">
       <PublishRitualStepper activeStep={2} />
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -104,17 +107,19 @@ export function GroundItScreen({
         </p>
       )}
 
-      <div className="space-y-4 border-t border-ffie-line/60 pt-6">
-        <p className="text-xs leading-relaxed text-ffie-muted">{copy.consentNote}</p>
-        <PublishRitualStepper activeStep={2} variant="dots" />
-        <FfieButton
-          onClick={onPublish}
-          disabled={submitting}
-          iconPosition="trailing"
-        >
-          {submitting ? copy.publishing : copy.publish}
-        </FfieButton>
-      </div>
+      <PublishRitualFooter activeStep={2} onBack={onBack}>
+        <div className="space-y-3">
+          <p className="text-xs leading-relaxed text-ffie-muted">{copy.consentNote}</p>
+          <FfieButton
+            onClick={onPublish}
+            disabled={submitting}
+            iconPosition="trailing"
+            className="w-full sm:w-auto"
+          >
+            {submitting ? copy.publishing : copy.publish}
+          </FfieButton>
+        </div>
+      </PublishRitualFooter>
     </div>
   );
 }
