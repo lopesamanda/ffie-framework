@@ -1,3 +1,8 @@
+/** Single sector vocabulary shared by Create (Choose, Embody) and the Explore filter. */
+import type { PersonaSector } from "@/lib/journey/persona-sectors";
+
+export type { PersonaSector };
+
 export type FutureQuadrant =
   | "dominant_dystopian"
   | "techno_optimist"
@@ -9,9 +14,6 @@ export type FutureStatus = "pending" | "published" | "rejected";
 export type PowerPosition = "marginalized" | "hegemonic";
 
 export type FutureCountry = "Brazil" | "Portugal";
-
-/** Single sector vocabulary shared by Create (Choose, Embody) and the Explore filter. */
-export type { PersonaSector } from "@/lib/journey/persona-sectors";
 
 export type FutureCollection = "research_findings" | "future_commons";
 
