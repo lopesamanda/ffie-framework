@@ -345,8 +345,8 @@ export function OracleDeckFan({
   return (
     <div className="space-y-6">
       <p className="max-w-xl text-[13px] leading-relaxed text-ffie-muted">
-        Tap the front card to draw it. Your reflection question appears once the
-        card is revealed. After reading, advance to the next card in the stack.
+        You don&apos;t choose the tension. You choose what to do with it. Tap the
+        front card to draw it — the category is given; the reading is yours.
       </p>
 
       <button

@@ -58,6 +58,7 @@ type CharacterEmbodyStepProps = {
   onChange: (patch: Partial<CharacterEmbodyDraft>) => void;
   onSubStepChange: (step: number) => void;
   onComplete: () => void;
+  onBack?: () => void;
 };
 
 export function isEmbodyScreenComplete(
@@ -137,6 +138,7 @@ export function CharacterEmbodyStep({
   onChange,
   onSubStepChange,
   onComplete,
+  onBack,
 }: CharacterEmbodyStepProps) {
   const reduceMotion = useReducedMotion();
   const p = pronounsForSelection(draft.characterPronoun);
@@ -380,10 +382,16 @@ export function CharacterEmbodyStep({
       </AnimatePresence>
 
       <div className="flex gap-3">
-        {embodySubStep > 0 && (
+        {(embodySubStep > 0 || onBack) && (
           <FfieButton
             variant="secondary"
-            onClick={() => onSubStepChange(embodySubStep - 1)}
+            onClick={() => {
+              if (embodySubStep > 0) {
+                onSubStepChange(embodySubStep - 1);
+                return;
+              }
+              onBack?.();
+            }}
           >
             Back
           </FfieButton>

@@ -11,8 +11,14 @@ export type StageMeta = {
 
 /** Maps journey stages → legacy 5-segment index (Explore path only). */
 export function getPhaseIndex(stage: JourneyStage): number {
-  if (stage === "entry") return 1;
-  if (stage === "orientation" || stage === "reflection") return 2;
+  if (stage === "entry" || stage === "choose") return 1;
+  if (
+    stage === "orientation" ||
+    stage === "reflection" ||
+    stage === "situate"
+  ) {
+    return 2;
+  }
   if (stage === "exploration") return 2;
   if (stage === "creation") return 4;
   return 5;
@@ -25,12 +31,19 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     title: "A future is taking shape.",
     accentColor: "#6e52c4",
   },
+  choose: {
+    phaseLabel: "Choose",
+    eyebrow: "CHOOSE",
+    title: "Choose your territory",
+    subtitle: "Where do you want to explore what AI could change?",
+    accentColor: "#c48a1a",
+  },
   orientation: {
-    phaseLabel: "Understand",
-    eyebrow: "UNDERSTAND",
-    title: "The Draw.",
+    phaseLabel: "Draw",
+    eyebrow: "DRAW",
+    title: "Draw the tensions",
     subtitle:
-      "Each card carries a structural tension mapped during a real research process — studying how AI is actually being used across today's innovation ecosystems. You'll draw one card from each register, plus the Environmental Impact card, which applies to every future by default. Your combination can generate a different future each time. Need inspiration? Browse Research Findings anytime via the link below.",
+      "Every future carries contradictions. Draw the ones that will shape yours.",
     accentColor: "#c8472a",
   },
   exploration: {
@@ -42,19 +55,25 @@ export const STAGE_META: Record<JourneyStage, StageMeta> = {
     accentColor: "#c48a1a",
   },
   reflection: {
-    phaseLabel: "Situate",
-    eyebrow: "SITUATE",
-    title: "The Draw.",
+    phaseLabel: "Draw",
+    eyebrow: "DRAW",
+    title: "Draw the tensions",
     subtitle:
       "One card from each category, plus the Environmental Impact lens — always applied, never drawn.",
     accentColor: "#1a2870",
+  },
+  situate: {
+    phaseLabel: "Situate",
+    eyebrow: "SITUATE",
+    title: "Place your future",
+    accentColor: "#6e52c4",
   },
   creation: {
     phaseLabel: "Creation",
     eyebrow: "EMBODY",
     title: "Give them a life.",
     subtitle:
-      "Character, machine, artifact — then two questions place it on the matrix.",
+      "Give them a name, a role, and a life inside the territory you chose.",
     accentColor: "#c22b7a",
   },
   output: {

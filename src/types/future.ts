@@ -10,18 +10,8 @@ export type PowerPosition = "marginalized" | "hegemonic";
 
 export type FutureCountry = "Brazil" | "Portugal";
 
-export type PersonaSector =
-  | "Finance"
-  | "Health"
-  | "Education"
-  | "ESG"
-  | "Mobility"
-  | "Media"
-  | "Retail/Commerce"
-  | "Public Sector"
-  | "Innovation"
-  | "Deeptech"
-  | "Other";
+/** Single sector vocabulary shared by Create (Choose, Embody) and the Explore filter. */
+export type { PersonaSector } from "@/lib/journey/persona-sectors";
 
 export type FutureCollection = "research_findings" | "future_commons";
 

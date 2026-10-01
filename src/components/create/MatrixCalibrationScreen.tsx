@@ -21,6 +21,9 @@ type MatrixCalibrationScreenProps = {
   onPowerOrgChange: (score: number) => void;
   onContinue: () => void;
   onBack?: () => void;
+  /** Publish-ritual stepper + 2/4 footer. Off when the matrix is used as Situate. */
+  showRitualChrome?: boolean;
+  continueLabel?: string;
 };
 
 export function MatrixCalibrationScreen({
@@ -29,6 +32,8 @@ export function MatrixCalibrationScreen({
   onPowerOrgChange,
   onContinue,
   onBack,
+  showRitualChrome = true,
+  continueLabel,
 }: MatrixCalibrationScreenProps) {
   const copy = PUBLISH_RITUAL.calibration;
   const canContinue =
@@ -50,7 +55,7 @@ export function MatrixCalibrationScreen({
 
   return (
     <div className="w-full min-w-0 space-y-8">
-      <PublishRitualStepper activeStep={1} />
+      {showRitualChrome && <PublishRitualStepper activeStep={1} />}
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(200px,240px)] lg:items-start">
         <div className="space-y-5">
@@ -101,11 +106,33 @@ export function MatrixCalibrationScreen({
         </div>
       )}
 
-      <PublishRitualFooter activeStep={1} onBack={onBack}>
-        <FfieButton disabled={!canContinue} onClick={onContinue} iconPosition="trailing" className="w-full sm:w-auto">
-          {copy.continue}
-        </FfieButton>
-      </PublishRitualFooter>
+      {showRitualChrome ? (
+        <PublishRitualFooter activeStep={1} onBack={onBack}>
+          <FfieButton
+            disabled={!canContinue}
+            onClick={onContinue}
+            iconPosition="trailing"
+            className="w-full sm:w-auto"
+          >
+            {continueLabel ?? copy.continue}
+          </FfieButton>
+        </PublishRitualFooter>
+      ) : (
+        <div className="flex flex-wrap gap-3">
+          {onBack && (
+            <FfieButton variant="secondary" onClick={onBack}>
+              Back
+            </FfieButton>
+          )}
+          <FfieButton
+            disabled={!canContinue}
+            onClick={onContinue}
+            iconPosition="trailing"
+          >
+            {continueLabel ?? copy.continue}
+          </FfieButton>
+        </div>
+      )}
     </div>
   );
 }

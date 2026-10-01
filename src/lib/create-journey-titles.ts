@@ -51,7 +51,7 @@ export function creationScreenTitle(draft: JourneyDraft): string {
 }
 
 export function oracleDrawTitle(): string {
-  return "The Draw.";
+  return "Draw the tensions";
 }
 
 export function livePreviewTitle(): string {

@@ -1,15 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import { SettleButton } from "@/components/motion/SettleButton";
+import { ArtifactTypeCards } from "@/components/create/ArtifactTypeCards";
 import { ChipSelect } from "@/components/create/ChipSelect";
 import {
   ARTIFACT_SUBFORMAT_OTHER,
   ARTIFACT_SUBFORMATS,
-  ARTIFACT_TYPE_OPTIONS,
   type ArtifactTypeId,
 } from "@/lib/journey/character-options";
-import { defaultVisualDirectionForType } from "@/lib/journey/visual-directions";
 import type { JourneyDraft } from "@/lib/journey/types";
 
 export function ArtifactTypeStep({
@@ -19,12 +16,13 @@ export function ArtifactTypeStep({
   draft: JourneyDraft;
   onChange: (patch: Partial<JourneyDraft>) => void;
 }) {
-  const subformats = draft.artifactType
-    ? [
-        ...ARTIFACT_SUBFORMATS[draft.artifactType as ArtifactTypeId],
-        ARTIFACT_SUBFORMAT_OTHER,
-      ]
+  const typeSubformats = draft.artifactType
+    ? ARTIFACT_SUBFORMATS[draft.artifactType as ArtifactTypeId]
     : [];
+  const subformats =
+    typeSubformats.length > 0
+      ? [...typeSubformats, ARTIFACT_SUBFORMAT_OTHER]
+      : [];
 
   return (
     <div className="space-y-8">
@@ -38,57 +36,8 @@ export function ArtifactTypeStep({
         </p>
       </div>
 
-      <div className="grid max-w-xl gap-2 sm:grid-cols-2">
-        {ARTIFACT_TYPE_OPTIONS.map((option) => {
-          const selected = draft.artifactType === option.id;
-          const imagePath = defaultVisualDirectionForType(option.id);
-          return (
-            <SettleButton
-              key={option.id}
-              onClick={() =>
-                onChange({
-                  artifactType: option.id,
-                  artifactSubformat: "",
-                  artifactSubformatOther: "",
-                  visualDirection: defaultVisualDirectionForType(option.id),
-                  selectedAiPower: "",
-                  selectedAiCapability: "",
-                  publicPromise: "",
-                  artifactGoalPitch: "",
-                })
-              }
-              className={`overflow-hidden rounded-lg border text-left transition ${
-                selected
-                  ? "border-ffie-accent ring-2 ring-ffie-accent/25"
-                  : "border-ffie-line bg-ffie-surface hover:border-ffie-accent/40"
-              }`}
-            >
-              <div className="relative aspect-[16/9] w-full bg-ffie-bg">
-                <Image
-                  src={imagePath}
-                  alt={option.label}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 42vw, 180px"
-                />
-              </div>
-              <div
-                className={`px-2.5 py-2 ${
-                  selected ? "bg-ffie-accent text-ffie-bg" : "text-ffie-ink"
-                }`}
-              >
-                <span className="block text-xs font-semibold">{option.label}</span>
-                <span
-                  className={`mt-0.5 block text-[10px] leading-snug ${
-                    selected ? "text-ffie-bg/80" : "text-ffie-muted"
-                  }`}
-                >
-                  {option.description}
-                </span>
-              </div>
-            </SettleButton>
-          );
-        })}
+      <div className="max-w-xl">
+        <ArtifactTypeCards draft={draft} onChange={onChange} />
       </div>
 
       {draft.artifactType && subformats.length > 0 && (

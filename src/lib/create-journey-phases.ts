@@ -1,15 +1,20 @@
 import type { JourneyStage } from "@/lib/journey/types";
 import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
 
-export const CREATE_FFIE_PHASES = [
-  "UNDERSTAND",
-  "SITUATE",
-  "EMBODY",
-  "MATERIALIZE",
-  "SHARE",
+/** The six Create stages, in order. Each stage's output feeds the next. */
+export const CREATE_STAGES = [
+  { id: "CHOOSE", number: "01", label: "Choose" },
+  { id: "DRAW", number: "02", label: "Draw" },
+  { id: "SITUATE", number: "03", label: "Situate" },
+  { id: "EMBODY", number: "04", label: "Embody" },
+  { id: "MAKE", number: "05", label: "Make" },
+  { id: "QUESTION", number: "06", label: "Question" },
 ] as const;
 
-export type CreateFfiePhase = (typeof CREATE_FFIE_PHASES)[number];
+export type CreateStageId = (typeof CREATE_STAGES)[number]["id"];
+
+/** SHARE is the publish ritual that follows the six stages. */
+export type CreateFfiePhase = CreateStageId | "SHARE";
 
 export type CreatePhaseContext = {
   stage: JourneyStage;
@@ -22,35 +27,54 @@ export type CreatePhaseContext = {
 };
 
 export function getCreateFfiePhase(ctx: CreatePhaseContext): CreateFfiePhase {
-  const { stage, creationStep, oracleSituateStarted } = ctx;
+  const { stage, creationStep } = ctx;
 
-  if (stage === "orientation" && !oracleSituateStarted) return "UNDERSTAND";
-  if (stage === "orientation" || stage === "reflection") return "SITUATE";
+  if (stage === "entry" || stage === "choose") return "CHOOSE";
+  if (
+    stage === "orientation" ||
+    stage === "reflection" ||
+    stage === "exploration"
+  ) {
+    return "DRAW";
+  }
+  if (stage === "situate") return "SITUATE";
   if (stage === "creation" && creationStep === 0) return "EMBODY";
-  if (stage === "creation" && creationStep > 0) return "MATERIALIZE";
-  if (stage === "output" || stage === "discovery") return "SHARE";
+  if (stage === "creation") return "MAKE";
+  return "SHARE";
+}
 
-  return "UNDERSTAND";
+/** Index into CREATE_STAGES; SHARE sits past the last stage. */
+export function getCreateStageIndex(phase: CreateFfiePhase): number {
+  if (phase === "SHARE") return CREATE_STAGES.length;
+  return CREATE_STAGES.findIndex((entry) => entry.id === phase);
 }
 
 export function getCreatePhaseEyebrow(
   phase: CreateFfiePhase,
   options?: { outputStep?: number },
 ): string {
-  if (phase === "SHARE" && options?.outputStep === 3) return "YOUR FUTURE";
+  if (phase === "SHARE") {
+    return options?.outputStep === 3 ? "YOUR FUTURE" : "SHARE";
+  }
   return phase;
 }
 
-/** Sub-step count for the active FFIE phase only. */
+/** "Stage 03 of 06" — calm counter beside the progress indicator. */
+export function getCreateStageCounter(phase: CreateFfiePhase): string {
+  if (phase === "SHARE") return "Share";
+  const entry = CREATE_STAGES[getCreateStageIndex(phase)];
+  const last = CREATE_STAGES[CREATE_STAGES.length - 1];
+  return `Stage ${entry.number} of ${last.number}`;
+}
+
+/** Sub-step count for the active stage only. */
 export function getActivePhaseSubStepCount(phase: CreateFfiePhase): number {
   switch (phase) {
-    case "UNDERSTAND":
-      return 1;
-    case "SITUATE":
+    case "DRAW":
       return 6;
     case "EMBODY":
       return EMBODY_SCREEN_COUNT;
-    case "MATERIALIZE":
+    case "MAKE":
       return 4;
     case "SHARE":
       return 4;
@@ -59,21 +83,19 @@ export function getActivePhaseSubStepCount(phase: CreateFfiePhase): number {
   }
 }
 
-/** Zero-based sub-step index within the active phase. */
+/** Zero-based sub-step index within the active stage. */
 export function getActivePhaseSubStepIndex(
   phase: CreateFfiePhase,
   ctx: CreatePhaseContext,
 ): number {
   switch (phase) {
-    case "UNDERSTAND":
-      return 0;
-    case "SITUATE":
+    case "DRAW":
       if (ctx.stage === "orientation") return 0;
       if (!ctx.oracleDrawIndex && ctx.stage === "reflection") return 1;
       return Math.min(ctx.oracleDrawIndex + 1, 5);
     case "EMBODY":
       return ctx.embodySubStep;
-    case "MATERIALIZE":
+    case "MAKE":
       return Math.max(0, ctx.creationStep - 1);
     case "SHARE":
       return ctx.outputStep;

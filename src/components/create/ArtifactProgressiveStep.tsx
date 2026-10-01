@@ -51,7 +51,10 @@ export function ArtifactProgressiveStep({
   const p = pronounsForSelection(draft.characterPronoun);
   const fearAnswer = draft.fear.trim() || "…";
   const artifactName = draft.artifactName.trim() || "this artifact";
-  const typeLabel = artifactTypeLabel(draft.artifactType).toLowerCase();
+  const typeLabel = artifactTypeLabel(
+    draft.artifactType,
+    draft.artifactTypeOther,
+  ).toLowerCase();
   const sector =
     resolvedPersonaSector(draft.personaSector, draft.personaSectorCustom) ||
     "their";
@@ -147,7 +150,7 @@ export function ArtifactProgressiveStep({
             <div className="flex flex-wrap items-center gap-2">
               {draft.artifactType && (
                 <span className="rounded-full border border-ffie-line bg-ffie-surface px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-ffie-muted">
-                  {artifactTypeLabel(draft.artifactType)}
+                  {artifactTypeLabel(draft.artifactType, draft.artifactTypeOther)}
                 </span>
               )}
               {resolvedArtifactSubformat(
