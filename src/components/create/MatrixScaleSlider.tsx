@@ -47,10 +47,16 @@ export function MatrixScaleSlider({
           onChange={(event) =>
             onChange(Number.parseFloat(event.target.value))
           }
+          onPointerUp={(event) => {
+            // A press without dragging fires no change event; still count it as an answer.
+            if (value == null) {
+              onChange(Number.parseFloat(event.currentTarget.value));
+            }
+          }}
           aria-labelledby={questionId}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-valuenow={current}
+          aria-valuenow={value ?? undefined}
           className="h-2 w-full cursor-pointer appearance-none rounded-full bg-ffie-line accent-ffie-accent"
         />
         <div className="flex justify-between text-xs font-medium text-ffie-muted">
@@ -59,7 +65,10 @@ export function MatrixScaleSlider({
         </div>
       </div>
 
-      <p className="text-center text-xs text-ffie-muted">
+      <p
+        className={`text-center text-xs text-ffie-muted ${value == null ? "invisible" : ""}`}
+        aria-hidden={value == null}
+      >
         {towardHigh}% toward {highLabel.toLowerCase()} · {towardLow}% toward{" "}
         {lowLabel.toLowerCase()}
       </p>

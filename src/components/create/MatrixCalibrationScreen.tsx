@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { FfieButton } from "@/components/create/design/FfieButton";
 import { LivePositionMiniMatrix } from "@/components/create/LivePositionMiniMatrix";
 import {
@@ -48,11 +47,6 @@ export function MatrixCalibrationScreen({
       : null;
   const powerPct =
     draft.powerOrgScore != null ? percentTowardHigh(draft.powerOrgScore) : null;
-
-  useEffect(() => {
-    if (draft.systemLogicScore == null) onSystemLogicChange(50);
-    if (draft.powerOrgScore == null) onPowerOrgChange(50);
-  }, [draft.systemLogicScore, draft.powerOrgScore, onSystemLogicChange, onPowerOrgChange]);
 
   return (
     <div className="w-full min-w-0 space-y-8">
