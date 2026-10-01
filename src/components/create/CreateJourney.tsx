@@ -61,6 +61,7 @@ import {
   oracleDrawTitle,
 } from "@/lib/create-journey-titles";
 import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
+import { hasMatrixPlacement } from "@/lib/publish-flow/guards";
 import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
 import {
   composeHiddenFunction,
@@ -850,6 +851,7 @@ export function CreateJourney() {
               id="future-output-card"
               showDrawSynthesis={oracleDrawComplete}
               showCardProvenance={oracleDrawComplete}
+              showQuadrant={hasMatrixPlacement(draft)}
             />
           </aside>
         )}

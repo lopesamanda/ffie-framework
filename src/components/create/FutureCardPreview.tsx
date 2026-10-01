@@ -304,10 +304,13 @@ export function FutureCardPreview({
   showCardTags = false,
   showCommonsNarrative = false,
   revealAnimated = false,
+  showQuadrant = true,
 }: {
   draft: JourneyDraft;
   id?: string;
   compact?: boolean;
+  /** Hide the quadrant pill until the Matrix has actually placed this future. */
+  showQuadrant?: boolean;
   /** Hide synthesis until all four Oracle cards are revealed. */
   showDrawSynthesis?: boolean;
   /** Hide Card Provenance until the full Oracle reveal sequence is complete. */
@@ -443,11 +446,13 @@ export function FutureCardPreview({
         <div className="relative z-[1] flex flex-col">
         <Wrap {...(revealAnimated ? nextReveal() : {})}>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-            <QuadrantPill
-              quadrant={quadrant}
-              seal={revealAnimated}
-              sealDelay={sealDelay}
-            />
+            {showQuadrant && (
+              <QuadrantPill
+                quadrant={quadrant}
+                seal={revealAnimated}
+                sealDelay={sealDelay}
+              />
+            )}
             {sectorLabel && (
               <span className="rounded-full border border-ffie-line bg-ffie-bg px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.06em] text-ffie-muted">
                 {sectorLabel}
