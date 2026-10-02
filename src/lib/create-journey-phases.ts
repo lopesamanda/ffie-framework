@@ -5,9 +5,9 @@ import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
 export const CREATE_STAGES = [
   { id: "CHOOSE", number: "01", label: "Choose" },
   { id: "DRAW", number: "02", label: "Draw" },
-  { id: "SITUATE", number: "03", label: "Situate" },
-  { id: "EMBODY", number: "04", label: "Embody" },
-  { id: "MAKE", number: "05", label: "Make" },
+  { id: "EMBODY", number: "03", label: "Embody" },
+  { id: "MAKE", number: "04", label: "Make" },
+  { id: "SITUATE", number: "05", label: "Situate" },
   { id: "QUESTION", number: "06", label: "Question" },
 ] as const;
 

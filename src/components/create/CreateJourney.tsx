@@ -23,10 +23,7 @@ import {
   FUTURE_SUMMARY_EXPORT_WIDTH,
 } from "@/components/create/FutureSummaryExport";
 import { PhaseSweepOverlay } from "@/components/motion/PhaseSweepOverlay";
-import {
-  OracleDrawRecap,
-  OracleDrawReflectionPrompt,
-} from "@/components/create/design/OracleDrawRecap";
+import { OracleDrawRecap } from "@/components/create/design/OracleDrawRecap";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import {
   CharacterEmbodyStep,
@@ -92,9 +89,6 @@ import {
 } from "@/lib/journey/types";
 
 const CREATION_STEP_COUNT = 5;
-
-const FIELD =
-  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
 
 export function CreateJourney() {
   const router = useRouter();
@@ -524,6 +518,12 @@ export function CreateJourney() {
                       )}
                       <OracleDrawRecap hand={draft.cardHand} />
 
+                      <p className="max-w-xl text-sm leading-relaxed text-ffie-muted">
+                        These tensions stay with this future. They become
+                        someone&apos;s fears once a person exists — not a
+                        question to answer now.
+                      </p>
+
                       <FfieButton
                         variant="secondary"
                         disabled={revealing}
@@ -531,15 +531,6 @@ export function CreateJourney() {
                       >
                         {revealing ? "Shuffling…" : "Shuffle & redraw"}
                       </FfieButton>
-
-                      <OracleDrawReflectionPrompt
-                        hand={draft.cardHand}
-                        reflectionText={draft.reflectionText}
-                        onReflectionChange={(reflectionText) =>
-                          update({ reflectionText })
-                        }
-                        fieldClassName={FIELD}
-                      />
 
                       <div className="flex flex-wrap gap-3">
                         <FfieButton
@@ -549,10 +540,10 @@ export function CreateJourney() {
                           Back
                         </FfieButton>
                         <FfieButton
-                          disabled={!draft.reflectionText.trim()}
+                          disabled={!draft.cardHand}
                           onClick={() =>
-                            runPhaseSweep("draw-situate", () =>
-                              goTo("situate"),
+                            runPhaseSweep("draw-embody", () =>
+                              goTo("creation", { creationStep: 0 }),
                             )
                           }
                         >
@@ -645,7 +636,10 @@ export function CreateJourney() {
                           update({ creationStep: 1, embodySubStep: 0 }),
                         )
                       }
-                      onBack={() => goTo("situate")}
+                      onBack={() => {
+                        setOracleDrawIndex(4);
+                        goTo("reflection");
+                      }}
                     />
                   )}
 
