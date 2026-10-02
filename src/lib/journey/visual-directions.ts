@@ -15,13 +15,13 @@ export const VISUAL_DIRECTION_IMAGES: {
   },
   {
     id: "app",
-    label: "App/Platform",
+    label: "Platform",
     path: "/images/visual-directions/visual-app-platform.png",
     artifactType: "app",
   },
   {
     id: "agent",
-    label: "Agent",
+    label: "AI Agent",
     path: "/images/visual-directions/visual-agent.png",
     artifactType: "agent",
   },
@@ -47,6 +47,7 @@ export const VISUAL_DIRECTION_IMAGES: {
     id: "other",
     label: "Other",
     path: "/images/visual-directions/visual-other.png",
+    artifactType: "other",
   },
 ];
 

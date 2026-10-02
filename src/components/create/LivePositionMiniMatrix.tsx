@@ -52,6 +52,7 @@ export function LivePositionMiniMatrix({
   sticky = false,
 }: LivePositionMiniMatrixProps) {
   const reduceMotion = useReducedMotion();
+  const placed = systemLogicScore != null && powerOrgScore != null;
   const x =
     systemLogicScore != null ? calibrationToSigned(systemLogicScore) : 0;
   const y = powerOrgScore != null ? calibrationToSigned(powerOrgScore) : 0;
@@ -146,25 +147,32 @@ export function LivePositionMiniMatrix({
           strokeDasharray="3 3"
           opacity={0.3}
         />
-        <motion.circle
-          cx={cx}
-          cy={cy}
-          r={9}
-          fill="#6e52c4"
-          stroke="#fff"
-          strokeWidth={2}
-          animate={{ cx, cy, scale: settling && !reduceMotion ? [1, 1.15, 1] : 1 }}
-          transition={
-            settling
-              ? { type: "spring", stiffness: 180, damping: 22, mass: 1.2 }
-              : { type: "spring", stiffness: 320, damping: 28 }
-          }
-        />
+        {placed && (
+          <motion.circle
+            cx={cx}
+            cy={cy}
+            r={9}
+            fill="#6e52c4"
+            stroke="#fff"
+            strokeWidth={2}
+            animate={{ cx, cy, scale: settling && !reduceMotion ? [1, 1.15, 1] : 1 }}
+            transition={
+              settling
+                ? { type: "spring", stiffness: 180, damping: 22, mass: 1.2 }
+                : { type: "spring", stiffness: 320, damping: 28 }
+            }
+          />
+        )}
       </svg>
-      <p className="mt-2 text-center text-[10px] text-ffie-muted">
+      <p
+        className={`mt-2 text-center text-[10px] text-ffie-muted ${placed ? "" : "invisible"}`}
+        aria-hidden={!placed}
+      >
         {QUADRANT_MATRIX_LABELS[quadrant]}
       </p>
-      <p className="sr-only">Current quadrant: {formatQuadrantLabel(quadrant)}</p>
+      {placed && (
+        <p className="sr-only">Current quadrant: {formatQuadrantLabel(quadrant)}</p>
+      )}
     </div>
   );
 }

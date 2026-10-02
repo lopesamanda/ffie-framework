@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -12,19 +11,19 @@ import { RegisterDeckExpandedRow } from "@/components/register/RegisterDeckExpan
 import { DiscoveryConstellation } from "@/components/create/design/DiscoveryConstellation";
 import { OracleDeckFan } from "@/components/create/design/OracleDeckFan";
 import { AnchoredConfirmationScreen } from "@/components/create/AnchoredConfirmationScreen";
+import { BrowseInspirationLink } from "@/components/create/BrowseInspirationLink";
+import { ChooseTerritoryScreen } from "@/components/create/ChooseTerritoryScreen";
 import { GroundItScreen } from "@/components/create/GroundItScreen";
 import { LivePreviewScreen } from "@/components/create/LivePreviewScreen";
 import { MatrixCalibrationScreen } from "@/components/create/MatrixCalibrationScreen";
+import { SituateScreen } from "@/components/create/SituateScreen";
 import {
   FutureSummaryExport,
   FUTURE_SUMMARY_EXPORT_HEIGHT,
   FUTURE_SUMMARY_EXPORT_WIDTH,
 } from "@/components/create/FutureSummaryExport";
 import { PhaseSweepOverlay } from "@/components/motion/PhaseSweepOverlay";
-import {
-  OracleDrawRecap,
-  OracleDrawReflectionPrompt,
-} from "@/components/create/design/OracleDrawRecap";
+import { OracleDrawRecap } from "@/components/create/design/OracleDrawRecap";
 import { FutureCardPreview } from "@/components/create/FutureCardPreview";
 import {
   CharacterEmbodyStep,
@@ -47,6 +46,7 @@ import {
 import { EMBODY_SCREEN_COUNT } from "@/lib/journey/embody-flow";
 import { ArtifactTypeStep } from "@/components/create/ArtifactTypeStep";
 import { ArtifactProgressiveStep } from "@/components/create/ArtifactProgressiveStep";
+import { isArtifactTypeComplete } from "@/components/create/ArtifactTypeCards";
 import { visualDirectionPatchForType } from "@/lib/journey/visual-directions";
 import {
   getCreatePhaseEyebrow,
@@ -61,6 +61,7 @@ import {
   oracleDrawTitle,
 } from "@/lib/create-journey-titles";
 import { PUBLISH_RITUAL } from "@/lib/publish-ritual-copy";
+import { hasMatrixPlacement } from "@/lib/publish-flow/guards";
 import { HiddenFunctionStep } from "@/components/create/HiddenFunctionStep";
 import {
   composeHiddenFunction,
@@ -69,11 +70,6 @@ import {
 import { buildOracleSynthesis, buildOracleSynthesisTensions } from "@/lib/journey/oracle-synthesis";
 import { resolvedCharacterRole } from "@/lib/journey/resolved-role";
 import { resolvedPersonaSector } from "@/lib/journey/resolved-sector";
-import {
-  FFIE_CARD_TEXT,
-  ffieCardCategory,
-  ffieCardShell,
-} from "@/lib/card-layout";
 import {
   buildNarrative,
   buildReflectionQuestion,
@@ -93,9 +89,6 @@ import {
 } from "@/lib/journey/types";
 
 const CREATION_STEP_COUNT = 5;
-
-const FIELD =
-  "w-full rounded-xl border border-ffie-line bg-ffie-surface px-4 py-3 text-sm outline-none focus:border-ffie-accent/40";
 
 export function CreateJourney() {
   const router = useRouter();
@@ -127,10 +120,21 @@ export function CreateJourney() {
     setDraft(normalized);
     setOracleSituateStarted(
       normalized.stage === "reflection" ||
+        normalized.stage === "situate" ||
         normalized.stage === "creation" ||
         normalized.stage === "output" ||
         Boolean(normalized.cardHand),
     );
+    if (
+      normalized.cardHand &&
+      (normalized.stage === "situate" ||
+        normalized.stage === "creation" ||
+        normalized.stage === "output" ||
+        normalized.stage === "discovery" ||
+        Boolean(normalized.reflectionText.trim()))
+    ) {
+      setOracleDrawIndex(4);
+    }
   }, []);
 
   const update = useCallback((patch: Partial<JourneyDraft>) => {
@@ -371,7 +375,6 @@ export function CreateJourney() {
 
   const showLivePreview =
     draft.stage !== "entry" &&
-    draft.stage !== "orientation" &&
     draft.stage !== "output" &&
     draft.stage !== "discovery";
 
@@ -394,10 +397,14 @@ export function CreateJourney() {
 
   const creationEyebrow =
     draft.stage === "creation" && draft.creationStep > 0
-      ? "MATERIALIZE"
+      ? "MAKE"
       : undefined;
 
   const oracleStageTitle = oracleDrawTitle();
+  const oracleStageSubtitle =
+    draft.stage === "orientation"
+      ? "Every future carries contradictions. Draw the ones that will shape yours."
+      : "One card from each category, plus the Environmental Impact lens — always applied, never drawn.";
   const outputTitle = outputStepTitle(draft.outputStep);
   const outputSubtitle =
     draft.outputStep === 0
@@ -435,7 +442,22 @@ export function CreateJourney() {
             >
               {draft.stage === "entry" && (
                 <CreateStageShell stage="entry" headerMode="entry" variant="cover">
-                  <CreateEntryCover onBegin={() => goTo("orientation")} />
+                  <CreateEntryCover onBegin={() => goTo("choose")} />
+                </CreateStageShell>
+              )}
+
+              {draft.stage === "choose" && (
+                <CreateStageShell
+                  stage="choose"
+                  eyebrow={phaseEyebrow}
+                  phaseContext={phaseContext}
+                >
+                  <ChooseTerritoryScreen
+                    draft={draft}
+                    onChange={update}
+                    onContinue={() => goTo("orientation")}
+                    onBack={() => goTo("entry")}
+                  />
                 </CreateStageShell>
               )}
 
@@ -444,34 +466,30 @@ export function CreateJourney() {
                   stage="orientation"
                   eyebrow={phaseEyebrow}
                   title={oracleStageTitle}
+                  subtitle={oracleStageSubtitle}
                   phaseContext={phaseContext}
                 >
-                  <RegisterDeckExpandedRow />
-                  <p className="mt-2 text-sm text-ffie-muted">
-                    About 10 minutes, five short moments.
+                  <p className="mb-6 max-w-xl text-sm leading-relaxed text-ffie-ink">
+                    You don&apos;t choose the tension. You choose what to do
+                    with it.
                   </p>
+                  <RegisterDeckExpandedRow />
                   <div className="mt-8 flex flex-col items-start gap-4">
-                    <FfieButton
-                      disabled={revealing}
-                      onClick={() => beginOracleDraw({ goToReflection: true })}
-                    >
-                      {revealing ? "Drawing…" : "Begin the Draw"}
-                    </FfieButton>
-                    <Link
-                      href="/explore"
-                      className={`${ffieCardShell} block max-w-md bg-ffie-surface px-[18px] py-4 transition hover:-translate-y-0.5 hover:border-ffie-accent/30`}
-                    >
-                      <p className={`${ffieCardCategory} text-ffie-accent`}>
-                        Need inspiration?
-                      </p>
-                      <p className={`mt-2 text-sm font-medium text-ffie-ink ${FFIE_CARD_TEXT}`}>
-                        Browse real prototypes
-                      </p>
-                      <p className={`mt-1 text-xs text-ffie-muted ${FFIE_CARD_TEXT}`}>
-                        Research Findings from the thesis — outside this linear
-                        flow.
-                      </p>
-                    </Link>
+                    <div className="flex flex-wrap gap-3">
+                      <FfieButton
+                        variant="secondary"
+                        onClick={() => goTo("choose")}
+                      >
+                        Back
+                      </FfieButton>
+                      <FfieButton
+                        disabled={revealing}
+                        onClick={() => beginOracleDraw({ goToReflection: true })}
+                      >
+                        {revealing ? "Drawing…" : "Begin the Draw"}
+                      </FfieButton>
+                    </div>
+                    <BrowseInspirationLink />
                   </div>
                 </CreateStageShell>
               )}
@@ -481,6 +499,7 @@ export function CreateJourney() {
                   stage="reflection"
                   eyebrow={phaseEyebrow}
                   title={oracleStageTitle}
+                  subtitle={oracleStageSubtitle}
                   phaseContext={phaseContext}
                 >
                   {!draft.cardHand ? (
@@ -499,6 +518,12 @@ export function CreateJourney() {
                       )}
                       <OracleDrawRecap hand={draft.cardHand} />
 
+                      <p className="max-w-xl text-sm leading-relaxed text-ffie-muted">
+                        These tensions stay with this future. They become
+                        someone&apos;s fears once a person exists — not a
+                        question to answer now.
+                      </p>
+
                       <FfieButton
                         variant="secondary"
                         disabled={revealing}
@@ -507,25 +532,24 @@ export function CreateJourney() {
                         {revealing ? "Shuffling…" : "Shuffle & redraw"}
                       </FfieButton>
 
-                      <OracleDrawReflectionPrompt
-                        hand={draft.cardHand}
-                        reflectionText={draft.reflectionText}
-                        onReflectionChange={(reflectionText) =>
-                          update({ reflectionText })
-                        }
-                        fieldClassName={FIELD}
-                      />
-
-                      <FfieButton
-                        disabled={!draft.reflectionText.trim()}
-                        onClick={() =>
-                          runPhaseSweep("draw-embody", () =>
-                            goTo("creation", { creationStep: 0 }),
-                          )
-                        }
-                      >
-                        Continue
-                      </FfieButton>
+                      <div className="flex flex-wrap gap-3">
+                        <FfieButton
+                          variant="secondary"
+                          onClick={() => goTo("orientation")}
+                        >
+                          Back
+                        </FfieButton>
+                        <FfieButton
+                          disabled={!draft.cardHand}
+                          onClick={() =>
+                            runPhaseSweep("draw-embody", () =>
+                              goTo("creation", { creationStep: 0 }),
+                            )
+                          }
+                        >
+                          Continue
+                        </FfieButton>
+                      </div>
                     </div>
                   ) : (
                     <OracleDeckFan
@@ -547,6 +571,46 @@ export function CreateJourney() {
                       onShuffle={handleShuffleCards}
                     />
                   )}
+                </CreateStageShell>
+              )}
+
+              {draft.stage === "situate" && (
+                <CreateStageShell
+                  stage="situate"
+                  eyebrow={phaseEyebrow}
+                  phaseContext={phaseContext}
+                >
+                  <SituateScreen
+                    draft={draft}
+                    onSystemLogicChange={(systemLogicScore: number) =>
+                      update({ systemLogicScore })
+                    }
+                    onPowerOrgChange={(powerOrgScore: number) =>
+                      update({ powerOrgScore })
+                    }
+                    onBack={() => {
+                      setOracleDrawIndex(4);
+                      goTo("reflection");
+                    }}
+                    onContinue={() => {
+                      if (
+                        draft.systemLogicScore == null ||
+                        draft.powerOrgScore == null
+                      ) {
+                        return;
+                      }
+                      const placement = computePlacementFromMatrixScales(
+                        draft.systemLogicScore,
+                        draft.powerOrgScore,
+                      );
+                      runPhaseSweep("situate-embody", () =>
+                        goTo("creation", {
+                          ...placement,
+                          creationStep: 0,
+                        }),
+                      );
+                    }}
+                  />
                 </CreateStageShell>
               )}
 
@@ -572,6 +636,10 @@ export function CreateJourney() {
                           update({ creationStep: 1, embodySubStep: 0 }),
                         )
                       }
+                      onBack={() => {
+                        setOracleDrawIndex(4);
+                        goTo("reflection");
+                      }}
                     />
                   )}
 
@@ -676,7 +744,8 @@ export function CreateJourney() {
                     )}
                     <FfieButton
                       disabled={
-                        (draft.creationStep === 1 && !draft.artifactType) ||
+                        (draft.creationStep === 1 &&
+                          !isArtifactTypeComplete(draft)) ||
                         (draft.creationStep === 2 &&
                           (!draft.artifactName.trim() ||
                             !draft.artifactProblemTension.trim() ||
@@ -732,7 +801,11 @@ export function CreateJourney() {
                   {draft.outputStep === 0 && (
                     <LivePreviewScreen
                       draft={draft}
-                      onContinue={() => update({ outputStep: 1 })}
+                      onContinue={() =>
+                        update({
+                          outputStep: hasMatrixPlacement(draft) ? 2 : 1,
+                        })
+                      }
                     />
                   )}
 
@@ -783,7 +856,11 @@ export function CreateJourney() {
                       onUpdate={update}
                       submitting={submitting}
                       submitError={submitError}
-                      onBack={() => update({ outputStep: 1 })}
+                      onBack={() =>
+                        update({
+                          outputStep: hasMatrixPlacement(draft) ? 0 : 1,
+                        })
+                      }
                       onPublish={() => void handleFinishOutput()}
                     />
                   )}
@@ -850,6 +927,7 @@ export function CreateJourney() {
               id="future-output-card"
               showDrawSynthesis={oracleDrawComplete}
               showCardProvenance={oracleDrawComplete}
+              showQuadrant={hasMatrixPlacement(draft)}
             />
           </aside>
         )}

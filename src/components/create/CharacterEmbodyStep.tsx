@@ -58,6 +58,7 @@ type CharacterEmbodyStepProps = {
   onChange: (patch: Partial<CharacterEmbodyDraft>) => void;
   onSubStepChange: (step: number) => void;
   onComplete: () => void;
+  onBack?: () => void;
 };
 
 export function isEmbodyScreenComplete(
@@ -137,6 +138,7 @@ export function CharacterEmbodyStep({
   onChange,
   onSubStepChange,
   onComplete,
+  onBack,
 }: CharacterEmbodyStepProps) {
   const reduceMotion = useReducedMotion();
   const p = pronounsForSelection(draft.characterPronoun);
@@ -263,38 +265,54 @@ export function CharacterEmbodyStep({
               />
             </ChipField>
 
-            <ChipField label={`${p.possessiveCap} sector in this ecosystem is…`}>
-              <ChipSelect
-                label=""
-                options={[...PERSONA_SECTOR_OPTIONS]}
-                value={
-                  draft.personaSector &&
-                  PERSONA_SECTOR_OPTIONS.includes(
-                    draft.personaSector as PersonaSector,
-                  )
-                    ? draft.personaSector
-                    : null
-                }
-                onChange={(personaSector) =>
-                  onChange({
-                    personaSector: personaSector as PersonaSector,
-                    personaSectorCustom:
-                      personaSector === "Other" ? draft.personaSectorCustom : "",
-                  })
-                }
-              />
-              {draft.personaSector === "Other" && (
-                <input
-                  type="text"
-                  value={draft.personaSectorCustom}
-                  onChange={(event) =>
-                    onChange({ personaSectorCustom: event.target.value })
+            {draft.personaSector &&
+            (draft.personaSector !== "Other" ||
+              draft.personaSectorCustom.trim().length > 0) ? (
+              <p className="text-sm leading-relaxed text-ffie-muted">
+                Territory:{" "}
+                <span className="font-medium text-ffie-ink">
+                  {resolvedPersonaSector(
+                    draft.personaSector,
+                    draft.personaSectorCustom,
+                  )}
+                </span>
+              </p>
+            ) : (
+              <ChipField label={`${p.possessiveCap} sector in this ecosystem is…`}>
+                <ChipSelect
+                  label=""
+                  options={[...PERSONA_SECTOR_OPTIONS]}
+                  value={
+                    draft.personaSector &&
+                    PERSONA_SECTOR_OPTIONS.includes(
+                      draft.personaSector as PersonaSector,
+                    )
+                      ? draft.personaSector
+                      : null
                   }
-                  placeholder="type your own"
-                  className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40"
+                  onChange={(personaSector) =>
+                    onChange({
+                      personaSector: personaSector as PersonaSector,
+                      personaSectorCustom:
+                        personaSector === "Other"
+                          ? draft.personaSectorCustom
+                          : "",
+                    })
+                  }
                 />
-              )}
-            </ChipField>
+                {draft.personaSector === "Other" && (
+                  <input
+                    type="text"
+                    value={draft.personaSectorCustom}
+                    onChange={(event) =>
+                      onChange({ personaSectorCustom: event.target.value })
+                    }
+                    placeholder="type your own"
+                    className="mt-3 w-full rounded-lg border border-ffie-line bg-ffie-surface px-3 py-2 text-sm outline-none placeholder:text-[13px] placeholder:text-ffie-muted/65 focus:border-ffie-accent/40"
+                  />
+                )}
+              </ChipField>
+            )}
 
             <NarrativeBlock>
               <NarrativeBlank
@@ -380,10 +398,16 @@ export function CharacterEmbodyStep({
       </AnimatePresence>
 
       <div className="flex gap-3">
-        {embodySubStep > 0 && (
+        {(embodySubStep > 0 || onBack) && (
           <FfieButton
             variant="secondary"
-            onClick={() => onSubStepChange(embodySubStep - 1)}
+            onClick={() => {
+              if (embodySubStep > 0) {
+                onSubStepChange(embodySubStep - 1);
+                return;
+              }
+              onBack?.();
+            }}
           >
             Back
           </FfieButton>

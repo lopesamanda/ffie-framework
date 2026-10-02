@@ -62,13 +62,17 @@ export type ArtifactTypeId =
   | "service"
   | "policy"
   | "narrative"
-  | "agent";
+  | "agent"
+  | "other";
 
-export const ARTIFACT_TYPE_OPTIONS: {
+type ArtifactTypeOption = {
   id: ArtifactTypeId;
   label: string;
   description: string;
-}[] = [
+};
+
+/** Artifact types offered in Create (Choose and Make share this list). */
+export const ARTIFACT_TYPE_OPTIONS: ArtifactTypeOption[] = [
   {
     id: "object",
     label: "Object",
@@ -76,21 +80,21 @@ export const ARTIFACT_TYPE_OPTIONS: {
       "Something they touch or wear, a physical or everyday thing",
   },
   {
+    id: "service",
+    label: "Service",
+    description: "Something they experience as a service",
+  },
+  {
     id: "app",
-    label: "App/Platform",
+    label: "Platform",
     description:
       "Something they use online, a way people interact with a system",
   },
   {
     id: "agent",
-    label: "Agent",
+    label: "AI Agent",
     description:
       "Something that acts on their behalf, making decisions or taking actions in the world without them needing to ask each time",
-  },
-  {
-    id: "service",
-    label: "Service",
-    description: "Something they experience as a service",
   },
   {
     id: "policy",
@@ -98,12 +102,29 @@ export const ARTIFACT_TYPE_OPTIONS: {
     description: "A rule, law, or institutional mechanism",
   },
   {
+    id: "other",
+    label: "Other",
+    description: "Something else — you name what it is",
+  },
+];
+
+/** No longer offered, but still resolvable for drafts saved before Choose existed. */
+const LEGACY_ARTIFACT_TYPE_OPTIONS: ArtifactTypeOption[] = [
+  {
     id: "narrative",
     label: "Narrative",
     description:
       "Something that shapes a story, a myth, or a public narrative about the future",
   },
 ];
+
+function findArtifactTypeOption(
+  type: ArtifactTypeId | "",
+): ArtifactTypeOption | undefined {
+  return [...ARTIFACT_TYPE_OPTIONS, ...LEGACY_ARTIFACT_TYPE_OPTIONS].find(
+    (option) => option.id === type,
+  );
+}
 
 export const ARTIFACT_SUBFORMAT_OTHER = "Other";
 
@@ -115,6 +136,7 @@ export const ARTIFACT_SUBFORMATS: Record<ArtifactTypeId, string[]> = {
   service: ["Physical space", "Community hub", "Event"],
   policy: ["Official document", "Certification", "Public notice", "Contract"],
   narrative: ["Campaign", "Social Media", "Ads", "Audiovisual piece"],
+  other: [],
 };
 
 export function resolvedArtifactSubformat(
@@ -127,13 +149,24 @@ export function resolvedArtifactSubformat(
   return subformat.trim();
 }
 
-export function artifactTypeLabel(type: ArtifactTypeId | ""): string {
-  const match = ARTIFACT_TYPE_OPTIONS.find((option) => option.id === type);
-  return match?.label ?? "artifact";
+export function artifactTypeLabel(
+  type: ArtifactTypeId | "",
+  typeOther = "",
+): string {
+  if (type === "other" && typeOther.trim()) return typeOther.trim();
+  return findArtifactTypeOption(type)?.label ?? "artifact";
 }
 
-export function artifactTypePhrase(type: ArtifactTypeId | ""): string {
-  const match = ARTIFACT_TYPE_OPTIONS.find((option) => option.id === type);
+export function artifactTypePhrase(
+  type: ArtifactTypeId | "",
+  typeOther = "",
+): string {
+  if (type === "other") {
+    return typeOther.trim()
+      ? `a kind of ${typeOther.trim().toLowerCase()}`
+      : "an artifact";
+  }
+  const match = findArtifactTypeOption(type);
   if (!match) return "an artifact";
   return match.description.replace(/^Something /i, "something ").toLowerCase();
 }

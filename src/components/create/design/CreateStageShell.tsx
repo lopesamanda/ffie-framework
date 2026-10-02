@@ -8,7 +8,11 @@ import {
   FfieLead,
 } from "@/components/create/design/FfieEyebrow";
 import { STAGE_META } from "@/lib/create-stage-meta";
-import type { CreatePhaseContext } from "@/lib/create-journey-phases";
+import {
+  getCreateFfiePhase,
+  getCreateStageCounter,
+  type CreatePhaseContext,
+} from "@/lib/create-journey-phases";
 import type { JourneyStage } from "@/lib/journey/types";
 
 type Props = {
@@ -70,7 +74,9 @@ export function CreateStageShell({
               }
             />
             <FfieEyebrow muted className="shrink-0">
-              {meta.phaseLabel}
+              {phaseContext
+                ? getCreateStageCounter(getCreateFfiePhase(phaseContext))
+                : meta.phaseLabel}
             </FfieEyebrow>
           </div>
         </div>

@@ -26,8 +26,14 @@ export type MatrixScaleScore = 1 | 2 | 3 | 4 | 5 | 6;
 /** @deprecated Use MatrixScaleScore — kept for legacy session data. */
 export type LikertScore = 1 | 2 | 3 | 4 | 5;
 
+/**
+ * Create IA: entry → choose → orientation + reflection (Draw) → situate →
+ * creation (Embody, Make) → output. Stage ids are persisted, so existing ones keep their names.
+ */
 export type JourneyStage =
   | "entry"
+  | "choose"
+  | "situate"
   | "orientation"
   | "exploration"
   | "reflection"
@@ -37,9 +43,11 @@ export type JourneyStage =
 
 export const JOURNEY_STAGES: { id: JourneyStage; label: string }[] = [
   { id: "entry", label: "Entry" },
+  { id: "choose", label: "Choose" },
   { id: "orientation", label: "Orientation" },
   { id: "exploration", label: "Exploration" },
   { id: "reflection", label: "Reflection" },
+  { id: "situate", label: "Situate" },
   { id: "creation", label: "Creation" },
   { id: "output", label: "Future Output" },
   { id: "discovery", label: "Discovery" },
@@ -91,6 +99,8 @@ export type JourneyDraft = {
   values: string[];
   artifactName: string;
   artifactType: ArtifactTypeId | "";
+  /** Free-text type when artifactType is "other" (chosen in Choose). */
+  artifactTypeOther: string;
   /** Cosmetic subformat label — does not affect capability defaults. */
   artifactSubformat: string;
   /** Free-text subformat when artifactSubformat is "Other". */
@@ -338,7 +348,10 @@ export function buildAiImagePrompt(draft: JourneyDraft): string {
     composeHiddenFunction(draft) ||
     draft.hiddenFunction.trim() ||
     "[artifact hidden function]";
-  const artifactType = artifactTypePhrase(draft.artifactType);
+  const artifactType = artifactTypePhrase(
+    draft.artifactType,
+    draft.artifactTypeOther,
+  );
   const p = pronounsForSelection(draft.characterPronoun);
 
   const benefitCardName =
@@ -399,6 +412,7 @@ export function createInitialDraft(sessionId: string): JourneyDraft {
     values: [],
     artifactName: "",
     artifactType: "",
+    artifactTypeOther: "",
     artifactSubformat: "",
     artifactSubformatOther: "",
     visualDirection: "",
@@ -450,10 +464,13 @@ export function loadDraft(): JourneyDraft | null {
     };
 
     const legacyStage = parsed.stage as string | undefined;
+    const knownStages = new Set(JOURNEY_STAGES.map((entry) => entry.id));
     const stage: JourneyStage =
       legacyStage === "understand"
         ? "orientation"
-        : (legacyStage as JourneyStage) ?? "entry";
+        : knownStages.has(legacyStage as JourneyStage)
+          ? (legacyStage as JourneyStage)
+          : "entry";
 
     const draft = {
       ...createInitialDraft(parsed.sessionId),
@@ -474,6 +491,7 @@ export function loadDraft(): JourneyDraft | null {
       characterCountry: parsed.characterCountry ?? "",
       roleCustom: parsed.roleCustom ?? "",
       artifactType: parsed.artifactType ?? "",
+      artifactTypeOther: parsed.artifactTypeOther ?? "",
       artifactSubformat: parsed.artifactSubformat ?? "",
       artifactSubformatOther: parsed.artifactSubformatOther ?? "",
       visualDirection: parsed.visualDirection ?? "",

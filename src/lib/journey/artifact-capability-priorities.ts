@@ -57,6 +57,7 @@ export const ARTIFACT_CAPABILITY_PRIORITY: Record<
     "realtime-monitoring",
     "algorithmic-management-oversight",
   ],
+  other: [],
 };
 
 export const AGENT_EXCLUSIVE_CAPABILITY_IDS = new Set(

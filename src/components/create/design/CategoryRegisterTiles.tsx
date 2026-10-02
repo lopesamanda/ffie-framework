@@ -1,7 +1,7 @@
 import { ENVIRONMENTAL_IMPACT_CARD } from "@/data/narrative-cards";
 import type { CardCategory } from "@/data/narrative-cards";
 import { TransversalBadge } from "@/components/create/design/TransversalBadge";
-import { CATEGORY_STYLES } from "@/lib/category-styles";
+import { CATEGORY_STYLES, ORACLE_CATEGORY_LABELS } from "@/lib/category-styles";
 import {
   FFIE_CARD_TEXT,
   ffieCardCategory,
@@ -16,22 +16,22 @@ const REGISTER: {
 }[] = [
   {
     category: "risk",
-    title: "AI Risks",
+    title: ORACLE_CATEGORY_LABELS.risk,
     description: "What could go wrong — structurally, not hypothetically.",
   },
   {
     category: "benefit",
-    title: "AI Benefits",
+    title: ORACLE_CATEGORY_LABELS.benefit,
     description: "What AI promises to deliver, and at what cost.",
   },
   {
     category: "trust",
-    title: "Trust",
+    title: ORACLE_CATEGORY_LABELS.trust,
     description: "Who is believed, and who is excluded from belief.",
   },
   {
     category: "barrier",
-    title: "Barriers",
+    title: ORACLE_CATEGORY_LABELS.barrier,
     description: "What prevents access, agency, or exit.",
   },
 ];
